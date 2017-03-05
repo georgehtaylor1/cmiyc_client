@@ -1,6 +1,7 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import game.Faction;
 import game.Obstacle;
@@ -63,11 +64,26 @@ public class Helper {
 	 *            The posiiton of the AI
 	 * @param treasures
 	 *            The list of treasures
-	 * @param currentWaypoint
+	 * @param previousWaypoint
 	 *            The current waypoint so that it can be ignored
+	 * @param randomness
+	 *            A double value representing the probability of a random waypoint being selected
 	 * @return The next waypoint to go to
 	 */
-	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position previousWaypoint) {
+	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position previousWaypoint,
+			double randomness, Random rand) {
+		
+		if(rand.nextDouble() < randomness){
+
+			int index = rand.nextInt(treasures.size());
+			Position chosenPosition = treasures.get(index).position;
+			while(previousWaypoint != null? chosenPosition.at(previousWaypoint, 2):false){
+				index = rand.nextInt(treasures.size());
+				chosenPosition = treasures.get(index).position;
+			}
+			return chosenPosition;
+		}
+		
 		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
 		Position minPos = null;
 		for (Treasure t : treasures) {

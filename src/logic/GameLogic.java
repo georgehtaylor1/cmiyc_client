@@ -31,10 +31,11 @@ public class GameLogic {
     private Rectangle fullMap;
     private Shape walkableArea;
 
+    
     public GameLogic(Main client, Pane pane) {
         this.client = client;
         this.faction = client.player.faction;
-        this.fullMap = new Rectangle(0, 0, 800, 450); // Must change this to
+        this.fullMap = new Rectangle(20, 20, 800, 450); // Must change this to
                                                       // inner arena size
         this.walkableArea = this.fullMap;
 

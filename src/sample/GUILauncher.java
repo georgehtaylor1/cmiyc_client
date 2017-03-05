@@ -1,20 +1,20 @@
 package sample;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import javafx.application.Application;
-
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.geometry.Rectangle2D;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;;
+import launcher.Main;;
 
-public class Main extends Application {
+public class GUILauncher extends Application {
 
+	public Main main;
+	
+	public GUILauncher(Main main) {
+		this.main = main;
+	}
+	
     @Override
     public void start(Stage primaryStage) throws Exception{
-        SlideScreen slideScreen = new SlideScreen();
+        SlideScreen slideScreen = new SlideScreen(main);
        // primaryStage.initStyle(StageStyle.UNDECORATED);
         WelcomeScreen welcomeScreen = new WelcomeScreen();
 
@@ -25,7 +25,7 @@ public class Main extends Application {
 
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public void run() {
+        launch();
     }
 }

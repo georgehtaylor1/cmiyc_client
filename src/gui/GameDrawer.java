@@ -6,6 +6,7 @@ import java.util.Map;
 import constants.Colors;
 import game.Faction;
 import game.Obstacle;
+import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
 import gui.util.FxUtils;
@@ -39,6 +40,7 @@ public class GameDrawer {
 	private Shape treasureShadow;
 	private Shape allies;
 	private Shape player;
+	private Faction faction;
 
 	/**
 	 * Constructs a new GameDrawer. Default graphics settings are set on the
@@ -49,7 +51,7 @@ public class GameDrawer {
 		this.main = main;
 		pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black) + ";");
 		pane.setPrefSize(GraphicsSettings.initialPaneWidth, GraphicsSettings.initalPaneHeight);
-
+		this.faction = main.player.faction;
 	}
 
 	/**
@@ -73,7 +75,7 @@ public class GameDrawer {
 		// Assume security
 
 		this.darkness = new Rectangle(20, 20, GameSettings.Arena.size.width, GameSettings.Arena.size.height);
-		this.darkness.setFill(Colors.darker);
+		this.darkness.setFill(Colors.fog);
 		// Make flashlight shapes
 		ArrayList<Shape> flashlightShapes = new ArrayList<>();
 
@@ -84,14 +86,13 @@ public class GameDrawer {
 				GameSettings.Security.lightArcPercentage * 360 / 100);
 
 		clientFlashlightArc.setType(ArcType.ROUND);
-		 RadialGradient rg = new
-		 RadialGradient(0,0.1,100,100,GameSettings.Security.lightRadius,false,CycleMethod.NO_CYCLE,new
-		 Stop[] {new Stop(0,Color.TRANSPARENT), new Stop(1,Color.WHITE)});
-
-		clientFlashlightArc.setFill(Color.YELLOW);
-		Shape.subtract(darkness, clientFlashlightArc);
+		Stop[] stop = new Stop[] { new Stop(0, Color.TRANSPARENT), new Stop(1, Colors.fog) };
+		RadialGradient rg = new RadialGradient(0, 0.1, main.player.position.x, main.player.position.y,
+				GameSettings.Security.lightRadius, false, CycleMethod.NO_CYCLE, stop);
+		clientFlashlightArc.setFill(rg);
+		this.darkness = Shape.subtract(darkness, clientFlashlightArc);
 		flashlightShapes.add(clientFlashlightArc);
-
+		
 		// Make obstacle shapes
 		ArrayList<Shape> obstacleShapes = new ArrayList<>();
 		for (Obstacle o : main.gameData.obstacles) {
@@ -104,37 +105,47 @@ public class GameDrawer {
 		// Make treasure shapes
 
 		// Make player shapes
-		ArrayList<Shape> players = new ArrayList<>();
-		for (Map.Entry<String, game.Player> entry : main.gameData.players.entrySet()) {
-
-			Arc f = new Arc(entry.getValue().position.x, entry.getValue().position.y, GameSettings.Security.lightRadius,
-					GameSettings.Security.lightRadius,
+		ArrayList<Shape> allies = new ArrayList<>();
+		ArrayList<Shape> enemies = new ArrayList<>();
+ 		for (Map.Entry<String, Player> entry : main.gameData.players.entrySet()) {
+			Arc f = new Arc(entry.getValue().position.x, entry.getValue().position.y, 
+					GameSettings.Security.lightRadius, GameSettings.Security.lightRadius,
 					-Math.toDegrees(entry.getValue().direction) - GameSettings.Security.lightRadius / 2,
 					GameSettings.Security.lightArcPercentage * 360 / 100);
-
 			f.setType(ArcType.ROUND);
-			Shape.subtract(darkness, f);
-			f.setFill(Color.YELLOW);
+			
+			this.darkness = Shape.subtract(darkness, f);
+			RadialGradient rg1 = new RadialGradient(0, 0.1, entry.getValue().position.x, entry.getValue().position.y,
+					GameSettings.Security.lightRadius, false, CycleMethod.NO_CYCLE, stop);
+			f.setFill(rg1);
 			flashlightShapes.add(f);
 			Circle c = new Circle(entry.getValue().position.x, entry.getValue().position.y, GameSettings.Player.radius);
-			if (entry.getValue().faction == Faction.SECURITY)
+			if (this.faction == entry.getValue().faction) {
 				c.setFill(Colors.activeSecurity);
-			else
+				allies.add(c);
+ 			} else {
 				c.setFill(Colors.activeThief);
-			players.add(c);
+				enemies.add(c);
+			}
 		}
 
 		// Client player
-		Circle clientPlayerShape = new Circle(GameSettings.Player.radius, Color.GREEN);
+ 		Circle clientPlayerShape = new Circle(GameSettings.Player.radius);
 		clientPlayerShape.setCenterX(main.player.position.x);
 		clientPlayerShape.setCenterY(main.player.position.y);
-
+		if (this.faction == Faction.SECURITY) {
+			clientPlayerShape.setFill(Colors.activeSecurity);
+		} else {
+			clientPlayerShape.setFill(Colors.activeThief);
+		}
+	
 		// Draw
-		pane.getChildren().addAll(obstacleShapes);
-//		pane.getChildren().add(darkness);
 		pane.getChildren().addAll(treasureShapes);
+		pane.getChildren().addAll(enemies);
 		pane.getChildren().addAll(flashlightShapes);
-		pane.getChildren().addAll(players);
+		pane.getChildren().addAll(obstacleShapes);
+		pane.getChildren().add(darkness);
+		pane.getChildren().addAll(allies);
 		pane.getChildren().add(clientPlayerShape);
 	}
 }

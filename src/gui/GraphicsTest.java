@@ -2,9 +2,11 @@ package gui;
 
 import ai.handler.Handler;
 import game.Camera;
+import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
+import game.util.Position;
 import javafx.application.Application;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
@@ -33,12 +35,17 @@ public class GraphicsTest extends Application {
 
         main.gameData.treasures.add(new Treasure(300, 300));
         main.gameData.treasures.add(new Treasure(310, 310));
-        main.gameData.treasures.add(new Treasure(400, 400));
+        main.gameData.treasures.add(new Treasure(390, 400));
+        
         Handler h = new Handler(main.gameData);
         h.addPlayers(1, 0);
         h.start();
         
-        main.gameData.players.put("bob", new Player("bob"));
+        Player bob = new Player("bob");
+        bob.faction = Faction.THIEF;
+        bob.position = new Position(50, 50);
+        
+        main.gameData.players.put("bob", bob);
 
         main.gameData.cameras.add(new Camera(500, 300, 0, 50));
         
@@ -58,7 +65,7 @@ public class GraphicsTest extends Application {
         // requestFocus() only works after stage.show().
         pane.requestFocus();
 
-        Thread drawerThread = new Thread(new GameLoop(drawer, logic));
+        Thread drawerThread = new Thread(new GameLoop(drawer, logic, h));
         drawerThread.setDaemon(true);
         drawerThread.start();
     }

@@ -2,9 +2,11 @@ package ai;
 
 import java.util.ArrayList;
 
+import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
+import game.constants.GameSettings;
 import game.util.Position;
 import util.Maths;
 
@@ -30,13 +32,27 @@ public class Helper {
 	 * 
 	 * @param p
 	 *            The position to compare to
+	 * @param myName
+	 *            the clientID of the current player so that they can be ignored
 	 * @param players
 	 *            The players to check
 	 * @return The closest player
 	 */
-	public static Player getClosestPlayer(Position p, ArrayList<Player> players) {
-		return players.stream().min((p1, p2) -> Double.compare(Maths.dist(p, p1.position), Maths.dist(p, p2.position)))
-				.get();
+	public static Player getClosestThief(Position p, String myName, ArrayList<Player> players) {
+		Player minPlayer = null;
+		// No player can be further away than this
+		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
+
+		for (Player player : players) {
+			if (!player.clientID.equals(myName) && player.faction == Faction.THIEF) {
+				double dist = Maths.dist(player.position, p);
+				if (dist < minDist) {
+					minDist = dist;
+					minPlayer = player;
+				}
+			}
+		}
+		return minPlayer;
 
 	}
 
@@ -51,11 +67,11 @@ public class Helper {
 	 *            The current waypoint so that it can be ignored
 	 * @return The next waypoint to go to
 	 */
-	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position currentWaypoint) {
-		double minDist = Maths.dist(p, treasures.get(0).position);
-		Position minPos = treasures.get(0).position;
+	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position previousWaypoint) {
+		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
+		Position minPos = null;
 		for (Treasure t : treasures) {
-			if (!t.position.at(p)) {
+			if (!t.position.at(p, 2) && (previousWaypoint != null ? !t.position.at(previousWaypoint, 2) : true)) {
 				double d = Maths.dist(p, t.position);
 				if (d < minDist) {
 					minDist = d;

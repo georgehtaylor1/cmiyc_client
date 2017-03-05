@@ -11,17 +11,31 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
 
+/**
+ * AudioMidi
+ * @author harvey
+ * Audio player for MIDI files
+ */
 public class AudioMidi implements AudioPlayer {
 	
 	private Sequencer sequencer;
 	private File audioFile;
 	private boolean running;
+	private boolean firstRun;
 	
+	/**
+	 * Creates a new MIDI file player
+	 * @param audioFile The file to be played
+	 */
 	public AudioMidi(File audioFile) {
 		running = false;
 		this.audioFile = audioFile;
+		this.firstRun = true;
 	}
 	
+	/**
+	 * Sets up the sequencer
+	 */
 	private void setup() {
 		running = true;
 		try {
@@ -32,12 +46,16 @@ public class AudioMidi implements AudioPlayer {
 		}
 	}
 
+	/**
+	 * Play the sound
+	 * @param loop Whether to loop or not
+	 */
 	public void play(boolean loop) {
-		if (!running) setup();
+		if (!firstRun) stop();
+		setup();
 		InputStream is;
 		try {
 			is = new BufferedInputStream(new FileInputStream(audioFile));
-			if (sequencer.isRunning()) sequencer.stop();
 			sequencer.setSequence(is);
 	    	sequencer.start();
 			if (loop) sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
@@ -47,15 +65,25 @@ public class AudioMidi implements AudioPlayer {
 		}
 	}
 	
+	/**
+	 * Stops playback
+	 */
 	public void stop() {
 		running = false;
 		sequencer.stop();
 		sequencer.close();
 	}
 	
+	/**
+	 * Returns whether the player is running or not
+	 * @return bool for whether the file is playing or not
+	 */
 	public boolean isRunning() {
 		return running;
 	}
 	
+	/**
+	 * Required by interface
+	 */
 	public void setVol(float vol, float pan) {};
 }

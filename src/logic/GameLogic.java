@@ -65,7 +65,7 @@ public class GameLogic {
         // First we find the angle from the mouse to the player
         double angle = Maths.angle(client.player.position.x,
                 client.player.position.y, mouseX, mouseY);
-        client.player.direction = angle; // Updates client's direction
+        client.player.direction = Maths.normalizeAngle(angle); // Updates client's direction
                                          // (currently in radians)
 
         if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)) {

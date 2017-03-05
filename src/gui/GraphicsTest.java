@@ -1,18 +1,22 @@
 package gui;
 
 import ai.handler.Handler;
+
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.util.Position;
+
 import javafx.application.Application;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
 import launcher.Main;
+
 import logic.GameLogic;
 import logic.GameLoop;
 
@@ -40,23 +44,25 @@ public class GraphicsTest extends Application {
         Handler h = new Handler(main.gameData);
         h.addPlayers(1, 0);
         h.start();
-        
-        Player bob = new Player("bob");
-        bob.faction = Faction.THIEF;
-        bob.position = new Position(50, 50);
-        
-        main.gameData.players.put("bob", bob);
+      
+        Player tom = new Player("tom");
+        tom.faction = Faction.THIEF;
+        tom.position = new Position(50, 50);
+        main.gameData.players.put("tom", tom);
+
+        main.gameData.players.put(main.player.clientID, main.player);
+        main.gameData.players.put("bob", new Player("bob"));
 
         main.gameData.cameras.add(new Camera(500, 300, 0, 50));
-        
-        
+
         Pane pane = new Pane();
 
         GameLogic logic = new GameLogic(main, pane);
         GameDrawer drawer = new GameDrawer(main, pane);
 
         Scene scene = new Scene(pane);
-        scene.setCursor(Cursor.CROSSHAIR); // TODO We could add our own cursor later.
+        scene.setCursor(Cursor.CROSSHAIR); // TODO We could add our own cursor
+                                           // later.
         stage.setScene(scene);
         stage.sizeToScene();
         stage.setTitle("Graphics test");

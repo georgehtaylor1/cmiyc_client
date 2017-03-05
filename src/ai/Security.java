@@ -106,9 +106,6 @@ public class Security extends AI {
 	 * @see ai.AI#updateState()
 	 */
 	protected void updateState() {
-
-		Debug.say("Security updating " + getState().toString() + " " + this.position.x + " " + this.position.y);
-
 		// Get the volume for the players
 		leftVol = Maths.getLeftVolume(this.position, this.clientID, this.getHandler().gameData.players);
 		rightVol = Maths.getLeftVolume(this.position, this.clientID, this.getHandler().gameData.players);
@@ -150,6 +147,7 @@ public class Security extends AI {
 		if (this.position.at(nextWaypoint, 5) && getState() == SecurityState.MOVING) {
 			setState(SecurityState.SCANNING);
 		}
+
 
 	}
 

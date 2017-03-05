@@ -17,12 +17,12 @@ public class Security extends AI {
 
 	private SecurityState state;
 
-	private final double turnSpeedHigh = 0.1;
+	private final double turnSpeedFast = 0.1;
 	private final double turnSpeedMid = 0.07;
-	private final double turnSpeedLow = 0.04;
-	private final double moveSpeedHigh = 1;
-	private final double moveSpeedMid = 0.7;
-	private final double moveSpeedLow = 0.4;
+	private final double turnSpeedSlow = 0.04;
+	private final double moveSpeedFast = 1;
+	private final double moveSpeedMid = 0.75;
+	private final double moveSpeedSlow = 0.4;
 
 	private Position nextWaypoint;
 	private Position tempWaypoint;
@@ -31,12 +31,11 @@ public class Security extends AI {
 
 	private double leftVol;
 	private double rightVol;
-	private double chasingAngle;
-	private double chasingDistance;
+	private Player chasingPlayer;
 
-	private final int scanTime = 160;
+	private final int scanTime = 200;
 	private int currentScanStep;
-	private final double scanAngle = Math.PI / 3;
+	private final double scanAngle = Math.PI - 0.1;
 	private double startingScanAngle;
 	private boolean scanningLeft;
 
@@ -80,13 +79,13 @@ public class Security extends AI {
 
 			switch (this.state) {
 			case CHASING:
-				updateChasePosition();
+				updateMovingPosition(chasingPlayer.position, turnSpeedMid, moveSpeedFast);
 				break;
 			case LISTENING:
 				updateListeningPosition();
 				break;
 			case MOVING:
-				updateMovingPosition();
+				updateMovingPosition(nextWaypoint, turnSpeedMid, moveSpeedMid);
 				break;
 			case SCANNING:
 				updateScanningPosition();
@@ -119,14 +118,15 @@ public class Security extends AI {
 		excHashMap.remove(super.clientID);
 		Player closestPlayer = Helper.getClosestThief(this.position, this.clientID,
 				new ArrayList<Player>(excHashMap.values()));
-		double closestDist = Maths.dist(this.position, closestPlayer.position);
-		if (closestDist < GameSettings.Security.lightRadius) {
-			double angle = Maths.angle(super.position, closestPlayer.position);
-			if (angle >= super.direction - GameSettings.Security.lightArcPercentage * 2 * Math.PI
-					&& angle <= super.direction + GameSettings.Security.lightArcPercentage * 2 * Math.PI) {
-				setState(SecurityState.CHASING);
-				chasingAngle = angle;
-				chasingDistance = closestDist;
+		if (closestPlayer != null) {
+			double closestDist = Maths.dist(this.position, closestPlayer.position);
+			if (closestDist < GameSettings.Security.lightRadius) {
+				double angle = Maths.angle(super.position, closestPlayer.position);
+				if (angle >= super.direction - GameSettings.Security.lightArcPercentage * 2 * Math.PI
+						&& angle <= super.direction + GameSettings.Security.lightArcPercentage * 2 * Math.PI) {
+					setState(SecurityState.CHASING);
+					chasingPlayer = closestPlayer;
+				}
 			}
 		}
 
@@ -136,18 +136,17 @@ public class Security extends AI {
 			if (currentScanStep > scanTime) {
 				currentScanStep = 0;
 				setState(SecurityState.MOVING);
-				Position newWaypoint = Helper.getNextWayPoint(this.position, getHandler().gameData.treasures,
-						this.previousWaypoint);
+				Position newWaypoint = Helper.getNextWayPoint(nextWaypoint, getHandler().gameData.treasures,
+						this.previousWaypoint, 0.5, getHandler().gameData.rand);
 				previousWaypoint = nextWaypoint;
 				nextWaypoint = newWaypoint;
 			}
 		}
 
 		// Are we at the waypoint but not yet scanning
-		if (this.position.at(nextWaypoint, 5) && getState() == SecurityState.MOVING) {
+		if (this.position.at(nextWaypoint, 10) && getState() == SecurityState.MOVING) {
 			setState(SecurityState.SCANNING);
 		}
-
 
 	}
 
@@ -175,9 +174,9 @@ public class Security extends AI {
 	 */
 	private void updateScanningPosition() {
 		if (scanningLeft && this.direction < Maths.normalizeAngle(this.startingScanAngle + this.scanAngle)) {
-			turnSlow(true);
+			turn(true, turnSpeedSlow);
 		} else if (!scanningLeft && this.direction > Maths.normalizeAngle(this.startingScanAngle - this.scanAngle)) {
-			turnSlow(false);
+			turn(false, turnSpeedSlow);
 		} else {
 			scanningLeft = !scanningLeft;
 		}
@@ -185,14 +184,21 @@ public class Security extends AI {
 	}
 
 	/**
-	 * Update the position of the security:
+	 * Update the position of the security.
 	 * 
-	 * If the security is about to come up against an obstacle then find the closest corner on the obstacle provided it is closer to the waypoint than the
-	 * player and turn towards that
+	 * Assume that the goal and any obstacles exert a force on the AI, the goal exerts a constant force of 1 and the obstacles exert a force proportional to the
+	 * distance (or some exponent of it) to the nearest obstacle. The resultant of these forces is then calculated and the AI moves in the direction of this
+	 * resultant. by ensuring that the force exerted by obstacles is strictly less than the force exerted by the goal it is possible to ensure that all objects
+	 * that lie directly on walls are reachable
 	 * 
-	 * If there is no obstacle ahead of the security then turn towards the waypoint
+	 * @param goal
+	 *            The goal for the AI to reach
+	 * @param turnSpeed
+	 *            The speed at which the AI can turn for this movement
+	 * @param moveSpeed
+	 *            The speed at which the AI can move for this movement
 	 */
-	private void updateMovingPosition() {
+	private void updateMovingPosition(Position goal, double turnSpeed, double moveSpeed) {
 		double goalForce = 1;
 
 		Obstacle obstruction = null;
@@ -207,7 +213,7 @@ public class Security extends AI {
 			}
 		}
 
-		double goalAngle = Maths.angle(this.position, nextWaypoint);
+		double goalAngle = Maths.angle(this.position, goal);
 		double targetAngle = goalAngle;
 
 		if (obstruction != null) {
@@ -229,8 +235,8 @@ public class Security extends AI {
 		}
 
 		Position resultantProjection = Maths.project(this.position, 5, targetAngle);
-		turnTowards(resultantProjection, 0.04);
-		moveMid();
+		turnTowards(resultantProjection, 0.04, turnSpeedMid);
+		move(moveSpeedMid);
 
 	}
 
@@ -273,21 +279,23 @@ public class Security extends AI {
 	 *            The position to turn towards
 	 * @param threshold
 	 *            The threshold to limit eratic motion in the AI
+	 * @param speed
+	 *            The turn speed for the AI
 	 */
-	private void turnTowards(Position p, double threshold) {
+	private void turnTowards(Position p, double threshold, double speed) {
 		double targetAngle = Maths.angle(this.position, p);
 		double deltaAngle = targetAngle - this.direction;
 		deltaAngle = Maths.normalizeAngle(deltaAngle);
 		if (Math.abs(deltaAngle) > threshold)
-			turnFast(deltaAngle > 0 && deltaAngle < Math.PI);
+			turn(deltaAngle > 0 && deltaAngle < Math.PI, speed);
 	}
 
 	/**
 	 * Update the position of the AI based on the fact that it can hear a villain
 	 */
 	private void updateListeningPosition() {
-		turnFast(leftVol > rightVol);
-		moveSlow();
+		turn(leftVol > rightVol, moveSpeedFast);
+		move(moveSpeedSlow);
 	}
 
 	private void updateChasePosition() {
@@ -296,56 +304,25 @@ public class Security extends AI {
 	}
 
 	/**
-	 * Move the AI forward at the faster speed
+	 * Move the AI forward
+	 * 
+	 * @param speed
+	 *            The speed the AI should move
 	 */
-	private void moveFast() {
-		this.position = Maths.project(this.position, moveSpeedHigh, this.direction);
+	private void move(double speed) {
+		this.position = Maths.project(this.position, speed, this.direction);
 	}
 
 	/**
-	 * Move the AI forward at the middle speed
-	 */
-	private void moveMid() {
-		this.position = Maths.project(this.position, moveSpeedMid, this.direction);
-	}
-
-	/**
-	 * Move the AI forward at the slower speed
-	 */
-	private void moveSlow() {
-		this.position = Maths.project(this.position, moveSpeedLow, this.direction);
-	}
-
-	/**
-	 * Quickly turn the AI
+	 * Turn the AI
 	 * 
 	 * @param left
 	 *            Should the AI turn left or right?
+	 * @param speed
+	 *            At what speed should the AI move
 	 */
-	private void turnFast(boolean left) {
-		this.direction += left ? turnSpeedHigh : -turnSpeedHigh;
-		this.direction = Maths.normalizeAngle(this.direction);
-	}
-
-	/**
-	 * Turn the AI at a medium speed
-	 * 
-	 * @param left
-	 *            Should the AI turn left or right?
-	 */
-	private void turnMid(boolean left) {
-		this.direction += left ? turnSpeedMid : -turnSpeedMid;
-		this.direction = Maths.normalizeAngle(this.direction);
-	}
-
-	/**
-	 * Slowlu turn the AI
-	 * 
-	 * @param left
-	 *            Should the AI turn left or right?
-	 */
-	private void turnSlow(boolean left) {
-		this.direction += left ? turnSpeedLow : -turnSpeedLow;
+	private void turn(boolean left, double speed) {
+		this.direction += left ? speed : -speed;
 		this.direction = Maths.normalizeAngle(this.direction);
 	}
 

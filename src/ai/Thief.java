@@ -27,7 +27,7 @@ public class Thief extends AI {
 	private Treasure target;
 
 	public Thief(Handler handler) {
-		super(handler);
+		super(handler, Faction.THIEF);
 		this.faction = Faction.THIEF;
 		// TODO Auto-generated constructor stub
 	}
@@ -65,25 +65,23 @@ public class Thief extends AI {
 	@Override
 	protected void updateState() {
 
-		if(this.position.at(target.position, GameSettings.Thief.stealRadius)){
-			for(Treasure t : getHandler().gameData.treasures){
-				if(t.position.at(target.position, 2)){
+		if (this.position.at(target.position, GameSettings.Thief.stealRadius)) {
+			for (Treasure t : getHandler().gameData.treasures) {
+				if (t.position.at(target.position, 2)) {
 					t.state = TreasureState.PICKED;
 					target = null;
 				}
 			}
-			
+
 			// Randomly select the next treasure
-			for(Treasure t : getHandler().gameData.treasures){
-				if(t.state == TreasureState.UNPICKED){
+			for (Treasure t : getHandler().gameData.treasures) {
+				if (t.state == TreasureState.UNPICKED) {
 					target = t;
 				}
 			}
-			
+
 		}
-		
-		
-		
+
 	}
 
 	/**
@@ -163,10 +161,10 @@ public class Thief extends AI {
 
 		if (security == null) {
 			turnTowards(resultantProjection, 0.04, turnSpeedMid);
-			move(moveSpeedMid);
+			Helper.move(this, getHandler().gameData.obstacles, moveSpeedMid);
 		} else {
 			turnTowards(resultantProjection, 0.04, turnSpeedFast);
-			move(moveSpeedFast);
+			Helper.move(this, getHandler().gameData.obstacles, moveSpeedFast);
 		}
 
 	}
@@ -187,16 +185,6 @@ public class Thief extends AI {
 		deltaAngle = Maths.normalizeAngle(deltaAngle);
 		if (Math.abs(deltaAngle) > threshold)
 			turn(deltaAngle > 0 && deltaAngle < Math.PI, speed);
-	}
-
-	/**
-	 * Move the AI forward
-	 * 
-	 * @param speed
-	 *            The speed the AI should move
-	 */
-	private void move(double speed) {
-		this.position = Maths.project(this.position, speed, this.direction);
 	}
 
 	/**

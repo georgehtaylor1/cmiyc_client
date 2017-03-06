@@ -209,5 +209,44 @@ public class Helper {
 		return p;
 
 	}
+	
+	/**
+	 * Move the AI forward without allowing it to move through walls
+	 * 
+	 * @param speed
+	 *            The speed the AI should move
+	 */
+	public static void move(Player p, ArrayList<Obstacle> obstacles, double speed) {
+		boolean xFine = true;
+		boolean yFine = true;
+		boolean bothFine = true;
+
+		Position testXY = new Position(p.position.x + (speed * Math.cos(p.direction)),
+				p.position.y + (speed * Math.sin(p.direction)));
+		Position testX = new Position(p.position.x + (speed * Math.cos(p.direction)), p.position.y);
+		Position testY = new Position(p.position.x, p.position.y + (speed * Math.sin(p.direction)));
+
+		for (Obstacle o : obstacles) {
+			if (o.contains(testXY)) {
+				bothFine = false;
+			}
+			if (o.contains(testX))
+				xFine = false;
+			if (o.contains(testY))
+				yFine = false;
+		}
+		if (bothFine) {
+			p.position = testXY;
+			return;
+		}
+		if (xFine && !yFine) {
+			p.position = testX;
+			return;
+		}
+		if (!xFine && yFine) {
+			p.position = testY;
+			return;
+		}
+	}
 
 }

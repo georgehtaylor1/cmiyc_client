@@ -46,7 +46,7 @@ public class Security extends AI {
 	 *            The AI handler for this AI
 	 */
 	public Security(Handler handler) {
-		super(handler);
+		super(handler, Faction.SECURITY);
 		this.faction = Faction.SECURITY;
 		setState(SecurityState.MOVING);
 		this.position = new Position(500, 500);
@@ -118,6 +118,7 @@ public class Security extends AI {
 		excHashMap.remove(super.clientID);
 		Player closestPlayer = Helper.getClosestThief(this.position, this.clientID,
 				new ArrayList<Player>(excHashMap.values()));
+		boolean inRange = false;
 		if (closestPlayer != null) {
 			double closestDist = Maths.dist(this.position, closestPlayer.position);
 			if (closestDist < GameSettings.Security.lightRadius) {
@@ -126,8 +127,14 @@ public class Security extends AI {
 						&& angle <= super.direction + GameSettings.Security.lightArcPercentage * 2 * Math.PI) {
 					setState(SecurityState.CHASING);
 					chasingPlayer = closestPlayer;
+					inRange = true;
 				}
 			}
+		}
+
+		if (!inRange) {
+			setState(SecurityState.MOVING);
+			chasingPlayer = null;
 		}
 
 		// Are we currently scanning
@@ -222,7 +229,8 @@ public class Security extends AI {
 
 			Position collisionPoint = Helper.getCollisionPoint(this.position, obstruction);
 			double collisionDist = Maths.dist(this.position, collisionPoint);
-			double obstacleForce = (GameSettings.Security.lightRadius - collisionDist)
+			double obstacleMultiplier = 1.1;
+			double obstacleForce = obstacleMultiplier * (GameSettings.Security.lightRadius - collisionDist)
 					/ GameSettings.Security.lightRadius;
 			double obstacleAngle = Maths.angle(collisionPoint, this.position);
 			double obstacleX = obstacleForce * Math.cos(obstacleAngle);
@@ -236,7 +244,7 @@ public class Security extends AI {
 
 		Position resultantProjection = Maths.project(this.position, 5, targetAngle);
 		turnTowards(resultantProjection, 0.04, turnSpeedMid);
-		move(moveSpeedMid);
+		Helper.move(this, getHandler().gameData.obstacles, moveSpeedMid);
 
 	}
 
@@ -263,22 +271,12 @@ public class Security extends AI {
 	 */
 	private void updateListeningPosition() {
 		turn(leftVol > rightVol, moveSpeedFast);
-		move(moveSpeedSlow);
+		Helper.move(this, getHandler().gameData.obstacles, moveSpeedSlow);
 	}
 
 	private void updateChasePosition() {
 		// TODO Auto-generated method stub
 
-	}
-
-	/**
-	 * Move the AI forward
-	 * 
-	 * @param speed
-	 *            The speed the AI should move
-	 */
-	private void move(double speed) {
-		this.position = Maths.project(this.position, speed, this.direction);
 	}
 
 	/**

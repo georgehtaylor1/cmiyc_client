@@ -76,5 +76,6 @@ public class GraphicsTest extends Application {
         Thread drawerThread = new Thread(new GameLoop(drawer, logic, h));
         drawerThread.setDaemon(true);
         drawerThread.start();
+        
     }
 }

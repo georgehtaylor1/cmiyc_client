@@ -177,5 +177,37 @@ public class Helper {
 		else
 			return null;
 	}
+	
+	/**
+	 * Get the closest position on the obstacle to the given position
+	 * 
+	 * @param p
+	 *            The position to compare to
+	 * @param o
+	 *            The obstacle to be examined
+	 * @return The position on the border of the obstacle closest to the given position
+	 */
+	public static Position getCollisionPoint(Position p, Obstacle o) {
+		if (p.y > o.bottomRight.y) {
+			if (p.x < o.topLeft.x)
+				return o.bottomLeft;
+			if (p.x > o.bottomRight.x)
+				return o.bottomRight;
+			return new Position(p.x, o.bottomRight.y);
+		}
+		if (p.y < o.topLeft.y) {
+			if (p.x < o.topLeft.x)
+				return o.topLeft;
+			if (p.x > o.bottomRight.x)
+				return o.topRight;
+			return new Position(p.x, o.topLeft.y);
+		}
+		if (p.x < o.topLeft.x)
+			return new Position(o.topLeft.x, p.y);
+		if (p.x > o.bottomRight.x)
+			return new Position(o.bottomRight.x, p.y);
+		return p;
+
+	}
 
 }

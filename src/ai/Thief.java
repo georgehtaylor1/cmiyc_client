@@ -37,6 +37,9 @@ public class Thief extends AI {
 
 		while (isRunning()) {
 
+			if (target == null)
+				target = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures);
+			
 			// Wait until the AI should be updated
 			while (!needsUpdate()) {
 				// Prevent thread races
@@ -65,20 +68,14 @@ public class Thief extends AI {
 	@Override
 	protected void updateState() {
 
+		
+		
 		if (this.position.at(target.position, GameSettings.Thief.stealRadius)) {
-			for (Treasure t : getHandler().gameData.treasures) {
-				if (t.position.at(target.position, 2)) {
-					t.state = TreasureState.PICKED;
-					target = null;
-				}
-			}
+			target.state = TreasureState.PICKED;
+			target = null;
 
 			// Randomly select the next treasure
-			for (Treasure t : getHandler().gameData.treasures) {
-				if (t.state == TreasureState.UNPICKED) {
-					target = t;
-				}
-			}
+			target = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures);
 
 		}
 

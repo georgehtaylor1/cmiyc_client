@@ -132,13 +132,13 @@ public class Security extends AI {
 			}
 		}
 
-		if (!inRange) {
+		if (!inRange && chasingPlayer != null) {
 			setState(SecurityState.MOVING);
 			chasingPlayer = null;
 		}
 
 		// Are we currently scanning
-		Debug.say("Checking scan" + currentScanStep);
+		Debug.say("Checking scan " + currentScanStep + " " + this.state);
 		if (this.getState() == SecurityState.SCANNING) {
 			currentScanStep++;
 			Debug.say("Scanning");
@@ -166,6 +166,7 @@ public class Security extends AI {
 	 *            The new state of the AI
 	 */
 	public void setState(SecurityState state) {
+		Debug.say("Set state: " + state);
 		this.state = state;
 	}
 

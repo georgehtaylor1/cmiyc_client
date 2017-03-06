@@ -24,8 +24,19 @@ public class Helper {
 	 * @return The closest treasure to the given point
 	 */
 	public static Treasure getClosestTreasure(Position p, ArrayList<Treasure> treasures) {
-		return treasures.stream()
-				.min((t1, t2) -> Double.compare(Maths.dist(p, t1.position), Maths.dist(p, t2.position))).get();
+		Treasure minTreasure = treasures.get(0);
+		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
+
+		for (Treasure t : treasures) {
+			if (t.state == TreasureState.UNPICKED) {
+				double currDist = Maths.dist(p, t.position);
+				if (currDist < minDist) {
+					minDist = currDist;
+					minTreasure = t;
+				}
+			}
+		}
+		return minTreasure;
 
 	}
 
@@ -97,6 +108,14 @@ public class Helper {
 				}
 			}
 		}
+
+		// If no treasure has been found then pick a random treasure instead
+		if (minPos == null) {
+			int index = rand.nextInt(treasures.size());
+			Position chosenPosition = treasures.get(index).position;
+			return chosenPosition;
+		}
+
 		return minPos;
 	}
 

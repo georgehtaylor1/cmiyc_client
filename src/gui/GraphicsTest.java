@@ -55,7 +55,7 @@ public class GraphicsTest extends Application {
         Player bob = new Player("bob");
         main.gameData.players.put("bob", bob);
 
-        main.gameData.cameras.add(new Camera(500, 300, 0, 50));
+        main.gameData.cameras.add(new Camera(500, 300, 270, 50));
 
         Pane pane = new Pane();
 

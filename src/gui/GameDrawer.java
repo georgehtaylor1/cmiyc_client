@@ -81,11 +81,11 @@ public class GameDrawer {
 		ArrayList<Rectangle> camera = new ArrayList<>();
 		for (Camera c : main.gameData.cameras) {
 			Rectangle box = new Rectangle(c.position.x - 5, c.position.y - 5, 10, 10);
-			box.setRotate(c.direction);
+			box.setRotate(-Math.toDegrees(c.direction - arcAngle / 2));
 			box.setStroke(Color.WHITE);
 			box.setStrokeWidth(2);
 			Arc base = new Arc(c.position.x, c.position.y, GameSettings.Security.lightRadius,
-					GameSettings.Security.lightRadius, -Math.toDegrees(c.direction) - arcAngle / 2, arcAngle);
+					GameSettings.Security.lightRadius, c.direction - arcAngle / 2, arcAngle);
 			base.setType(ArcType.ROUND);
 			
 			if (main.player.faction == Faction.SECURITY) {

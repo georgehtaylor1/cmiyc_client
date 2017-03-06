@@ -8,6 +8,7 @@ import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
+import game.states.TreasureState;
 import game.util.Position;
 import util.Maths;
 
@@ -72,22 +73,23 @@ public class Helper {
 	 */
 	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position previousWaypoint,
 			double randomness, Random rand) {
-		
-		if(rand.nextDouble() < randomness){
+
+		if (rand.nextDouble() < randomness) {
 
 			int index = rand.nextInt(treasures.size());
 			Position chosenPosition = treasures.get(index).position;
-			while(previousWaypoint != null? chosenPosition.at(previousWaypoint, 2):false){
+			while (previousWaypoint != null ? chosenPosition.at(previousWaypoint, 2) : false) {
 				index = rand.nextInt(treasures.size());
 				chosenPosition = treasures.get(index).position;
 			}
 			return chosenPosition;
 		}
-		
+
 		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
 		Position minPos = null;
 		for (Treasure t : treasures) {
-			if (!t.position.at(p, 2) && (previousWaypoint != null ? !t.position.at(previousWaypoint, 2) : true)) {
+			if (t.state != TreasureState.PICKED && !t.position.at(p, 2)
+					&& (previousWaypoint != null ? !t.position.at(previousWaypoint, 2) : true)) {
 				double d = Maths.dist(p, t.position);
 				if (d < minDist) {
 					minDist = d;
@@ -177,7 +179,7 @@ public class Helper {
 		else
 			return null;
 	}
-	
+
 	/**
 	 * Get the closest position on the obstacle to the given position
 	 * 
@@ -209,7 +211,7 @@ public class Helper {
 		return p;
 
 	}
-	
+
 	/**
 	 * Move the AI forward without allowing it to move through walls
 	 * 

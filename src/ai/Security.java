@@ -138,8 +138,10 @@ public class Security extends AI {
 		}
 
 		// Are we currently scanning
+		Debug.say("Checking scan" + currentScanStep);
 		if (this.getState() == SecurityState.SCANNING) {
 			currentScanStep++;
+			Debug.say("Scanning");
 			if (currentScanStep > scanTime) {
 				currentScanStep = 0;
 				setState(SecurityState.MOVING);

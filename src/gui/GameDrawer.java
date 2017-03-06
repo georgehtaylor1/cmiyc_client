@@ -70,6 +70,7 @@ public class GameDrawer {
 			r.setY(o.topLeft.y);
 			obstacleShapes.add(r);
 		}
+		
 		ArrayList<Circle> thiefVision = new ArrayList<>();
 		ArrayList<Arc> lightArcs = new ArrayList<>();
 		ArrayList<Shape> allies = new ArrayList<>();
@@ -111,17 +112,12 @@ public class GameDrawer {
 				lightArcs.add(base);
 				c.setFill(Colors.activeSecurity);
 			} else {
-				// TODO occlusion for thief vision
 				Circle vision = new Circle(player.position.x, player.position.y, GameSettings.Thief.visionRadius);
 				RadialGradient rg = new RadialGradient(0, 0.1, player.position.x, player.position.y,
 						GameSettings.Security.lightRadius, false, CycleMethod.NO_CYCLE,
 						new Stop[] { new Stop(0, Color.TRANSPARENT), new Stop(1, Colors.thiefVision) });
 				vision.setFill(rg);
 				Circle extra = new Circle(player.position.x, player.position.y, GameSettings.Thief.visionRadius-2);
-				
-				if (main.player.faction == Faction.THIEF) {
-					darkness = Shape.subtract(darkness, extra);
-				}
 				
 				thiefVision.add(0,vision);
 				c.setFill(Colors.activeThief);
@@ -189,7 +185,48 @@ public class GameDrawer {
 			occludedLightArcs.add(occludedLight);
 		}
 
+		// Occlusion for thieves vision
+		ArrayList<Shape> occludedLightCircles = new ArrayList<>();
 		
+		for (Circle cutout : thiefVision) {
+			Shape occludedCutout = cutout;
+
+			Circle occludedLightCircle = new Circle(cutout.getCenterX(), cutout.getCenterY(), cutout.getRadius() + 2);
+
+			Shape occludedLight = occludedLightCircle;
+
+			for (Line edge : obstacleEdges) {
+
+				double vx = edge.getEndX() - edge.getStartX();
+				double vy = edge.getEndY() - edge.getStartY();
+				double vl = Math.sqrt(vx * vx + vy * vy);
+				double wl = vl - 2;
+				double wx = (wl * vx) / vl;
+				double wy = (wl * vy) / vl;
+				double bx = edge.getStartX() + wx;
+				double by = edge.getStartY() + wy;
+				double ax = edge.getEndX() - wx;
+				double ay = edge.getEndY() - wy;
+
+				Line lightEdge = new Line(ax, ay, bx, by);
+
+				Polygon cutoutOcclusion = calcOcclusion(cutout.getCenterX(), cutout.getCenterY(), edge);
+				occludedCutout = Shape.subtract(occludedCutout, cutoutOcclusion);
+
+				Polygon lightOcclusion = calcOcclusion(cutout.getCenterX(), cutout.getCenterY(), lightEdge);
+				occludedLight = Shape.subtract(occludedLight, lightOcclusion);
+			}
+			if (main.player.faction == Faction.THIEF) {
+				darkness = Shape.subtract(darkness, occludedCutout);
+			}
+			RadialGradient rg1 = new RadialGradient(0, 0.1, cutout.getCenterX(), cutout.getCenterY(),
+					GameSettings.Thief.visionRadius, false, CycleMethod.NO_CYCLE,
+					new Stop[] { new Stop(0, Color.TRANSPARENT), new Stop(1, Colors.fog) });
+
+			occludedLight.setFill(rg1);
+			occludedLightCircles.add(occludedLight);
+		}
+
 		Shape outerArena = new Rectangle(0, 0, 840, 530);
 		Rectangle innerArena = new Rectangle(20, 20, 800, 450);
 		outerArena = Shape.subtract(outerArena, innerArena);
@@ -200,13 +237,11 @@ public class GameDrawer {
 		pane.getChildren().add(innerArena);
 		pane.getChildren().addAll(treasureShapes);
 		pane.getChildren().addAll(enemies);
+		pane.getChildren().addAll(occludedLightCircles);
 		pane.getChildren().addAll(obstacleShapes);
 		pane.getChildren().addAll(camera);
 		pane.getChildren().addAll(occludedLightArcs);
-		pane.getChildren().addAll(thiefVision);
 		pane.getChildren().add(darkness);
-		// Fog
-
 		pane.getChildren().addAll(allies);
 		pane.getChildren().add(outerArena);
 	}

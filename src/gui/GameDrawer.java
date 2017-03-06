@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import constants.Colors;
-
+import game.Camera;
 import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
-
 import gui.util.FxUtils;
-
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -25,7 +23,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-
 import launcher.Main;
 
 /**
@@ -78,6 +75,14 @@ public class GameDrawer {
 		ArrayList<Shape> allies = new ArrayList<>();
 		ArrayList<Shape> enemies = new ArrayList<>();
 
+		// Make camera shapes
+		/*
+		ArrayList<Rectangle> camera = new ArrayList<>();
+		for (Camera c : main.gameData.cameras) {
+			Rectangle box = new Rectangle(c.position.x, c.position.y, )
+		}
+		*/
+		
 		double arcAngle = (GameSettings.Security.lightArcPercentage / 100) * 360;
 
 		for (Map.Entry<String, Player> entry : main.gameData.players.entrySet()) {

@@ -105,6 +105,7 @@ public class GameDrawer {
 				if (main.player.faction == Faction.THIEF) {
 					darkness = Shape.subtract(darkness, extra);
 				}
+				
 				thiefVision.add(0,vision);
 				c.setFill(Colors.activeThief);
 			}

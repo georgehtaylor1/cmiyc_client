@@ -75,15 +75,27 @@ public class GameDrawer {
 		ArrayList<Shape> allies = new ArrayList<>();
 		ArrayList<Shape> enemies = new ArrayList<>();
 
+		double arcAngle = (GameSettings.Security.lightArcPercentage / 100) * 360;
+
 		// Make camera shapes
-		/*
 		ArrayList<Rectangle> camera = new ArrayList<>();
 		for (Camera c : main.gameData.cameras) {
-			Rectangle box = new Rectangle(c.position.x, c.position.y, )
+			Rectangle box = new Rectangle(c.position.x - 5, c.position.y - 5, 10, 10);
+			box.setRotate(c.direction);
+			box.setStroke(Color.WHITE);
+			box.setStrokeWidth(2);
+			Arc base = new Arc(c.position.x, c.position.y, GameSettings.Security.lightRadius,
+					GameSettings.Security.lightRadius, -Math.toDegrees(c.direction) - arcAngle / 2, arcAngle);
+			base.setType(ArcType.ROUND);
+			
+			if (main.player.faction == Faction.SECURITY) {
+				darkness = Shape.subtract(darkness, box);
+			}
+			lightArcs.add(base);
+			camera.add(box);
 		}
-		*/
 		
-		double arcAngle = (GameSettings.Security.lightArcPercentage / 100) * 360;
+		
 
 		for (Map.Entry<String, Player> entry : main.gameData.players.entrySet()) {
 
@@ -189,6 +201,7 @@ public class GameDrawer {
 		pane.getChildren().addAll(treasureShapes);
 		pane.getChildren().addAll(enemies);
 		pane.getChildren().addAll(obstacleShapes);
+		pane.getChildren().addAll(camera);
 		pane.getChildren().addAll(occludedLightArcs);
 		pane.getChildren().addAll(thiefVision);
 		pane.getChildren().add(darkness);

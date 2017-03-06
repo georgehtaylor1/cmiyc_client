@@ -6,14 +6,12 @@ import game.Faction;
 import game.Obstacle;
 import game.Treasure;
 import game.constants.GameSettings;
-
+import game.states.TreasureState;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-
 import launcher.Main;
-
 import util.Maths;
 
 /**
@@ -73,48 +71,45 @@ public class GameLogic {
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle);
             tempY += client.player.speed * Math.sin(angle);
-            if (walkableArea.contains(tempX, tempY)) { // Only update movement
-                                                       // when the area is still
-                                                       // walkable
-                client.player.position.x = tempX;
-                client.player.position.y = tempY;
-            }
+            
+            if (walkableArea.contains(tempX, client.player.position.y)) 
+            	client.player.position.x = tempX;
+
+            if (walkableArea.contains(client.player.position.x, tempY)) 
+            	client.player.position.y = tempY;
         }
         if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S)) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX -= client.player.speed * Math.cos(angle);
             tempY -= client.player.speed * Math.sin(angle);
-            if (walkableArea.contains(tempX, tempY)) { // Only update movement
-                                                       // when the area is still
-                                                       // walkable
-                client.player.position.x = tempX;
-                client.player.position.y = tempY;
-            }
+            if (walkableArea.contains(tempX, client.player.position.y)) 
+            	client.player.position.x = tempX;
+
+            if (walkableArea.contains(client.player.position.x, tempY)) 
+            	client.player.position.y = tempY;
         }
         if (keys.containsKey(KeyCode.A) && keys.get(KeyCode.A)) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle - Math.PI / 2);
             tempY += client.player.speed * Math.sin(angle - Math.PI / 2);
-            if (walkableArea.contains(tempX, tempY)) { // Only update movement
-                                                       // when the area is still
-                                                       // walkable
-                client.player.position.x = tempX;
-                client.player.position.y = tempY;
-            }
+            if (walkableArea.contains(tempX, client.player.position.y)) 
+            	client.player.position.x = tempX;
+
+            if (walkableArea.contains(client.player.position.x, tempY)) 
+            	client.player.position.y = tempY;
         }
         if (keys.containsKey(KeyCode.D) && keys.get(KeyCode.D)) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle + Math.PI / 2);
             tempY += client.player.speed * Math.sin(angle + Math.PI / 2);
-            if (walkableArea.contains(tempX, tempY)) { // Only update movement
-                                                       // when the area is still
-                                                       // walkable
-                client.player.position.x = tempX;
-                client.player.position.y = tempY;
-            }
+            if (walkableArea.contains(tempX, client.player.position.y)) 
+            	client.player.position.x = tempX;
+
+            if (walkableArea.contains(client.player.position.x, tempY)) 
+            	client.player.position.y = tempY;
         }
         if (Faction.THIEF == faction && keys.containsKey(KeyCode.SPACE)
                 && keys.get(KeyCode.SPACE)) { // Action button to collect
@@ -131,6 +126,7 @@ public class GameLogic {
                                                                    // catch
                                                                    // range.
                     tempT = t; // This is the treasure to delete
+                    t.state = TreasureState.PICKED;
                 }
             }
             if (tempT != null) { // We can't remove the treasure in the for loop

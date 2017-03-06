@@ -42,14 +42,14 @@ public class GraphicsTest extends Application {
         main.gameData.treasures.add(new Treasure(390, 400));
         
         Handler h = new Handler(main.gameData);
-        //h.addPlayers(1, 2);
-        //h.start();
+        h.addPlayers(1, 0);
+        h.start();
       
         Player tom = new Player("tom");
         tom.faction = Faction.THIEF;
         tom.position = new Position(50, 50);
         main.gameData.players.put("tom", tom);
-        main.player.faction = Faction.THIEF;
+        main.player.faction = Faction.SECURITY;
         main.gameData.players.put(main.player.clientID, main.player);
         
         Player bob = new Player("bob");
@@ -76,5 +76,6 @@ public class GraphicsTest extends Application {
         Thread drawerThread = new Thread(new GameLoop(drawer, logic, h));
         drawerThread.setDaemon(true);
         drawerThread.start();
+        
     }
 }

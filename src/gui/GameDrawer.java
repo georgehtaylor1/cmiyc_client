@@ -86,8 +86,7 @@ public class GameDrawer {
 			Circle c = new Circle(player.position.x, player.position.y, GameSettings.Player.radius);
 
 			// Flashlight
-			if (main.player.faction == Faction.SECURITY) {
-
+			if (player.faction == Faction.SECURITY) {
 				Arc base = new Arc(player.position.x, player.position.y, GameSettings.Security.lightRadius,
 						GameSettings.Security.lightRadius, -Math.toDegrees(player.direction) - arcAngle / 2, arcAngle);
 
@@ -95,17 +94,20 @@ public class GameDrawer {
 				lightArcs.add(base);
 				c.setFill(Colors.activeSecurity);
 			} else {
+				// TODO occlusion for thief vision
 				Circle vision = new Circle(player.position.x, player.position.y, GameSettings.Thief.visionRadius);
 				RadialGradient rg = new RadialGradient(0, 0.1, player.position.x, player.position.y,
 						GameSettings.Security.lightRadius, false, CycleMethod.NO_CYCLE,
-						new Stop[] { new Stop(0, Color.TRANSPARENT), new Stop(1, Colors.fog) });
+						new Stop[] { new Stop(0, Color.TRANSPARENT), new Stop(1, Colors.thiefVision) });
 				vision.setFill(rg);
 				Circle extra = new Circle(player.position.x, player.position.y, GameSettings.Thief.visionRadius-2);
-				darkness = Shape.subtract(darkness, extra);
-				thiefVision.add(vision);
+				
+				if (main.player.faction == Faction.THIEF) {
+					darkness = Shape.subtract(darkness, extra);
+				}
+				thiefVision.add(0,vision);
 				c.setFill(Colors.activeThief);
 			}
-			
 			
 			if (main.player.faction == player.faction) {
 				allies.add(c);
@@ -158,9 +160,9 @@ public class GameDrawer {
 				Polygon lightOcclusion = calcOcclusion(cutout.getCenterX(), cutout.getCenterY(), lightEdge);
 				occludedLight = Shape.subtract(occludedLight, lightOcclusion);
 			}
-
-			darkness = Shape.subtract(darkness, occludedCutout);
-
+			if (main.player.faction == Faction.SECURITY) {
+				darkness = Shape.subtract(darkness, occludedCutout);
+			}
 			RadialGradient rg1 = new RadialGradient(0, 0.1, cutout.getCenterX(), cutout.getCenterY(),
 					GameSettings.Security.lightRadius, false, CycleMethod.NO_CYCLE,
 					new Stop[] { new Stop(0, Colors.flashlight), new Stop(1, Colors.fog) });
@@ -177,17 +179,17 @@ public class GameDrawer {
 		darkness.setFill(Colors.fog);
 
 		// Draw
-		pane.getChildren().add(outerArena);
 		pane.getChildren().add(innerArena);
 		pane.getChildren().addAll(treasureShapes);
 		pane.getChildren().addAll(enemies);
 		pane.getChildren().addAll(obstacleShapes);
 		pane.getChildren().addAll(occludedLightArcs);
 		pane.getChildren().addAll(thiefVision);
-		// Fog
 		pane.getChildren().add(darkness);
+		// Fog
 
 		pane.getChildren().addAll(allies);
+		pane.getChildren().add(outerArena);
 	}
 
 	/**

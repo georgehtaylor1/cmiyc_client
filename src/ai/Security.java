@@ -205,7 +205,7 @@ public class Security extends AI {
 		double dist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
 
 		for (Obstacle o : getHandler().gameData.obstacles) {
-			Position collisionPoint = getCollisionPoint(this.position, o);
+			Position collisionPoint = Helper.getCollisionPoint(this.position, o);
 			double currentDist = Maths.dist(this.position, collisionPoint);
 			if (currentDist < GameSettings.Security.lightRadius && currentDist < dist) {
 				obstruction = o;
@@ -220,7 +220,7 @@ public class Security extends AI {
 			double goalX = goalForce * Math.cos(goalAngle);
 			double goalY = goalForce * Math.sin(goalAngle);
 
-			Position collisionPoint = getCollisionPoint(this.position, obstruction);
+			Position collisionPoint = Helper.getCollisionPoint(this.position, obstruction);
 			double collisionDist = Maths.dist(this.position, collisionPoint);
 			double obstacleForce = (GameSettings.Security.lightRadius - collisionDist)
 					/ GameSettings.Security.lightRadius;
@@ -237,38 +237,6 @@ public class Security extends AI {
 		Position resultantProjection = Maths.project(this.position, 5, targetAngle);
 		turnTowards(resultantProjection, 0.04, turnSpeedMid);
 		move(moveSpeedMid);
-
-	}
-
-	/**
-	 * Get the closest position on the obstacle to the given position
-	 * 
-	 * @param p
-	 *            The position to compare to
-	 * @param o
-	 *            The obstacle to be examined
-	 * @return The position on the border of the obstacle closest to the given position
-	 */
-	private Position getCollisionPoint(Position p, Obstacle o) {
-		if (p.y > o.bottomRight.y) {
-			if (p.x < o.topLeft.x)
-				return o.bottomLeft;
-			if (p.x > o.bottomRight.x)
-				return o.bottomRight;
-			return new Position(p.x, o.bottomRight.y);
-		}
-		if (p.y < o.topLeft.y) {
-			if (p.x < o.topLeft.x)
-				return o.topLeft;
-			if (p.x > o.bottomRight.x)
-				return o.topRight;
-			return new Position(p.x, o.topLeft.y);
-		}
-		if (p.x < o.topLeft.x)
-			return new Position(o.topLeft.x, p.y);
-		if (p.x > o.bottomRight.x)
-			return new Position(o.bottomRight.x, p.y);
-		return p;
 
 	}
 

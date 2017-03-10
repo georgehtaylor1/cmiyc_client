@@ -1,24 +1,31 @@
 package gui;
 
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 
 /**
  * A Shape container that maintains centerX and centerY properties.
  */
-public class OccludedLight {
+public class CenteredShape {
 
-    private Shape shape;
+    public Shape shape;
+
     private double centerX;
     private double centerY;
 
-    public OccludedLight(Shape shape, double centerX, double centerY) {
+    public CenteredShape(Shape shape, double centerX, double centerY) {
         this.shape = shape;
         this.centerX = centerX;
         this.centerY = centerY;
     }
 
-    public Shape getShape() {
-        return this.shape;
+    public CenteredShape(Arc arc) {
+        this(arc, arc.getCenterX(), arc.getCenterY());
+    }
+
+    public CenteredShape(Circle circle) {
+        this(circle, circle.getCenterX(), circle.getCenterY());
     }
 
     public double getCenterX() {
@@ -27,10 +34,6 @@ public class OccludedLight {
 
     public double getCenterY() {
         return this.centerY;
-    }
-
-    public void setShape(Shape shape) {
-        this.shape = shape;
     }
 
     public void setCenterX(double centerX) {

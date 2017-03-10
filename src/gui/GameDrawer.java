@@ -1,16 +1,19 @@
 package gui;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import constants.Colors;
-import game.Camera;
+
 import game.Faction;
 import game.Obstacle;
 import game.Player;
-import game.Treasure;
 import game.constants.GameSettings;
+
 import gui.util.FxUtils;
+
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -23,6 +26,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+
 import launcher.Main;
 
 /**
@@ -30,244 +34,176 @@ import launcher.Main;
  */
 public class GameDrawer {
 
-	private Main main;
-	private Pane pane;
+    private Main main;
+    private Pane pane;
 
-	/**
-	 * Constructs a new GameDrawer. Default graphics settings are set on the
-	 * Pane.
-	 */
-	public GameDrawer(Main main, Pane pane) {
-		this.pane = pane;
-		this.main = main;
-		pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black) + ";");
-		pane.setPrefSize(GraphicsSettings.initialPaneWidth, GraphicsSettings.initalPaneHeight);
-	}
+    /**
+     * Constructs a new GameDrawer. Default graphics settings are set on the
+     * Pane.
+     */
+    public GameDrawer(Main main, Pane pane) {
+        this.pane = pane;
+        this.main = main;
+        pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black)
+                + ";");
+        pane.setPrefSize(GraphicsSettings.initialPaneWidth,
+                GraphicsSettings.initalPaneHeight);
+    }
 
-	/**
-	 * Draws the current state of the game to the Pane.
-	 */
-	public void draw() {
-		pane.getChildren().clear();
+    /**
+     * Draws the current state of the game to the Pane.
+     */
+    public void draw() {
 
-		Shape darkness = new Rectangle(20, 20, GameSettings.Arena.size.width, GameSettings.Arena.size.height);
+        // Make obstacle shapes
+        ArrayList<Rectangle> obstacleRects = new ArrayList<>();
+        for (Obstacle o : main.gameData.obstacles) {
+            Rectangle r = new Rectangle(o.width, o.height, Color.LIGHTBLUE);
+            r.setX(o.topLeft.x);
+            r.setY(o.topLeft.y);
+            obstacleRects.add(r);
+        }
 
-		ArrayList<Shape> treasureShapes = new ArrayList<>();
-		for (Treasure t : main.gameData.treasures) {
-			Circle c = new Circle(GameSettings.Treasure.radius, Colors.treasure);
-			c.setCenterX(t.position.x);
-			c.setCenterY(t.position.y);
-			treasureShapes.add(c);
-		}
+        ArrayList<Arc> lightArcs = new ArrayList<>();
+        ArrayList<Shape> allies = new ArrayList<>();
+        ArrayList<Shape> enemies = new ArrayList<>();
 
-		// Make obstacle shapes
-		ArrayList<Rectangle> obstacleShapes = new ArrayList<>();
-		for (Obstacle o : main.gameData.obstacles) {
-			Rectangle r = new Rectangle(o.width, o.height, Color.TRANSPARENT);
-			r.setStroke(Color.WHITE);
-			r.setStrokeWidth(4);
-			r.setX(o.topLeft.x);
-			r.setY(o.topLeft.y);
-			obstacleShapes.add(r);
-		}
-		
-		ArrayList<Circle> thiefVision = new ArrayList<>();
-		ArrayList<Arc> lightArcs = new ArrayList<>();
-		ArrayList<Shape> allies = new ArrayList<>();
-		ArrayList<Shape> enemies = new ArrayList<>();
+        double arcAngle = (GameSettings.Security.lightArcPercentage / 100)
+                * 360;
 
-		double arcAngle = (GameSettings.Security.lightArcPercentage / 100) * 360;
+        for (Map.Entry<String, Player> entry : main.gameData.players
+                .entrySet()) {
 
-		// Make camera shapes
-		ArrayList<Rectangle> camera = new ArrayList<>();
-		for (Camera c : main.gameData.cameras) {
-			Rectangle box = new Rectangle(c.position.x - 5, c.position.y - 5, 10, 10);
-			box.setRotate(-Math.toDegrees(c.direction - arcAngle / 2));
-			box.setStroke(Color.WHITE);
-			box.setStrokeWidth(2);
-			Arc base = new Arc(c.position.x, c.position.y, GameSettings.Security.lightRadius,
-					GameSettings.Security.lightRadius, c.direction - arcAngle / 2, arcAngle);
-			base.setType(ArcType.ROUND);
-			
-			if (main.player.faction == Faction.SECURITY) {
-				darkness = Shape.subtract(darkness, box);
-			}
-			lightArcs.add(base);
-			camera.add(box);
-		}
-		
-		
+            Player player = entry.getValue();
+            Circle c = new Circle(player.position.x, player.position.y,
+                    GameSettings.Player.radius);
 
-		for (Map.Entry<String, Player> entry : main.gameData.players.entrySet()) {
+            if (player.faction == Faction.SECURITY) {
+                Arc light = new Arc(player.position.x, player.position.y,
+                        GameSettings.Security.lightRadius,
+                        GameSettings.Security.lightRadius,
+                        -Math.toDegrees(player.direction) - arcAngle / 2,
+                        arcAngle);
 
-			Player player = entry.getValue();
-			Circle c = new Circle(player.position.x, player.position.y, GameSettings.Player.radius);
+                light.setType(ArcType.ROUND);
+                lightArcs.add(light);
+            }
 
-			// Flashlight
-			if (player.faction == Faction.SECURITY) {
-				Arc base = new Arc(player.position.x, player.position.y, GameSettings.Security.lightRadius,
-						GameSettings.Security.lightRadius, -Math.toDegrees(player.direction) - arcAngle / 2, arcAngle);
+            if (main.player.faction == player.faction) {
+                c.setFill(Color.GREEN);
+                allies.add(c);
+            } else {
+                c.setFill(Color.RED);
+                enemies.add(c);
+            }
+        }
 
-				base.setType(ArcType.ROUND);
-				lightArcs.add(base);
-				c.setFill(Colors.activeSecurity);
-			} else {
-				Circle vision = new Circle(player.position.x, player.position.y, GameSettings.Thief.visionRadius);
-				RadialGradient rg = new RadialGradient(0, 0.1, player.position.x, player.position.y,
-						GameSettings.Security.lightRadius, false, CycleMethod.NO_CYCLE,
-						new Stop[] { new Stop(0, Color.TRANSPARENT), new Stop(1, Colors.thiefVision) });
-				vision.setFill(rg);
-				Circle extra = new Circle(player.position.x, player.position.y, GameSettings.Thief.visionRadius-2);
-				
-				thiefVision.add(0,vision);
-				c.setFill(Colors.activeThief);
-			}
-			
-			if (main.player.faction == player.faction) {
-				allies.add(c);
-			} else {
-				enemies.add(c);
-			}
-		}
+        // Calculate occlusion
+        ArrayList<Line> obstacleEdges = new ArrayList<>();
+        for (Rectangle r : obstacleRects) {
+            double leftX = r.getX();
+            double rightX = r.getX() + r.getWidth();
+            double topY = r.getY();
+            double bottomY = r.getY() + r.getHeight();
+            obstacleEdges.add(new Line(leftX, topY, leftX, bottomY));
+            obstacleEdges.add(new Line(leftX, bottomY, rightX, bottomY));
+            obstacleEdges.add(new Line(leftX, topY, rightX, topY));
+            obstacleEdges.add(new Line(rightX, topY, rightX, bottomY));
+        }
 
-		// Calculate occlusion
-		ArrayList<Line> obstacleEdges = new ArrayList<>();
-		for (Rectangle r : obstacleShapes) {
-			double leftX = r.getX();
-			double rightX = r.getX() + r.getWidth();
-			double topY = r.getY();
-			double bottomY = r.getY() + r.getHeight();
-			obstacleEdges.add(new Line(leftX, topY, leftX, bottomY));
-			obstacleEdges.add(new Line(leftX, bottomY, rightX, bottomY));
-			obstacleEdges.add(new Line(leftX, topY, rightX, topY));
-			obstacleEdges.add(new Line(rightX, topY, rightX, bottomY));
-		}
+        ArrayList<OccludedLight> occludedLightShapes = new ArrayList<>();
+        for (Arc light : lightArcs) {
 
-		ArrayList<Shape> occludedLightArcs = new ArrayList<>();
-		for (Arc cutout : lightArcs) {
-			Shape occludedCutout = cutout;
+            OccludedLight occludedLight = new OccludedLight(light,
+                    light.getCenterX(), light.getCenterY());
 
-			Arc occludedLightArc = new Arc(cutout.getCenterX(), cutout.getCenterY(), cutout.getRadiusX() + 2,
-					cutout.getRadiusY() + 2, cutout.getStartAngle() - 2, cutout.getLength() + 4);
-			occludedLightArc.setType(ArcType.ROUND);
+            for (Line edge : obstacleEdges) {
 
-			Shape occludedLight = occludedLightArc;
+                Polygon lightOcclusion = calcOcclusion(light.getCenterX(),
+                        light.getCenterY(), edge);
 
-			for (Line edge : obstacleEdges) {
+                occludedLight.setShape(Shape.subtract(occludedLight.getShape(),
+                        lightOcclusion));
+            }
 
-				double vx = edge.getEndX() - edge.getStartX();
-				double vy = edge.getEndY() - edge.getStartY();
-				double vl = Math.sqrt(vx * vx + vy * vy);
-				double wl = vl - 2;
-				double wx = (wl * vx) / vl;
-				double wy = (wl * vy) / vl;
-				double bx = edge.getStartX() + wx;
-				double by = edge.getStartY() + wy;
-				double ax = edge.getEndX() - wx;
-				double ay = edge.getEndY() - wy;
+            RadialGradient lightGrad = new RadialGradient(0, 0.1,
+                    light.getCenterX(), light.getCenterY(),
+                    GameSettings.Security.lightRadius, false,
+                    CycleMethod.NO_CYCLE,
+                    new Stop[] { new Stop(0, Colors.flashlight),
+                            new Stop(1, Color.TRANSPARENT) });
 
-				Line lightEdge = new Line(ax, ay, bx, by);
+            occludedLight.getShape().setFill(lightGrad);
+            occludedLightShapes.add(occludedLight);
+        }
 
-				Polygon cutoutOcclusion = calcOcclusion(cutout.getCenterX(), cutout.getCenterY(), edge);
-				occludedCutout = Shape.subtract(occludedCutout, cutoutOcclusion);
+        ArrayList<Shape> occludedObstacleShapes = new ArrayList<>();
+        for (OccludedLight light : occludedLightShapes) {
+            for (Rectangle r : obstacleRects) {
 
-				Polygon lightOcclusion = calcOcclusion(cutout.getCenterX(), cutout.getCenterY(), lightEdge);
-				occludedLight = Shape.subtract(occludedLight, lightOcclusion);
-			}
-			if (main.player.faction == Faction.SECURITY) {
-				darkness = Shape.subtract(darkness, occludedCutout);
-			}
-			RadialGradient rg1 = new RadialGradient(0, 0.1, cutout.getCenterX(), cutout.getCenterY(),
-					GameSettings.Security.lightRadius, false, CycleMethod.NO_CYCLE,
-					new Stop[] { new Stop(0, Colors.flashlight), new Stop(1, Colors.fog) });
+                Rectangle outline = new Rectangle(r.getWidth() + 4,
+                        r.getHeight() + 4);
+                outline.setX(r.getX() - 2);
+                outline.setY(r.getY() - 2);
 
-			occludedLight.setFill(rg1);
-			occludedLightArcs.add(occludedLight);
-		}
+                Shape occludedOutline = Shape.subtract(outline, r);
+                occludedOutline = Shape.intersect(occludedOutline,
+                        light.getShape());
 
-		// Occlusion for thieves vision
-		ArrayList<Shape> occludedLightCircles = new ArrayList<>();
-		
-		for (Circle cutout : thiefVision) {
-			Shape occludedCutout = cutout;
+                RadialGradient outlineGrad = new RadialGradient(0, 0.1,
+                        light.getCenterX(), light.getCenterY(),
+                        GameSettings.Security.lightRadius, false,
+                        CycleMethod.NO_CYCLE,
+                        new Stop[] { new Stop(0, Color.WHITE),
+                                new Stop(1, Color.TRANSPARENT) });
 
-			Circle occludedLightCircle = new Circle(cutout.getCenterX(), cutout.getCenterY(), cutout.getRadius() + 2);
+                occludedOutline.setFill(outlineGrad);
+                occludedObstacleShapes.add(occludedOutline);
+            }
+        }
 
-			Shape occludedLight = occludedLightCircle;
+        Shape outerArena = new Rectangle(0, 0, 840, 530);
+        Rectangle innerArena = new Rectangle(20, 20, 800, 450);
+        outerArena.setFill(Colors.outerArena);
+        innerArena.setFill(Color.BLACK);
 
-			for (Line edge : obstacleEdges) {
+        // Draw
+        List<Node> ch = pane.getChildren();
+        ch.clear();
+        ch.add(outerArena);
+        ch.add(innerArena);
+        ch.addAll(occludedObstacleShapes);
 
-				double vx = edge.getEndX() - edge.getStartX();
-				double vy = edge.getEndY() - edge.getStartY();
-				double vl = Math.sqrt(vx * vx + vy * vy);
-				double wl = vl - 2;
-				double wx = (wl * vx) / vl;
-				double wy = (wl * vy) / vl;
-				double bx = edge.getStartX() + wx;
-				double by = edge.getStartY() + wy;
-				double ax = edge.getEndX() - wx;
-				double ay = edge.getEndY() - wy;
+        for (OccludedLight light : occludedLightShapes) {
+            ch.add(light.getShape());
+        }
 
-				Line lightEdge = new Line(ax, ay, bx, by);
+        ch.addAll(allies);
+    }
 
-				Polygon cutoutOcclusion = calcOcclusion(cutout.getCenterX(), cutout.getCenterY(), edge);
-				occludedCutout = Shape.subtract(occludedCutout, cutoutOcclusion);
+    /**
+     * Calculate the occlusion caused by the given edge.
+     */
+    private Polygon calcOcclusion(double originX, double originY, Line edge) {
+        double OCCLUSION_LENGTH = pane.getWidth() * 1000;
 
-				Polygon lightOcclusion = calcOcclusion(cutout.getCenterX(), cutout.getCenterY(), lightEdge);
-				occludedLight = Shape.subtract(occludedLight, lightOcclusion);
-			}
-			if (main.player.faction == Faction.THIEF) {
-				darkness = Shape.subtract(darkness, occludedCutout);
-			}
-			RadialGradient rg1 = new RadialGradient(0, 0.1, cutout.getCenterX(), cutout.getCenterY(),
-					GameSettings.Thief.visionRadius, false, CycleMethod.NO_CYCLE,
-					new Stop[] { new Stop(0, Color.TRANSPARENT), new Stop(1, Colors.fog) });
+        double v2x = edge.getEndX() - originX;
+        double v2y = edge.getEndY() - originY;
+        double v2l = Math.sqrt(v2x * v2x + v2y * v2y);
+        double v3x = (OCCLUSION_LENGTH * v2x) / v2l;
+        double v3y = (OCCLUSION_LENGTH * v2y) / v2l;
+        double x3 = originX + v3x;
+        double y3 = originY + v3y;
 
-			occludedLight.setFill(rg1);
-			occludedLightCircles.add(occludedLight);
-		}
+        double v1x = edge.getStartX() - originX;
+        double v1y = edge.getStartY() - originY;
+        double v1l = Math.sqrt(v1x * v1x + v1y * v1y);
+        double v4x = (OCCLUSION_LENGTH * v1x) / v1l;
+        double v4y = (OCCLUSION_LENGTH * v1y) / v1l;
+        double x4 = originX + v4x;
+        double y4 = originY + v4y;
 
-		Shape outerArena = new Rectangle(0, 0, 840, 530);
-		Rectangle innerArena = new Rectangle(20, 20, 800, 450);
-		outerArena = Shape.subtract(outerArena, innerArena);
-		outerArena.setFill(Colors.outerArena);
-		darkness.setFill(Colors.fog);
-
-		// Draw
-		pane.getChildren().add(innerArena);
-		pane.getChildren().addAll(treasureShapes);
-		pane.getChildren().addAll(enemies);
-		pane.getChildren().addAll(occludedLightCircles);
-		pane.getChildren().addAll(obstacleShapes);
-		pane.getChildren().addAll(camera);
-		pane.getChildren().addAll(occludedLightArcs);
-		pane.getChildren().add(darkness);
-		pane.getChildren().addAll(allies);
-		pane.getChildren().add(outerArena);
-	}
-
-	/**
-	 * Calculate the occlusion caused by the given edge.
-	 */
-	private Polygon calcOcclusion(double originX, double originY, Line edge) {
-		double OCCLUSION_LENGTH = pane.getWidth() * 1000;
-
-		double v2x = edge.getEndX() - originX;
-		double v2y = edge.getEndY() - originY;
-		double v2l = Math.sqrt(v2x * v2x + v2y * v2y);
-		double v3x = (OCCLUSION_LENGTH * v2x) / v2l;
-		double v3y = (OCCLUSION_LENGTH * v2y) / v2l;
-		double x3 = originX + v3x;
-		double y3 = originY + v3y;
-
-		double v1x = edge.getStartX() - originX;
-		double v1y = edge.getStartY() - originY;
-		double v1l = Math.sqrt(v1x * v1x + v1y * v1y);
-		double v4x = (OCCLUSION_LENGTH * v1x) / v1l;
-		double v4y = (OCCLUSION_LENGTH * v1y) / v1l;
-		double x4 = originX + v4x;
-		double y4 = originY + v4y;
-
-		return new Polygon(edge.getStartX(), edge.getStartY(), edge.getEndX(), edge.getEndY(), x3, y3, x4, y4);
-	}
+        return new Polygon(edge.getStartX(), edge.getStartY(), edge.getEndX(),
+                edge.getEndY(), x3, y3, x4, y4);
+    }
 }

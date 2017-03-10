@@ -1,7 +1,5 @@
 package launcher;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -14,20 +12,23 @@ import com.ClientReceiver;
 import com.ClientSender;
 
 import constants.Commands.Action;
-
 import game.Faction;
 import game.GameData;
 import game.GameMode;
 import game.Player;
-import game.constants.GameSettings;
-
-
+import javafx.application.Application;
+import javafx.stage.Stage;
+import sample.GUILauncher;
+import sample.GameScreen;
+import sample.SlideScreen;
+import sample.WelcomeScreen;
 import states.ClientState;
-
 import util.Transferable;
 
 @SuppressWarnings("serial")
-public class Main extends JFrame {
+public class Main extends Application {
+	
+	public Main m;
 
     public String id;
     public String username;
@@ -104,7 +105,7 @@ public class Main extends JFrame {
         return inputs;
     }
 
-    private void useInputs(String[] _inputs) {
+    public void useInputs(String[] _inputs) {
 
         String host = _inputs[0];
         String port = _inputs[1];
@@ -113,12 +114,13 @@ public class Main extends JFrame {
         this.port = (this.validPort(port)) ? Integer.parseInt(port) : this.port;
         this.host = host;
         this.username = username;
+        connect();
 
     }
 
     private void connect() {
 
-        this.useInputs(this.getInputs());
+        System.out.println("connecting to " + this.host);
 
         Socket socket;
 
@@ -281,6 +283,19 @@ public class Main extends JFrame {
 
     public static void main(String _arguments[]) {
         new Main();
+        launch(_arguments);
+    }
+    
+    public void start(Stage primaryStage) throws Exception{
+        SlideScreen slideScreen = new SlideScreen(this);
+       // primaryStage.initStyle(StageStyle.UNDECORATED);
+        WelcomeScreen welcomeScreen = new WelcomeScreen();
+
+        GameScreen gameScreen = new GameScreen();
+
+        primaryStage.setScene(slideScreen.drawScene());
+        primaryStage.show();
+
     }
 
 }

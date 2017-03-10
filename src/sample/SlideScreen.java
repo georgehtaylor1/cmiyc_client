@@ -1,10 +1,14 @@
 package sample;
 
+import java.io.IOException;
+
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.Scene;
 import javafx.util.Duration;
-import java.io.IOException;
+import launcher.Main;
+import sun.launcher.resources.launcher;
 
 /**
  * Created by Gerta on 24/02/2017.
@@ -27,10 +31,14 @@ public class SlideScreen extends AnchorPane {
     private final ToggleButton security;
     private final ToggleButton thief;
     private final ToggleGroup group2;
+    
+    private Main main;
 
     private TranslateTransition sliderTranslation;
 
-    public SlideScreen() throws IOException {
+    public SlideScreen(Main main) throws IOException {
+    	this.main = main;
+        this.sliderLayer = new AnchorPane();
         this.slider = new AnchorPane();
         this.together = new BorderPane();
         this.mainButton = new Button("Find Game");
@@ -105,7 +113,15 @@ public class SlideScreen extends AnchorPane {
         toggleButton2vs3.setId("2vs3");
         security.setId("security");
         thief.setId("thief");
-
+        connect.setOnAction(e -> {
+        	String[] splits = host.getText().split(":");
+        	String user = username.getText();
+        	String[] ret = new String[3];
+        	ret[0] = splits[0];
+        	ret[1] = splits[1];
+        	ret[2] = user;
+        	main.useInputs(ret);
+        });
 
         toggleButton1vs2.setToggleGroup(group);
         toggleButton1vs2.setSelected(true);

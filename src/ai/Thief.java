@@ -11,6 +11,7 @@ import game.Treasure;
 import game.constants.GameSettings;
 import game.states.TreasureState;
 import game.util.Position;
+import util.Debug;
 import util.Maths;
 
 public class Thief extends AI {
@@ -29,17 +30,19 @@ public class Thief extends AI {
 	public Thief(Handler handler) {
 		super(handler, Faction.THIEF);
 		this.faction = Faction.THIEF;
+		this.state = ThiefState.MOVING;
+		this.position = new Position(500, 500);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void run() {
 
+		if (target == null)
+			target = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures);
+		
 		while (isRunning()) {
 
-			if (target == null)
-				target = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures);
-			
 			// Wait until the AI should be updated
 			while (!needsUpdate()) {
 				// Prevent thread races
@@ -51,16 +54,19 @@ public class Thief extends AI {
 			}
 
 			updateState();
-
+			Debug.say(getState() + " " + this.position.x + " " + this.position.y);
 			switch (getState()) {
 			case MOVING:
 				updateMovingPosition(target.position, turnSpeedMid, moveSpeedMid);
+				break;
 			case RUNNING:
 				break;
 			default:
 				break;
 
 			}
+			
+			setUpdate(false);
 		}
 
 	}
@@ -68,11 +74,9 @@ public class Thief extends AI {
 	@Override
 	protected void updateState() {
 
-		
-		
 		if (this.position.at(target.position, GameSettings.Thief.stealRadius)) {
+			Debug.say("Item collected");
 			target.state = TreasureState.PICKED;
-			target = null;
 
 			// Randomly select the next treasure
 			target = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures);
@@ -85,7 +89,7 @@ public class Thief extends AI {
 	 * Update the position of the thief.
 	 * 
 	 * Assume that the goal, any obstacles and any security exert a force on the AI, the goal and security exerts 1 and the obstacles exert a force proportional
-	 * to the distance (or some exponent of it) to the nearest obstacle. If the security is within range then th force exerted by the goal will be 0 and the
+	 * to the distance (or some exponent of it) to the nearest obstacle. If the security is within range then the force exerted by the goal will be 0 and the
 	 * force exerted by the security will be 1. The resultant of these forces is then calculated and the AI moves in the direction of this resultant. By
 	 * ensuring that the force exerted by obstacles is strictly less than the force exerted by the goal it is possible to ensure that all objects that lie
 	 * directly on walls are reachable
@@ -158,10 +162,10 @@ public class Thief extends AI {
 
 		if (security == null) {
 			turnTowards(resultantProjection, 0.04, turnSpeedMid);
-			Helper.move(this, getHandler().gameData.obstacles, moveSpeedMid);
+			Helper.move(this, getHandler().gameData.obstacles, moveSpeed);
 		} else {
 			turnTowards(resultantProjection, 0.04, turnSpeedFast);
-			Helper.move(this, getHandler().gameData.obstacles, moveSpeedFast);
+			Helper.move(this, getHandler().gameData.obstacles, moveSpeed);
 		}
 
 	}

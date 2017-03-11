@@ -31,7 +31,7 @@ public class Thief extends AI {
 		super(handler, Faction.THIEF);
 		this.faction = Faction.THIEF;
 		this.state = ThiefState.MOVING;
-		this.position = new Position(500, 500);
+		this.position = new Position(100, 100);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -162,10 +162,10 @@ public class Thief extends AI {
 
 		if (security == null) {
 			turnTowards(resultantProjection, 0.04, turnSpeedMid);
-			Helper.move(this, getHandler().gameData.obstacles, moveSpeed);
+			Helper.move(this, getHandler().gameData.obstacles, moveSpeedMid);
 		} else {
 			turnTowards(resultantProjection, 0.04, turnSpeedFast);
-			Helper.move(this, getHandler().gameData.obstacles, moveSpeed);
+			Helper.move(this, getHandler().gameData.obstacles, moveSpeedFast);
 		}
 
 	}
@@ -176,7 +176,7 @@ public class Thief extends AI {
 	 * @param p
 	 *            The position to turn towards
 	 * @param threshold
-	 *            The threshold to limit eratic motion in the AI
+	 *            The threshold to limit erratic motion in the AI
 	 * @param speed
 	 *            The turn speed for the AI
 	 */

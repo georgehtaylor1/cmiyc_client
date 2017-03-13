@@ -81,6 +81,11 @@ public class GameLogic {
                                                        // walkable
                 client.player.position.x = tempX;
                 client.player.position.y = tempY;
+                String drag = client.player.dragging;
+                if (drag != null) {
+                	client.gameData.players.get(drag).position.x = tempX;
+                	client.gameData.players.get(drag).position.y = tempY;
+                }
             }
         }
         if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S)) {
@@ -93,6 +98,11 @@ public class GameLogic {
                                                        // walkable
                 client.player.position.x = tempX;
                 client.player.position.y = tempY;
+                String drag = client.player.dragging;
+                if (drag != null) {
+                	client.gameData.players.get(drag).position.x = tempX;
+                	client.gameData.players.get(drag).position.y = tempY;
+                }
             }
         }
         if (keys.containsKey(KeyCode.A) && keys.get(KeyCode.A)) {
@@ -105,6 +115,11 @@ public class GameLogic {
                                                        // walkable
                 client.player.position.x = tempX;
                 client.player.position.y = tempY;
+                String drag = client.player.dragging;
+                if (drag != null) {
+                	client.gameData.players.get(drag).position.x = tempX;
+                	client.gameData.players.get(drag).position.y = tempY;
+                }
             }
         }
         if (keys.containsKey(KeyCode.D) && keys.get(KeyCode.D)) {
@@ -117,6 +132,11 @@ public class GameLogic {
                                                        // walkable
                 client.player.position.x = tempX;
                 client.player.position.y = tempY;
+                String drag = client.player.dragging;
+                if (drag != null) {
+                	client.gameData.players.get(drag).position.x = tempX;
+                	client.gameData.players.get(drag).position.y = tempY;
+                }
             }
         }
         if (Faction.THIEF == faction && keys.containsKey(KeyCode.SPACE)

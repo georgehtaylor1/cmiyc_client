@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import game.Obstacle;
 import game.Treasure;
 import game.constants.GameSettings;
-
+import game.states.PlayerState;
 import gui.util.FxUtils;
 
 import javafx.scene.layout.Pane;
@@ -51,19 +51,22 @@ public class GameDrawer {
 
         // Make flashlight shapes
         ArrayList<Shape> flashlightShapes = new ArrayList<>();
-
-        // Client player
-        Arc clientFlashlightArc = new Arc(main.player.position.x,
-                main.player.position.y, GameSettings.Security.lightRadius,
-                GameSettings.Security.lightRadius,
-                -Math.toDegrees(main.player.direction)
-                        - GameSettings.Security.lightRadius / 2,
-                GameSettings.Security.lightArcPercentage * 360 / 100);
-
-        clientFlashlightArc.setType(ArcType.ROUND);
-        clientFlashlightArc.setFill(Color.YELLOW);
-
-        flashlightShapes.add(clientFlashlightArc);
+        
+        // Check that player has not run out of battery
+        if (main.player.state != PlayerState.STUCK) {	
+	        // Client player
+	        Arc clientFlashlightArc = new Arc(main.player.position.x,
+	                main.player.position.y, GameSettings.Security.lightRadius,
+	                GameSettings.Security.lightRadius,
+	                -Math.toDegrees(main.player.direction)
+	                        - GameSettings.Security.lightRadius / 2,
+	                GameSettings.Security.lightArcPercentage * 360 / 100);
+	
+	        clientFlashlightArc.setType(ArcType.ROUND);
+	        clientFlashlightArc.setFill(Color.YELLOW);
+	
+	        flashlightShapes.add(clientFlashlightArc);
+        }
 
         // Make obstacle shapes
         ArrayList<Shape> obstacleShapes = new ArrayList<>();
@@ -95,7 +98,8 @@ public class GameDrawer {
         // Draw
         pane.getChildren().addAll(obstacleShapes);
         pane.getChildren().addAll(treasureShapes);
-        pane.getChildren().addAll(flashlightShapes);
+        if (main.player.state != PlayerState.STUCK)
+        	pane.getChildren().addAll(flashlightShapes);
         pane.getChildren().add(clientPlayerShape);
     }
 }

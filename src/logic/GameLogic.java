@@ -216,6 +216,9 @@ public class GameLogic {
                 client.send(new Transferable(Action.STOP_DRAG));
         	}
         }
+        
+        if (client.player.faction == Faction.SECURITY)
+        	client.player.battery -= 0.01;
 
         // TODO Catch thieves for security
         // TODO Catch thieves for camera

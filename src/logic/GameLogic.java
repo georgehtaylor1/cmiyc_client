@@ -6,6 +6,7 @@ import constants.Commands.Action;
 import constants.Commands.Key;
 import game.Faction;
 import game.Obstacle;
+import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
 import game.states.TreasureState;
@@ -151,6 +152,46 @@ public class GameLogic {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        
+        if (Faction.SECURITY == faction && keys.containsKey(KeyCode.SPACE)
+                && keys.get(KeyCode.SPACE)) { // Action button to drag
+                                              // guards (FOR SECURITY)
+        	if (client.player.dragging == null) {
+	            String id = null; // initialisation
+	            for (String k : client.gameData.players.keySet()) {
+	            	Player p = client.gameData.players.get(k);
+	                double tx = p.position.x;
+	                double ty = p.position.y;
+	                double px = client.player.position.x;
+	                double py = client.player.position.y;
+	                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) < Math
+	                        .pow(GameSettings.Security.dragRadius, 2)) { // Player
+	                                                                   // is in
+	                                                                   // drag
+	                                                                   // range.
+	                    id = p.clientID;
+	                }
+	            }
+	            if (id != null) {
+	                System.out.println("Dragging Player");
+	                client.player.dragging = id;
+	                HashMap<Key, Object> map = new HashMap<Key, Object>();
+	                map.put(Key.DRAGGED_PLAYER, id);
+	                client.send(new Transferable(Action.START_DRAG, new HashMap<Key, Object>()));
+	            }
+	
+	            try { // Adds a little delay so guards won't spam action button.
+	                Thread.sleep(100);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+        	}
+        	else {
+        		System.out.println("Stopped dragging");
+        		client.player.dragging = null;
+                client.send(new Transferable(Action.STOP_DRAG));
+        	}
         }
 
         // TODO Catch thieves for security

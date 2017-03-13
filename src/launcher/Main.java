@@ -6,8 +6,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import javax.swing.JFrame;
-
 import com.ClientReceiver;
 import com.ClientSender;
 
@@ -17,8 +15,9 @@ import game.GameData;
 import game.GameMode;
 import game.Player;
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import sample.GUILauncher;
 import sample.GameScreen;
 import sample.SlideScreen;
 import sample.WelcomeScreen;
@@ -287,13 +286,19 @@ public class Main extends Application {
     }
     
     public void start(Stage primaryStage) throws Exception{
+    	StackPane base = new StackPane();
+        Scene scene = new Scene(base);
         SlideScreen slideScreen = new SlideScreen(this);
-       // primaryStage.initStyle(StageStyle.UNDECORATED);
         WelcomeScreen welcomeScreen = new WelcomeScreen();
 
         GameScreen gameScreen = new GameScreen();
+        base.getChildren().addAll(gameScreen, welcomeScreen, slideScreen);
 
-        primaryStage.setScene(slideScreen.drawScene());
+        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            welcomeScreen.setAnchor(newValue.doubleValue());
+        });
+
+        primaryStage.setScene(scene);
         primaryStage.show();
 
     }

@@ -3,12 +3,17 @@ package sample;
 import java.io.IOException;
 
 import javafx.animation.TranslateTransition;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import launcher.Main;
-import sun.launcher.resources.launcher;
 
 /**
  * Created by Gerta on 24/02/2017.
@@ -38,7 +43,6 @@ public class SlideScreen extends AnchorPane {
 
     public SlideScreen(Main main) throws IOException {
     	this.main = main;
-        this.sliderLayer = new AnchorPane();
         this.slider = new AnchorPane();
         this.together = new BorderPane();
         this.mainButton = new Button("Find Game");

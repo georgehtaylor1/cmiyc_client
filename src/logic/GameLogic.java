@@ -2,11 +2,13 @@ package logic;
 
 import java.util.HashMap;
 
+import constants.Commands.Action;
+import constants.Commands.Key;
 import game.Faction;
 import game.Obstacle;
 import game.Treasure;
 import game.constants.GameSettings;
-
+import game.states.TreasureState;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
@@ -15,6 +17,7 @@ import javafx.scene.shape.Shape;
 import launcher.Main;
 
 import util.Maths;
+import util.Transferable;
 
 /**
  * The main logic of the game.
@@ -137,6 +140,10 @@ public class GameLogic {
                                  // concurrentModificationException.
                 System.out.println("Score! Add: " + tempT.value);
                 client.gameData.treasures.remove(tempT); // So we remove it here
+                HashMap<Key, Object> map = new HashMap<Key, Object>();
+                map.put(Key.TREASURE_ID, tempT.id);
+                map.put(Key.TREASURE_STATE, TreasureState.PICKED);
+                client.send(new Transferable(Action.UPDATE_TREASURE_STATE, new HashMap<Key, Object>()));
             }
 
             try { // Adds a little delay so villains won't spam action button.

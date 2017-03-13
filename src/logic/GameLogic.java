@@ -9,6 +9,7 @@ import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
+import game.states.PlayerState;
 import game.states.TreasureState;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
@@ -190,7 +191,9 @@ public class GameLogic {
 	                                                                   // is in
 	                                                                   // drag
 	                                                                   // range.
-	                    id = p.clientID;
+	                	if (client.gameData.players.get(k).state == PlayerState.STUCK) { // Check if player is out of battery
+	                		id = p.clientID;
+	                	}
 	                }
 	            }
 	            if (id != null) {

@@ -72,7 +72,7 @@ public class GameLogic {
         client.player.direction = angle; // Updates client's direction
                                          // (currently in radians)
 
-        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)) {
+        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W) && client.player.state == PlayerState.NORMAL) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle);
@@ -89,7 +89,7 @@ public class GameLogic {
                 }
             }
         }
-        if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S)) {
+        if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S) && client.player.state == PlayerState.NORMAL) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX -= client.player.speed * Math.cos(angle);
@@ -106,7 +106,7 @@ public class GameLogic {
                 }
             }
         }
-        if (keys.containsKey(KeyCode.A) && keys.get(KeyCode.A)) {
+        if (keys.containsKey(KeyCode.A) && keys.get(KeyCode.A) && client.player.state == PlayerState.NORMAL) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle - Math.PI / 2);
@@ -123,7 +123,7 @@ public class GameLogic {
                 }
             }
         }
-        if (keys.containsKey(KeyCode.D) && keys.get(KeyCode.D)) {
+        if (keys.containsKey(KeyCode.D) && keys.get(KeyCode.D) && client.player.state == PlayerState.NORMAL) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle + Math.PI / 2);

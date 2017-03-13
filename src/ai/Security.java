@@ -132,6 +132,10 @@ public class Security extends AI {
 			}
 		}
 
+		if(chasingPlayer != null && this.position.at(chasingPlayer.position, GameSettings.Security.catchRadius)){
+			//chasingPlayer.
+		}
+		
 		if (!inRange && chasingPlayer != null) {
 			setState(SecurityState.MOVING);
 			chasingPlayer = null;

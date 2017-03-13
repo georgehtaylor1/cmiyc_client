@@ -132,14 +132,20 @@ public class Security extends AI {
 			}
 		}
 
-		if (!inRange) {
+		if(chasingPlayer != null && this.position.at(chasingPlayer.position, GameSettings.Security.catchRadius)){
+			//chasingPlayer.
+		}
+		
+		if (!inRange && chasingPlayer != null) {
 			setState(SecurityState.MOVING);
 			chasingPlayer = null;
 		}
 
 		// Are we currently scanning
+		Debug.say("Checking scan " + currentScanStep + " " + this.state);
 		if (this.getState() == SecurityState.SCANNING) {
 			currentScanStep++;
+			Debug.say("Scanning");
 			if (currentScanStep > scanTime) {
 				currentScanStep = 0;
 				setState(SecurityState.MOVING);
@@ -164,6 +170,7 @@ public class Security extends AI {
 	 *            The new state of the AI
 	 */
 	public void setState(SecurityState state) {
+		Debug.say("Set state: " + state);
 		this.state = state;
 	}
 

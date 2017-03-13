@@ -8,6 +8,7 @@ import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
+import game.states.TreasureState;
 import game.util.Position;
 import util.Maths;
 
@@ -23,8 +24,19 @@ public class Helper {
 	 * @return The closest treasure to the given point
 	 */
 	public static Treasure getClosestTreasure(Position p, ArrayList<Treasure> treasures) {
-		return treasures.stream()
-				.min((t1, t2) -> Double.compare(Maths.dist(p, t1.position), Maths.dist(p, t2.position))).get();
+		Treasure minTreasure = treasures.get(0);
+		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
+
+		for (Treasure t : treasures) {
+			if (t.state == TreasureState.UNPICKED) {
+				double currDist = Maths.dist(p, t.position);
+				if (currDist < minDist) {
+					minDist = currDist;
+					minTreasure = t;
+				}
+			}
+		}
+		return minTreasure;
 
 	}
 
@@ -72,22 +84,23 @@ public class Helper {
 	 */
 	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position previousWaypoint,
 			double randomness, Random rand) {
-		
-		if(rand.nextDouble() < randomness){
+
+		if (rand.nextDouble() < randomness) {
 
 			int index = rand.nextInt(treasures.size());
 			Position chosenPosition = treasures.get(index).position;
-			while(previousWaypoint != null? chosenPosition.at(previousWaypoint, 2):false){
+			while (previousWaypoint != null ? chosenPosition.at(previousWaypoint, 2) : false) {
 				index = rand.nextInt(treasures.size());
 				chosenPosition = treasures.get(index).position;
 			}
 			return chosenPosition;
 		}
-		
+
 		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
 		Position minPos = null;
 		for (Treasure t : treasures) {
-			if (!t.position.at(p, 2) && (previousWaypoint != null ? !t.position.at(previousWaypoint, 2) : true)) {
+			if (t.state != TreasureState.PICKED && !t.position.at(p, 2)
+					&& (previousWaypoint != null ? !t.position.at(previousWaypoint, 2) : true)) {
 				double d = Maths.dist(p, t.position);
 				if (d < minDist) {
 					minDist = d;
@@ -95,6 +108,14 @@ public class Helper {
 				}
 			}
 		}
+
+		// If no treasure has been found then pick a random treasure instead
+		if (minPos == null) {
+			int index = rand.nextInt(treasures.size());
+			Position chosenPosition = treasures.get(index).position;
+			return chosenPosition;
+		}
+
 		return minPos;
 	}
 
@@ -177,7 +198,7 @@ public class Helper {
 		else
 			return null;
 	}
-	
+
 	/**
 	 * Get the closest position on the obstacle to the given position
 	 * 
@@ -209,7 +230,7 @@ public class Helper {
 		return p;
 
 	}
-	
+
 	/**
 	 * Move the AI forward without allowing it to move through walls
 	 * 
@@ -225,6 +246,16 @@ public class Helper {
 				p.position.y + (speed * Math.sin(p.direction)));
 		Position testX = new Position(p.position.x + (speed * Math.cos(p.direction)), p.position.y);
 		Position testY = new Position(p.position.x, p.position.y + (speed * Math.sin(p.direction)));
+
+		if (testY.y <= 0 || testY.y >= GameSettings.Arena.size.getHeight()) {
+			yFine = false;
+			bothFine = false;
+		}
+
+		if (testX.x <= 0 || testX.x >= GameSettings.Arena.size.getWidth()) {
+			xFine = false;
+			bothFine = false;
+		}
 
 		for (Obstacle o : obstacles) {
 			if (o.contains(testXY)) {

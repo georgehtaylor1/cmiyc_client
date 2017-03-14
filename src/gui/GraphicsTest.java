@@ -10,6 +10,7 @@ import game.Treasure;
 import game.util.Position;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -68,8 +69,14 @@ public class GraphicsTest extends Application {
         stage.setScene(scene);
         stage.sizeToScene();
         stage.setTitle("Graphics test");
+        
+        stage.setOnCloseRequest(e -> {
+        	e.consume();
+        	h.end();
+        	Platform.exit();
+        });
+        
         stage.show();
-
         // requestFocus() only works after stage.show().
         pane.requestFocus();
 
@@ -78,4 +85,5 @@ public class GraphicsTest extends Application {
         drawerThread.start();
 
     }
+    
 }

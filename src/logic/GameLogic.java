@@ -3,6 +3,7 @@ package logic;
 import java.util.HashMap;
 import java.util.Map;
 
+import game.Camera;
 import game.Faction;
 import game.Obstacle;
 import game.Player;
@@ -165,6 +166,15 @@ public class GameLogic {
         	captureThief(nameToBeRemoved,thiefToBeRemoved);
         }
         	
+        // Deploy camera
+        if (faction == Faction.SECURITY && keys.containsKey(KeyCode.C) && keys.get(KeyCode.C)) {
+        	if (client.player.cameras > 0) {
+        		Camera deployed = new Camera(client.player.position.x, client.player.position.y, -Math.toDegrees(angle), GameSettings.Security.lightRadius);
+        		client.gameData.cameras.add(deployed);
+        		client.player.cameras--;
+        		Debug.say("deployed camera. Left " + client.player.cameras + " cameras");
+        	}
+        }
     }
     
     /**

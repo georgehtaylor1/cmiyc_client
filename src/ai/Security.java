@@ -49,7 +49,7 @@ public class Security extends AI {
 		super(handler, Faction.SECURITY);
 		this.faction = Faction.SECURITY;
 		setState(SecurityState.MOVING);
-		this.position = new Position(500, 500);
+		this.position = new Position(100, 200);
 	}
 
 	/* (non-Javadoc)

@@ -40,7 +40,7 @@ public class Thief extends AI {
 
 		if (target == null)
 			target = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures);
-		
+
 		while (isRunning()) {
 
 			// Wait until the AI should be updated
@@ -65,7 +65,7 @@ public class Thief extends AI {
 				break;
 
 			}
-			
+
 			setUpdate(false);
 		}
 
@@ -123,7 +123,7 @@ public class Thief extends AI {
 		for (Player p : new ArrayList<Player>(getHandler().gameData.players.values())) {
 			if (p.faction == Faction.SECURITY) {
 				double currDist = Maths.dist(this.position, p.position);
-				if (currDist < GameSettings.Thief.visionRadius && currDist < secDist) {
+				if (currDist < GameSettings.Thief.visionRadius * 0.8 && currDist < secDist) {
 					security = p.position;
 					secDist = currDist;
 				}

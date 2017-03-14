@@ -38,7 +38,6 @@ public class SlideScreen extends AnchorPane {
 
     public SlideScreen(Main main) throws IOException {
     	this.main = main;
-        this.sliderLayer = new AnchorPane();
         this.slider = new AnchorPane();
         this.together = new BorderPane();
         this.mainButton = new Button("Find Game");

@@ -5,16 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import constants.Colors;
-
 import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
-
 import gui.util.FxUtils;
-
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -27,7 +25,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-
 import launcher.Main;
 
 /**
@@ -326,6 +323,9 @@ public class GameDrawer {
         }
 
         ch.addAll(allyShapes);
+
+        TextField battery = new TextField(String.valueOf(main.player.battery));
+        pane.getChildren().add(battery);
     }
 
     /**

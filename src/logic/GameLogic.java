@@ -3,6 +3,7 @@ package logic;
 import java.util.HashMap;
 import java.util.Map;
 
+import constants.Colors;
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
@@ -11,6 +12,7 @@ import game.Treasure;
 import game.constants.GameSettings;
 import game.states.PlayerState;
 import game.states.TreasureState;
+import game.util.Position;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
@@ -31,16 +33,20 @@ public class GameLogic {
     private double mouseX;
     private double mouseY;
 
+    private boolean stuck; // When security ran out of battery
     private Rectangle fullMap;
     private Shape walkableArea;
-
+    private Rectangle chargingArea;
     
     public GameLogic(Main client, Pane pane) {
         this.client = client;
         this.faction = client.player.faction;
         this.fullMap = new Rectangle(20, 20, 800, 450); // Must change this to
                                                       // inner arena size
+        this.stuck = false;
         this.walkableArea = this.fullMap;
+        this.chargingArea = new Rectangle(0,0,50,50); // FIXME: This is still hardcoded. The security's charging area
+        this.chargingArea.setFill(Colors.green1);
 
         // Makes the walkable area
         for (Obstacle o : client.gameData.obstacles) {
@@ -71,12 +77,16 @@ public class GameLogic {
         client.player.direction = Maths.normalizeAngle(angle); // Updates client's direction
                                          // (currently in radians)
 
-        if (Math.pow(client.player.position.x - mouseX, 2) + Math.pow(client.player.position.y - mouseY, 2) < Math.pow(10, 2)) {
+        if (stuck) { // Stuck security can't move
         	return;
         }
-        
+         
         if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)) {
-            double tempX = client.player.position.x,
+        	if (Math.pow(client.player.position.x - mouseX, 2) + Math.pow(client.player.position.y - mouseY, 2) < Math.pow(10, 2)) {
+        		return;
+        	}
+
+        	double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle);
             tempY += client.player.speed * Math.sin(angle);
@@ -168,13 +178,22 @@ public class GameLogic {
         	
         // Deploy camera
         if (faction == Faction.SECURITY && keys.containsKey(KeyCode.C) && keys.get(KeyCode.C)) {
-        	if (client.player.cameras > 0) {
-        		Camera deployed = new Camera(client.player.position.x, client.player.position.y, -Math.toDegrees(angle), GameSettings.Security.lightRadius);
-        		client.gameData.cameras.add(deployed);
-        		client.player.cameras--;
-        		Debug.say("deployed camera. Left " + client.player.cameras + " cameras");
-        	}
+        	deployCamera(client.player.position, angle);
         }
+        
+        // If on charging area, then increase battery, else decrease it
+        double current = client.player.battery;
+        if (chargingArea.contains(client.player.position.x, client.player.position.y)) {
+        	if (current < GameSettings.Security.fullBattery) {
+        		client.player.battery += 0.005;
+        	}
+        	stuck = false;
+        } else {
+        	if (current > GameSettings.Security.noBattery)
+        		client.player.battery -= 0.001;
+        	else stuck = true;
+        }
+        
     }
     
     /**
@@ -194,9 +213,11 @@ public class GameLogic {
     	}
     }
     
+
     /**
-     * Method to capture thief
-     * @param thief to be removed
+     * Method to capture aka remove thief from gamedata
+     * @param name of the thief
+     * @param thief player to be removed
      */
     public void captureThief(String name, Player thief) {
     	if (thief != null) {
@@ -211,5 +232,20 @@ public class GameLogic {
     	}
     }
     
+    /**
+     * Method to deploy camera
+     * @param p position to put camera
+     * @param angle in radians of the direction
+     */
+    public void deployCamera(Position p, double angle) {
+    	if (client.player.cameras > 0) {
+    		Camera deployed = new Camera(p.x, p.y, -Math.toDegrees(angle), GameSettings.Security.lightRadius);
+    		client.gameData.cameras.add(deployed);
+    		client.player.cameras--;
+    		Debug.say("deployed camera. Left " + client.player.cameras + " cameras");
+    	}	
+    }
    
+    
+    
 }

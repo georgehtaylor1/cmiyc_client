@@ -33,7 +33,6 @@ public class GraphicsTest extends Application {
     public void start(Stage stage) {
         Main main = new Main();
 
-        main.gameData.obstacles.add(new Obstacle(20, 20, 50, 50));
         main.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
         main.gameData.obstacles.add(new Obstacle(200, 180, 60, 120));
         main.gameData.obstacles.add(new Obstacle(600, 50, 100, 100));

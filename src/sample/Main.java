@@ -1,3 +1,4 @@
+/*
 package sample;
 
 import javafx.application.Application;
@@ -15,12 +16,14 @@ public class Main extends Application {
 
         StackPane base = new StackPane();
         Scene scene = new Scene(base);
-        SlideScreen slideScreen = new SlideScreen();
+         // SlideScreen slideScreen = new SlideScreen();
        // primaryStage.initStyle(StageStyle.TRANSPARENT);
         WelcomeScreen welcomeScreen = new WelcomeScreen();
 
-        GameScreen gameScreen = new GameScreen();
-        base.getChildren().addAll(gameScreen, welcomeScreen, slideScreen);
+        //GameScreen gameScreen = new GameScreen(this);
+        SlideScreen slideScreen = new SlideScreen(gameScreen);
+
+        base.getChildren().addAll(gameScreen, slideScreen);
 
         primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
             welcomeScreen.setAnchor(newValue.doubleValue());
@@ -35,3 +38,4 @@ public class Main extends Application {
         launch(args);
     }
 }
+*/

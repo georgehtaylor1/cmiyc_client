@@ -136,7 +136,7 @@ public class Security extends AI {
 		}
 
 		// Are we at the waypoint but not yet scanning
-		if (this.position.at(nextWaypoint) && getState() != SecurityState.SCANNING)
+		if (this.position.at(nextWaypoint, 5.0) && getState() != SecurityState.SCANNING)
 			setState(SecurityState.SCANNING);
 
 	}

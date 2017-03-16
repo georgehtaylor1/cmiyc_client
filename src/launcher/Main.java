@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import javax.swing.JFrame;
+
 import com.ClientReceiver;
 import com.ClientSender;
 
@@ -286,17 +288,23 @@ public class Main extends Application {
     }
     
     public void start(Stage primaryStage) throws Exception{
-    	StackPane base = new StackPane();
+        StackPane base = new StackPane();
         Scene scene = new Scene(base);
-        SlideScreen slideScreen = new SlideScreen(this);
+
+        // SlideScreen slideScreen = new SlideScreen();
+       // primaryStage.initStyle(StageStyle.UNDECORATED);
         WelcomeScreen welcomeScreen = new WelcomeScreen();
 
-        GameScreen gameScreen = new GameScreen();
-        base.getChildren().addAll(gameScreen, welcomeScreen, slideScreen);
+        GameScreen gameScreen = new GameScreen(this, base);
+        SlideScreen slideScreen = new SlideScreen(gameScreen);
+
+        base.getChildren().addAll(gameScreen, slideScreen);
 
         primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
             welcomeScreen.setAnchor(newValue.doubleValue());
         });
+
+        this.gameData.players.put(this.player.clientID, this.player);
 
         primaryStage.setScene(scene);
         primaryStage.show();

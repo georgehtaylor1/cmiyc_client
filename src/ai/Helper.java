@@ -55,7 +55,7 @@ public class Helper {
 		double minDist = Maths.dist(p, treasures.get(0).position);
 		Position minPos = treasures.get(0).position;
 		for (Treasure t : treasures) {
-			if (!t.position.at(p)) {
+			if (!t.position.at(p, 5.0)) {
 				double d = Maths.dist(p, t.position);
 				if (d < minDist) {
 					minDist = d;

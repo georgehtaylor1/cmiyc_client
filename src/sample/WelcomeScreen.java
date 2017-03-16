@@ -1,5 +1,6 @@
 package sample;
 
+import game.constants.GameSettings;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -54,12 +55,12 @@ public class WelcomeScreen extends AnchorPane{
         this.getStylesheets().add("styles/welcomeLayer.css");
 
         welcomeControls.setPrefHeight(40);
-        this.setPrefWidth(Constants.ScreenWidth);
-        this.setPrefHeight(Constants.ScreenHeight);
+        this.setPrefWidth(GameSettings.Arena.size.getWidth());
+        this.setPrefHeight(GameSettings.Arena.size.getHeight());
         this.getChildren().addAll(welcomeScreen, welcomeControls);
 
-        welcomeScreen.setPrefWidth(this.getPrefWidth());
-        welcomeScreen.setPrefHeight(350);
+        welcomeScreen.setPrefWidth(GameSettings.Arena.size.getWidth());
+        welcomeScreen.setPrefHeight(GameSettings.Arena.size.getHeight());
 
         AnchorPane.setBottomAnchor(welcomeControls, 0.0);
         AnchorPane.setRightAnchor(welcomeControls, 0.0);

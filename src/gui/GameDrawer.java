@@ -324,7 +324,7 @@ public class GameDrawer {
 
         ch.addAll(allyShapes);
 
-        TextField battery = new TextField(String.valueOf(main.player.battery));
+        TextField battery = new TextField("Battery : " + String.valueOf(main.player.battery));
         pane.getChildren().add(battery);
     }
 

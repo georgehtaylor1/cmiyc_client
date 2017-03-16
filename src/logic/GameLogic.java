@@ -32,7 +32,7 @@ public class GameLogic {
     private Faction faction; // Client's faction
     private double mouseX;
     private double mouseY;
-
+    
     private boolean stuck; // When security ran out of battery
     private Rectangle fullMap;
     private Shape walkableArea;
@@ -45,8 +45,7 @@ public class GameLogic {
                                                       // inner arena size
         this.stuck = false;
         this.walkableArea = this.fullMap;
-        this.chargingArea = new Rectangle(0,0,50,50); // FIXME: This is still hardcoded. The security's charging area
-        this.chargingArea.setFill(Colors.green1);
+        this.chargingArea = new Rectangle(20,20,50,50); // FIXME: This is still hardcoded. The security's charging area
 
         // Makes the walkable area
         for (Obstacle o : client.gameData.obstacles) {
@@ -57,7 +56,7 @@ public class GameLogic {
         }
 
         // Adds listeners
-        pane.setFocusTraversable(true);
+        pane.requestFocus();
         pane.setOnKeyPressed(e -> {
             keys.put(e.getCode(), true);
         });
@@ -70,6 +69,9 @@ public class GameLogic {
         });
     }
 
+    /**
+     * Updates the game periodically
+     */
     public void update() {
         // First we find the angle from the mouse to the player
         double angle = Maths.angle(client.player.position.x,
@@ -77,18 +79,85 @@ public class GameLogic {
         client.player.direction = Maths.normalizeAngle(angle); // Updates client's direction
                                          // (currently in radians)
 
-        if (stuck) { // Stuck security can't move
-        	return;
-        }
-         
-        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)) {
-        	if (Math.pow(client.player.position.x - mouseX, 2) + Math.pow(client.player.position.y - mouseY, 2) < Math.pow(10, 2)) {
+        if (faction == Faction.THIEF) { // Thief functions
+	        if (keys.containsKey(KeyCode.SPACE) && keys.get(KeyCode.SPACE)) { // Action button to collect
+	                                              // treasures (FOR THIEVES)
+	        	double px = client.player.position.x;
+	        	double py = client.player.position.y;
+	
+	        	Treasure tempT = null; // Saves a treasures to be collected
+	            for (Treasure t : client.gameData.treasures) {
+	                double tx = t.position.x;
+	                double ty = t.position.y;
+	                
+	                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math
+	                        .pow(GameSettings.Thief.stealRadius, 2)) { // Treasure
+	                                                                   // is in
+	                                                                   // catch
+	                                                                   // range.
+	                    tempT = t; // This is the treasure to delete
+	                    break;
+	                }
+	            }
+	            collectTreasure(tempT);
+	        }
+        } else { // Security functions
+        	if (stuck) { // Stuck security can't move
         		return;
         	}
 
-        	double tempX = client.player.position.x,
-                    tempY = client.player.position.y;
-            tempX += client.player.speed * Math.cos(angle);
+        	if (keys.containsKey(KeyCode.SPACE) && keys.get(KeyCode.SPACE)) {
+	        	double px = client.player.position.x;
+	        	double py = client.player.position.y;
+	        	String nameToBeRemoved = null;
+	        	Player thiefToBeRemoved = null;
+	        	for (Map.Entry<String, Player> p : client.gameData.players.entrySet()) {
+	        		Player tempP = p.getValue();
+	        		
+	        		if (tempP.faction == Faction.SECURITY) {
+	        			continue;
+	        		}
+	        		
+	        		double tx = tempP.position.x;
+	        		double ty = tempP.position.y;	
+	    			if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math.pow(GameSettings.Security.catchRadius, 2)) {
+	    				nameToBeRemoved = p.getKey();
+	    				thiefToBeRemoved = tempP;
+	    				break;
+	        		}
+	        	}
+	        	captureThief(nameToBeRemoved,thiefToBeRemoved);
+	        }
+	        	
+	        // Deploy camera
+	        if (keys.containsKey(KeyCode.C) && keys.get(KeyCode.C)) {
+	        	deployCamera(client.player.position, angle);
+	        }
+	        
+	        // If on charging area, then increase battery, else decrease it
+	        double current = client.player.battery;
+	        if (chargingArea.contains(client.player.position.x, client.player.position.y)) {
+	        	stuck = false;
+	        	if (current < GameSettings.Security.fullBattery) {
+	        		client.player.battery += GameSettings.Security.chargeValue;
+	        	}
+	        } else {
+	        	if (current > GameSettings.Security.noBattery)
+	        		client.player.battery -= GameSettings.Security.drainValue;
+	        	else stuck = true;
+	        }
+        }    
+        
+        // Movement
+        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)) {
+        	if (Math.pow(client.player.position.x - mouseX, 2) 
+        			+ Math.pow(client.player.position.y - mouseY, 2) 
+        			< Math.pow(GameSettings.Player.radius, 2)) {
+        		return; // This prevents spinning about mouse
+        	}
+            double tempX = client.player.position.x,
+            		tempY = client.player.position.y;
+        	tempX += client.player.speed * Math.cos(angle);
             tempY += client.player.speed * Math.sin(angle);
             
             if (walkableArea.contains(tempX, client.player.position.y)) 
@@ -99,8 +168,8 @@ public class GameLogic {
         }
         if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S)) {
             double tempX = client.player.position.x,
-                    tempY = client.player.position.y;
-            tempX -= client.player.speed * Math.cos(angle);
+            		tempY = client.player.position.y;
+        	tempX -= client.player.speed * Math.cos(angle);
             tempY -= client.player.speed * Math.sin(angle);
             if (walkableArea.contains(tempX, client.player.position.y)) 
             	client.player.position.x = tempX;
@@ -110,8 +179,8 @@ public class GameLogic {
         }
         if (keys.containsKey(KeyCode.A) && keys.get(KeyCode.A)) {
             double tempX = client.player.position.x,
-                    tempY = client.player.position.y;
-            tempX += client.player.speed * Math.cos(angle - Math.PI / 2);
+            		tempY = client.player.position.y;
+        	tempX += client.player.speed * Math.cos(angle - Math.PI / 2);
             tempY += client.player.speed * Math.sin(angle - Math.PI / 2);
             if (walkableArea.contains(tempX, client.player.position.y)) 
             	client.player.position.x = tempX;
@@ -121,8 +190,8 @@ public class GameLogic {
         }
         if (keys.containsKey(KeyCode.D) && keys.get(KeyCode.D)) {
             double tempX = client.player.position.x,
-                    tempY = client.player.position.y;
-            tempX += client.player.speed * Math.cos(angle + Math.PI / 2);
+            		tempY = client.player.position.y;
+        	tempX += client.player.speed * Math.cos(angle + Math.PI / 2);
             tempY += client.player.speed * Math.sin(angle + Math.PI / 2);
             if (walkableArea.contains(tempX, client.player.position.y)) 
             	client.player.position.x = tempX;
@@ -130,70 +199,6 @@ public class GameLogic {
             if (walkableArea.contains(client.player.position.x, tempY)) 
             	client.player.position.y = tempY;
         }
-        if (Faction.THIEF == faction && keys.containsKey(KeyCode.SPACE)
-                && keys.get(KeyCode.SPACE)) { // Action button to collect
-                                              // treasures (FOR THIEVES)
-        	double px = client.player.position.x;
-        	double py = client.player.position.y;
-
-        	Treasure tempT = null; // Saves a treasures to be collected
-            for (Treasure t : client.gameData.treasures) {
-                double tx = t.position.x;
-                double ty = t.position.y;
-                
-                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math
-                        .pow(GameSettings.Thief.stealRadius, 2)) { // Treasure
-                                                                   // is in
-                                                                   // catch
-                                                                   // range.
-                    tempT = t; // This is the treasure to delete
-                    break;
-                }
-            }
-            collectTreasure(tempT);
-        }
-        
-        if (faction == Faction.SECURITY && keys.containsKey(KeyCode.SPACE) && keys.get(KeyCode.SPACE)) {
-        	double px = client.player.position.x;
-        	double py = client.player.position.y;
-        	String nameToBeRemoved = null;
-        	Player thiefToBeRemoved = null;
-        	for (Map.Entry<String, Player> p : client.gameData.players.entrySet()) {
-        		Player tempP = p.getValue();
-        		
-        		if (tempP.faction == Faction.SECURITY) {
-        			continue;
-        		}
-        		
-        		double tx = tempP.position.x;
-        		double ty = tempP.position.y;	
-    			if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math.pow(GameSettings.Security.catchRadius, 2)) {
-    				nameToBeRemoved = p.getKey();
-    				thiefToBeRemoved = tempP;
-    				break;
-        		}
-        	}
-        	captureThief(nameToBeRemoved,thiefToBeRemoved);
-        }
-        	
-        // Deploy camera
-        if (faction == Faction.SECURITY && keys.containsKey(KeyCode.C) && keys.get(KeyCode.C)) {
-        	deployCamera(client.player.position, angle);
-        }
-        
-        // If on charging area, then increase battery, else decrease it
-        double current = client.player.battery;
-        if (chargingArea.contains(client.player.position.x, client.player.position.y)) {
-        	if (current < GameSettings.Security.fullBattery) {
-        		client.player.battery += 0.005;
-        	}
-        	stuck = false;
-        } else {
-        	if (current > GameSettings.Security.noBattery)
-        		client.player.battery -= 0.001;
-        	else stuck = true;
-        }
-        
     }
     
     /**

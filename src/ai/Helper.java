@@ -24,7 +24,7 @@ public class Helper {
 	 * @return The closest treasure to the given point
 	 */
 	public static Treasure getClosestTreasure(Position p, ArrayList<Treasure> treasures) {
-		Treasure minTreasure = treasures.get(0);
+		Treasure minTreasure = null;
 		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
 
 		for (Treasure t : treasures) {

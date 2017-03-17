@@ -36,4 +36,14 @@ public class AITest {
 		
 	}
 
+	@Test
+	public void testClosestCorner(){
+		
+	}
+	
+	@Test
+	public void testGetCollisionPoint(){
+		
+	}
+	
 }

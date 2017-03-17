@@ -1,5 +1,6 @@
 package ai;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 import ai.handler.Handler;
@@ -22,6 +23,8 @@ public abstract class AI extends Player implements Runnable {
 		super(UUID.randomUUID().toString());
 		this.setHandler(handler);
 		super.faction = faction;
+		super.position = Helper.getStartPositon(getHandler().gameData.treasures, getHandler().gameData.obstacles,
+				(ArrayList<Player>) getHandler().gameData.players.values(), getHandler().gameData.rand);
 		setRunning(false);
 	}
 

@@ -1,10 +1,7 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 
 public class Main extends Application {
@@ -13,7 +10,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
 
-        StackPane base = new StackPane();
+        /*StackPane base = new StackPane();
         Scene scene = new Scene(base);
         SlideScreen slideScreen = new SlideScreen();
        // primaryStage.initStyle(StageStyle.TRANSPARENT);
@@ -27,7 +24,7 @@ public class Main extends Application {
         });
 
         primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStage.show();*/
 
     }
 

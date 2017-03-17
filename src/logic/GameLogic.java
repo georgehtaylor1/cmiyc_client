@@ -2,7 +2,6 @@ package logic;
 
 import java.util.HashMap;
 
-import constants.Commands.Action;
 import constants.Commands.Key;
 import game.Faction;
 import game.Obstacle;
@@ -15,11 +14,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-
 import launcher.Main;
-
 import util.Maths;
-import util.Transferable;
 
 /**
  * The main logic of the game.
@@ -35,6 +31,7 @@ public class GameLogic {
 
     private Rectangle fullMap;
     private Shape walkableArea;
+    private Rectangle secHome;
 
     public GameLogic(Main client, Pane pane) {
         this.client = client;
@@ -42,6 +39,7 @@ public class GameLogic {
         this.fullMap = new Rectangle(0, 0, 800, 450); // Must change this to
                                                       // inner arena size
         this.walkableArea = this.fullMap;
+        this.secHome = new Rectangle(0,0,GameSettings.Arena.secHomeSize.getWidth(),GameSettings.Arena.secHomeSize.getHeight());
 
         // Makes the walkable area
         for (Obstacle o : client.gameData.obstacles) {
@@ -72,7 +70,7 @@ public class GameLogic {
         client.player.direction = angle; // Updates client's direction
                                          // (currently in radians)
 
-        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W) && client.player.state == PlayerState.NORMAL) {
+        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W) && client.player.state != PlayerState.CAUGHT) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle);
@@ -82,14 +80,9 @@ public class GameLogic {
                                                        // walkable
                 client.player.position.x = tempX;
                 client.player.position.y = tempY;
-                String drag = client.player.dragging;
-                if (drag != null) {
-                	client.gameData.players.get(drag).position.x = tempX;
-                	client.gameData.players.get(drag).position.y = tempY;
-                }
             }
         }
-        if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S) && client.player.state == PlayerState.NORMAL) {
+        if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S) && client.player.state != PlayerState.CAUGHT) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX -= client.player.speed * Math.cos(angle);
@@ -99,14 +92,9 @@ public class GameLogic {
                                                        // walkable
                 client.player.position.x = tempX;
                 client.player.position.y = tempY;
-                String drag = client.player.dragging;
-                if (drag != null) {
-                	client.gameData.players.get(drag).position.x = tempX;
-                	client.gameData.players.get(drag).position.y = tempY;
-                }
             }
         }
-        if (keys.containsKey(KeyCode.A) && keys.get(KeyCode.A) && client.player.state == PlayerState.NORMAL) {
+        if (keys.containsKey(KeyCode.A) && keys.get(KeyCode.A) && client.player.state != PlayerState.CAUGHT) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle - Math.PI / 2);
@@ -116,14 +104,9 @@ public class GameLogic {
                                                        // walkable
                 client.player.position.x = tempX;
                 client.player.position.y = tempY;
-                String drag = client.player.dragging;
-                if (drag != null) {
-                	client.gameData.players.get(drag).position.x = tempX;
-                	client.gameData.players.get(drag).position.y = tempY;
-                }
             }
         }
-        if (keys.containsKey(KeyCode.D) && keys.get(KeyCode.D) && client.player.state == PlayerState.NORMAL) {
+        if (keys.containsKey(KeyCode.D) && keys.get(KeyCode.D) && client.player.state != PlayerState.CAUGHT) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle + Math.PI / 2);
@@ -133,11 +116,6 @@ public class GameLogic {
                                                        // walkable
                 client.player.position.x = tempX;
                 client.player.position.y = tempY;
-                String drag = client.player.dragging;
-                if (drag != null) {
-                	client.gameData.players.get(drag).position.x = tempX;
-                	client.gameData.players.get(drag).position.y = tempY;
-                }
             }
         }
         if (Faction.THIEF == faction && keys.containsKey(KeyCode.SPACE)
@@ -165,7 +143,7 @@ public class GameLogic {
                 HashMap<Key, Object> map = new HashMap<Key, Object>();
                 map.put(Key.TREASURE_ID, tempT.id);
                 map.put(Key.TREASURE_STATE, TreasureState.PICKED);
-                client.send(new Transferable(Action.UPDATE_TREASURE_STATE, new HashMap<Key, Object>()));
+                //client.send(new Transferable(Action.UPDATE_TREASURE_STATE, new HashMap<Key, Object>()));
             }
 
             try { // Adds a little delay so villains won't spam action button.
@@ -176,32 +154,31 @@ public class GameLogic {
         }
         
         if (Faction.SECURITY == faction && keys.containsKey(KeyCode.SPACE)
-                && keys.get(KeyCode.SPACE)) { // Action button to drag
-                                              // guards (FOR SECURITY)
-        	if (client.player.dragging == null) {
-	            String id = null; // initialisation
-	            for (String k : client.gameData.players.keySet()) {
-	            	Player p = client.gameData.players.get(k);
+                && keys.get(KeyCode.SPACE)) { // Action button to catch
+                                              // thieves (FOR SECURITY)
+            String id = null; // initialisation
+            for (String k : client.gameData.players.keySet()) {
+            	Player p = client.gameData.players.get(k);
+            	if (p.faction == Faction.THIEF) {
 	                double tx = p.position.x;
 	                double ty = p.position.y;
 	                double px = client.player.position.x;
 	                double py = client.player.position.y;
 	                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) < Math
-	                        .pow(GameSettings.Security.dragRadius, 2)) { // Player
+	                        .pow(GameSettings.Security.catchRadius, 2)) { // Player
 	                                                                   // is in
 	                                                                   // drag
 	                                                                   // range.
-	                	if (client.gameData.players.get(k).state == PlayerState.STUCK) { // Check if player is out of battery
-	                		id = p.clientID;
-	                	}
+	                	id = p.clientID;
 	                }
-	            }
+            	}
 	            if (id != null) {
-	                System.out.println("Dragging Player");
-	                client.player.dragging = id;
+	                System.out.println("Catching Thief");
+	                client.gameData.players.get(id).state = PlayerState.CAUGHT;
 	                HashMap<Key, Object> map = new HashMap<Key, Object>();
-	                map.put(Key.DRAGGED_PLAYER, id);
-	                client.send(new Transferable(Action.START_DRAG, new HashMap<Key, Object>()));
+	                map.put(Key.CLIENT_ID, id);
+	                map.put(Key.PLAYER_STATE, PlayerState.CAUGHT);
+	                //client.send(new Transferable(Action.UPDATE_PLAYER_STATE, new HashMap<Key, Object>()));
 	            }
 	
 	            try { // Adds a little delay so guards won't spam action button.
@@ -210,17 +187,31 @@ public class GameLogic {
 	                e.printStackTrace();
 	            }
         	}
-        	else {
-        		System.out.println("Stopped dragging");
-        		client.player.dragging = null;
-                client.send(new Transferable(Action.STOP_DRAG));
-        	}
         }
         
-        if (client.player.faction == Faction.SECURITY)
-        	client.player.battery -= 0.01;
+        if (client.player.faction == Faction.SECURITY) {
+        	double tempX = client.player.position.x;
+        	double tempY = client.player.position.y;
+        	if (this.secHome.contains(tempX,tempY)) {
+        		if (client.player.battery < 1) {
+	        		client.player.battery += (0.1/60);
+	        		if (client.player.state == PlayerState.STUCK)
+	    				client.player.state = PlayerState.NORMAL;
+        		}
+        		else
+        			client.player.battery = 1;
+        	}
+        	else {
+	        	if (client.player.state == PlayerState.NORMAL) {
+	        		client.player.battery -= (0.1/60);
+	        		if (client.player.battery <= 0) {
+	        			client.player.battery = 0;
+	        			client.player.state = PlayerState.STUCK;
+	        		}
+	        	}
+        	}
+        }
 
-        // TODO Catch thieves for security
         // TODO Catch thieves for camera
     }
 }

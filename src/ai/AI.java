@@ -24,7 +24,7 @@ public abstract class AI extends Player implements Runnable {
 		this.setHandler(handler);
 		super.faction = faction;
 		super.position = Helper.getStartPositon(getHandler().gameData.treasures, getHandler().gameData.obstacles,
-				(ArrayList<Player>) getHandler().gameData.players.values(), getHandler().gameData.rand);
+				new ArrayList<Player>(getHandler().gameData.players.values()), getHandler().gameData.rand);
 		setRunning(false);
 	}
 

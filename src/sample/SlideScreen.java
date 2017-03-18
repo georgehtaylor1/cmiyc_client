@@ -3,13 +3,11 @@ package sample;
 import game.constants.GameSettings;
 import gui.GameDrawer;
 import javafx.animation.TranslateTransition;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import logic.GameLogic;
-import logic.GameLoop;
 import launcher.Main;
 
 import java.io.IOException;
@@ -39,13 +37,77 @@ public class SlideScreen extends AnchorPane {
     private GameLogic gameLogic;
     private GameDrawer gameDrawer;
     private Main launcherMain;
-    private Scene scene;
-    private Stage stage;
     private GameScreen gameScreen;
+
+
+    private VBox vBox1;
+    private VBox vBox2;
+    private HBox hBox1;
+    private HBox hBox2;
+
 
     private TranslateTransition sliderTranslation;
 
-    public SlideScreen(GameScreen gameScreen) throws IOException {
+    public AnchorPane getSlider() {
+        return slider;
+    }
+
+    public ToolBar getToolBar() {
+        return toolBar;
+    }
+
+    public BorderPane getTogether() {
+        return together;
+    }
+
+    public Button getConnect() {
+        return connect;
+    }
+
+    public Button getMainButton() {
+        return mainButton;
+    }
+
+    public ToggleButton getToggleButton2vs3() {
+        return toggleButton2vs3;
+    }
+
+    public ToggleButton getToggleButton1vs2() {
+        return toggleButton1vs2;
+    }
+
+
+    public ToggleButton getSecurity() {
+        return security;
+    }
+
+    public ToggleButton getThief() {
+        return thief;
+    }
+
+
+    public HBox gethBox1() {
+        return hBox1;
+    }
+
+    public HBox gethBox2() {
+        return hBox2;
+    }
+
+    public VBox getvBox1() {
+        return vBox1;
+    }
+
+    public VBox getvBox2() {
+        return vBox2;
+    }
+
+
+    public TranslateTransition getSliderTranslation() {
+        return sliderTranslation;
+    }
+
+    public SlideScreen(GameScreen gameScreen, Stage stage) throws IOException {
         this.slider = new AnchorPane();
         this.together = new BorderPane();
         this.mainButton = new Button("Find Game");
@@ -55,12 +117,12 @@ public class SlideScreen extends AnchorPane {
         this.connect = new Button("Connect");
 
         //toggleButton for number of players
-        this.toggleButton1vs2 = new ToggleButton("1vs2");
-        this.toggleButton1vs2.setOnAction(e-> {
 
-        });
+        this.toggleButton1vs2 = new ToggleButton("1vs2");
+
         this.toggleButton2vs3 = new ToggleButton("2vs3");
         this.group = new ToggleGroup();
+
 
         this.security = new ToggleButton("Security");
         this.thief = new ToggleButton("Thief");
@@ -69,7 +131,7 @@ public class SlideScreen extends AnchorPane {
         this.launcherMain = new Main();
         this.pane = new Pane();
         this.gameLogic = new GameLogic(launcherMain, pane);
-        this.gameDrawer = new GameDrawer(launcherMain, pane);
+        this.gameDrawer = new GameDrawer(launcherMain, pane, stage);
         this.gameScreen = gameScreen;
         this.drawScene();
     }
@@ -80,29 +142,27 @@ public class SlideScreen extends AnchorPane {
         this.getStylesheets().add("styles/sliderLayer.css");
 
         toolBar.setPrefHeight(40);
-        this.setPrefWidth(Constants.ScreenWidth);
-        this.setPrefHeight(Constants.ScreenHeight);
+        this.setPrefWidth(GameSettings.Arena.size.getWidth());
+        this.setPrefHeight(GameSettings.Arena.size.getHeight());
         this.getChildren().addAll(slider, toolBar);
 
         slider.setPrefWidth(250);
-        slider.setPrefHeight(Constants.ScreenHeight);
+        slider.setPrefHeight(GameSettings.Arena.size.getHeight());
         username.setPromptText("username");
         host.setPromptText("host");
 
-
-        VBox vBox1 = new VBox();
+        vBox1 = new VBox();
         vBox1.getChildren().addAll(username, host, connect);
         vBox1.setDisable(false);
-        VBox vBox2 = new VBox();
-        HBox hBox1 = new HBox();
+        vBox2 = new VBox();
+        hBox1 = new HBox();
         hBox1.getChildren().addAll(toggleButton1vs2, toggleButton2vs3);
-        HBox hBox2 = new HBox();
+        hBox2 = new HBox();
         hBox2.getChildren().addAll(security, thief);
         vBox2.getChildren().addAll(hBox1, hBox2);
         together.setTop(vBox1);
         together.setBottom(vBox2);
         slider.getChildren().addAll(together);
-
 
         AnchorPane.setBottomAnchor(toolBar, 0.0);
         AnchorPane.setRightAnchor(toolBar, 0.0);
@@ -124,16 +184,12 @@ public class SlideScreen extends AnchorPane {
         username.setId("username");
         host.setId("host");
         connect.setId("connect");
-       // cancel.setId("cancel");
         toggleButton1vs2.setId("1vs2");
         toggleButton2vs3.setId("2vs3");
         security.setId("security");
         thief.setId("thief");
+        vBox2.setId("vBox2");
 
-
-        security.setToggleGroup(group2);
-        security.setSelected(true);
-        thief.setToggleGroup(group2);
 
         username.setEditable(true);
 
@@ -146,13 +202,8 @@ public class SlideScreen extends AnchorPane {
         sliderTranslation.setRate(1);
         sliderTranslation.play();
 
-        /*this.cancel.setOnAction(e -> {
-            sliderTranslation.setRate(1);
-            sliderTranslation.play();
-        });*/
 
         connect.setOnAction(e -> {
-
             gameScreen.drawGame();
         });
 
@@ -168,19 +219,31 @@ public class SlideScreen extends AnchorPane {
             }
         });
 
+        toggleButton1vs2.setToggleGroup(group);
+        toggleButton2vs3.setToggleGroup(group);
+        security.setToggleGroup(group2);
+        thief.setToggleGroup(group2);
+        toggleButton1vs2.setSelected(true);
+        security.setSelected(true);
+
     }
 
-    public void thiefSetActive() {
-        toggleButton1vs2.setToggleGroup(group);
+    public void oneVsTwoSetActive() {
         toggleButton1vs2.setSelected(true);
-        toggleButton2vs3.setToggleGroup(group);
     }
 
-    public void securitySetActive() {
-        toggleButton1vs2.setToggleGroup(group);
-        toggleButton1vs2.setSelected(true);
-        toggleButton2vs3.setToggleGroup(group);
+    public void twoVsThreeSetActive() {
+        toggleButton2vs3.setSelected(true);
     }
+
+    public void securitySetActive () {
+        security.setSelected(true);
+    }
+
+    public void thiefSetActive () {
+        thief.setSelected(true);
+    }
+
 
     public void slideIn(){
         sliderTranslation.setRate(-1);

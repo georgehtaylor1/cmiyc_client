@@ -12,11 +12,9 @@ import com.ClientReceiver;
 import com.ClientSender;
 
 import constants.Commands.Action;
-import game.Faction;
-import game.GameData;
-import game.GameMode;
-import game.Player;
+import game.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -28,8 +26,8 @@ import util.Transferable;
 
 @SuppressWarnings("serial")
 public class Main extends Application {
-	
-	public Main m;
+
+    public Main m;
 
     public String id;
     public String username;
@@ -102,7 +100,7 @@ public class Main extends Application {
         inputs[1] = splits[1];
         inputs[2] = this.gui.userInput.getText();
     	*/
-    	String[] inputs = {"localhost","1234","Unknown"};
+        String[] inputs = {"localhost","1234","Unknown"};
         return inputs;
     }
 
@@ -286,17 +284,19 @@ public class Main extends Application {
         new Main();
         launch(_arguments);
     }
-    
+
     public void start(Stage primaryStage) throws Exception{
         StackPane base = new StackPane();
         Scene scene = new Scene(base);
 
         // SlideScreen slideScreen = new SlideScreen();
-       // primaryStage.initStyle(StageStyle.UNDECORATED);
+        // primaryStage.initStyle(StageStyle.UNDECORATED);
         WelcomeScreen welcomeScreen = new WelcomeScreen();
+        this.gameData.treasures.add(new Treasure(450,450));
+        this.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
 
-        GameScreen gameScreen = new GameScreen(this, base);
-        SlideScreen slideScreen = new SlideScreen(gameScreen);
+        GameScreen gameScreen = new GameScreen(this, base, primaryStage);
+        SlideScreen slideScreen = new SlideScreen(gameScreen, primaryStage);
 
         base.getChildren().addAll(gameScreen, slideScreen);
 

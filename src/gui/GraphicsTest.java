@@ -1,23 +1,21 @@
 package gui;
 
 import ai.handler.Handler;
-
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.util.Position;
-
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
 import launcher.Main;
-
 import logic.GameLogic;
 import logic.GameLoop;
 
@@ -26,11 +24,11 @@ import logic.GameLoop;
  */
 public class GraphicsTest extends Application {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+	public static void main(String[] args) {
+		launch(args);
+	}
 
-    public void start(Stage stage) {
+	public void start(Stage stage) {
         Main main = new Main();
 
         main.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
@@ -42,7 +40,7 @@ public class GraphicsTest extends Application {
         main.gameData.treasures.add(new Treasure(390, 400));
 
         Handler h = new Handler(main.gameData);
-        h.addPlayers(1, 0);
+        h.addPlayers(0, 1);
         h.start();
 
         Player tom = new Player("tom");
@@ -60,9 +58,10 @@ public class GraphicsTest extends Application {
         Pane pane = new Pane();
 
         GameLogic logic = new GameLogic(main, pane);
-        GameDrawer drawer = new GameDrawer(main, pane);
+        GameDrawer drawer = new GameDrawer(main, pane, stage);
 
         Scene scene = new Scene(pane);
+       
         scene.setCursor(Cursor.CROSSHAIR); // TODO We could add our own cursor
                                            // later.
         stage.setScene(scene);
@@ -84,5 +83,5 @@ public class GraphicsTest extends Application {
         drawerThread.start();
 
     }
-    
+
 }

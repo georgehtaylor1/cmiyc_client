@@ -11,24 +11,19 @@ public class GameLoop implements Runnable {
 
     private GameDrawer drawer;
     private GameLogic logic;
-	//private Handler aiHandler;
+	private Handler aiHandler;
 
     public GameLoop(GameDrawer drawer, GameLogic logic, Handler aiHandler) {
         this.drawer = drawer;
         this.logic = logic;
-        //this.aiHandler = aiHandler;
-    }
-
-    public GameLoop(GameDrawer drawer, GameLogic logic) {
-        this.drawer = drawer;
-        this.logic = logic;
+        this.aiHandler = aiHandler;
     }
 
     public void run() {
         while (true) {
 
             logic.update();
-            //aiHandler.update();
+            aiHandler.update();
 
             Platform.runLater(() -> {
                 drawer.draw();

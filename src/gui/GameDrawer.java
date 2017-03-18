@@ -11,6 +11,7 @@ import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
+import game.states.TreasureState;
 
 import gui.util.FxUtils;
 
@@ -66,12 +67,9 @@ public class GameDrawer {
         }
 
         // Make treasure shapes
-        ArrayList<Circle> treasureShapes = new ArrayList<>();
+        ArrayList<TreasureShape> treasureShapes = new ArrayList<>();
         for (Treasure t : main.gameData.treasures) {
-            Circle c = new Circle(GameSettings.Treasure.radius);
-            c.setCenterX(t.position.x);
-            c.setCenterY(t.position.y);
-            treasureShapes.add(c);
+            treasureShapes.add(new TreasureShape(t));
         }
 
         // Make player shapes
@@ -80,8 +78,8 @@ public class GameDrawer {
         ArrayList<Circle> allyShapes = new ArrayList<>();
         ArrayList<Circle> enemyShapes = new ArrayList<>();
 
-        final double arcAngle = (GameSettings.Security.lightArcPercentage / 100)
-                * 360;
+        final double arcAngle =
+                (GameSettings.Security.lightArcPercentage / 100) * 360;
 
         for (Map.Entry<String, Player> entry : main.gameData.players
                 .entrySet()) {
@@ -175,6 +173,7 @@ public class GameDrawer {
         final double outlineWidth = 2;
         ArrayList<Shape> occObstacleShapes = new ArrayList<>();
         ArrayList<Shape> occTreasureShapes = new ArrayList<>();
+        ArrayList<Shape> occShadowTreasureShapes = new ArrayList<>();
         ArrayList<Shape> occEnemyShapes = new ArrayList<>();
         ArrayList<Shape> occHiddenSecurityLightShapes = new ArrayList<>();
 
@@ -186,9 +185,9 @@ public class GameDrawer {
                 // Obstacles
                 for (Rectangle r : obstacleRects) {
 
-                    Rectangle outline = new Rectangle(
-                            r.getWidth() + outlineWidth * 2,
-                            r.getHeight() + outlineWidth * 2);
+                    Rectangle outline =
+                            new Rectangle(r.getWidth() + outlineWidth * 2,
+                                    r.getHeight() + outlineWidth * 2);
                     outline.setX(r.getX() - outlineWidth);
                     outline.setY(r.getY() - outlineWidth);
 
@@ -205,16 +204,19 @@ public class GameDrawer {
                 }
 
                 // Treasures
-                for (Circle c : treasureShapes) {
-                    Shape occTreasure = Shape.intersect(c, light.shape);
+                for (TreasureShape t : treasureShapes) {
+                    if (t.treasure.state == TreasureState.UNPICKED) {
+                        Shape occTreasure =
+                                Shape.intersect(t.circle, light.shape);
 
-                    RadialGradient treasureGrad = makeRadialGradient(
-                            light.getCenterX(), light.getCenterY(),
-                            GameSettings.Security.lightRadius, Colors.treasure,
-                            Color.TRANSPARENT);
+                        RadialGradient treasureGrad = makeRadialGradient(
+                                light.getCenterX(), light.getCenterY(),
+                                GameSettings.Security.lightRadius,
+                                Colors.treasure, Color.TRANSPARENT);
 
-                    occTreasure.setFill(treasureGrad);
-                    occTreasureShapes.add(occTreasure);
+                        occTreasure.setFill(treasureGrad);
+                        occTreasureShapes.add(occTreasure);
+                    }
                 }
 
                 // Thieves
@@ -228,6 +230,19 @@ public class GameDrawer {
 
                     occEnemy.setFill(enemyGrad);
                     occEnemyShapes.add(occEnemy);
+                }
+            }
+
+            // Treasure shadows
+            for (TreasureShape t : treasureShapes) {
+                if (t.treasure.state != TreasureState.PICKED_AND_SEEN) {
+                    Shape occShadowTreasure = t.circle;
+                    for (CenteredShape light : occSecurityLightShapes) {
+                        occShadowTreasure =
+                                Shape.subtract(occShadowTreasure, light.shape);
+                    }
+                    occShadowTreasure.setFill(Colors.treasureShadow);
+                    occShadowTreasureShapes.add(occShadowTreasure);
                 }
             }
         } else {
@@ -251,9 +266,9 @@ public class GameDrawer {
                 // Obstacles
                 for (Rectangle r : obstacleRects) {
 
-                    Rectangle outline = new Rectangle(
-                            r.getWidth() + outlineWidth * 2,
-                            r.getHeight() + outlineWidth * 2);
+                    Rectangle outline =
+                            new Rectangle(r.getWidth() + outlineWidth * 2,
+                                    r.getHeight() + outlineWidth * 2);
                     outline.setX(r.getX() - outlineWidth);
                     outline.setY(r.getY() - outlineWidth);
 
@@ -270,16 +285,19 @@ public class GameDrawer {
                 }
 
                 // Treasures
-                for (Circle c : treasureShapes) {
-                    Shape occTreasure = Shape.intersect(c, vision.shape);
+                for (TreasureShape t : treasureShapes) {
+                    if (t.treasure.state == TreasureState.UNPICKED) {
+                        Shape occTreasure =
+                                Shape.intersect(t.circle, vision.shape);
 
-                    RadialGradient treasureGrad = makeRadialGradient(
-                            vision.getCenterX(), vision.getCenterY(),
-                            GameSettings.Thief.visionRadius, Colors.treasure,
-                            Color.TRANSPARENT);
+                        RadialGradient treasureGrad = makeRadialGradient(
+                                vision.getCenterX(), vision.getCenterY(),
+                                GameSettings.Thief.visionRadius,
+                                Colors.treasure, Color.TRANSPARENT);
 
-                    occTreasure.setFill(treasureGrad);
-                    occTreasureShapes.add(occTreasure);
+                        occTreasure.setFill(treasureGrad);
+                        occTreasureShapes.add(occTreasure);
+                    }
                 }
 
                 // Security
@@ -309,6 +327,12 @@ public class GameDrawer {
         ch.add(innerArena);
         ch.addAll(occObstacleShapes);
         ch.addAll(occTreasureShapes);
+
+        if (main.player.faction == Faction.SECURITY) {
+            // Draw treasure shadows for security
+            ch.addAll(occShadowTreasureShapes);
+        }
+
         ch.addAll(occEnemyShapes);
 
         if (main.player.faction == Faction.SECURITY) {

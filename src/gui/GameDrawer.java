@@ -138,13 +138,15 @@ public class GameDrawer {
             }
         }
 
+        final double outlineWidth = 2;
+
         // Collect all edges
         ArrayList<Line> obstacleEdges = new ArrayList<>();
         for (Rectangle r : obstacleRects) {
-            double leftX = r.getX();
-            double rightX = r.getX() + r.getWidth();
-            double topY = r.getY();
-            double bottomY = r.getY() + r.getHeight();
+            double leftX = r.getX() + outlineWidth;
+            double rightX = r.getX() + r.getWidth() - outlineWidth;
+            double topY = r.getY() + outlineWidth;
+            double bottomY = r.getY() + r.getHeight() - outlineWidth;
             obstacleEdges.add(new Line(leftX, topY, leftX, bottomY));
             obstacleEdges.add(new Line(leftX, bottomY, rightX, bottomY));
             obstacleEdges.add(new Line(leftX, topY, rightX, topY));
@@ -194,7 +196,6 @@ public class GameDrawer {
         }
 
         // Occlude hidden shapes
-        final double outlineWidth = 2;
         ArrayList<Shape> occObstacleShapes = new ArrayList<>();
         ArrayList<Shape> occTreasureShapes = new ArrayList<>();
         ArrayList<Shape> occShadowTreasureShapes = new ArrayList<>();
@@ -210,22 +211,21 @@ public class GameDrawer {
                 // Obstacles
                 for (Rectangle r : obstacleRects) {
 
-                    Rectangle outline =
-                            new Rectangle(r.getWidth() + outlineWidth * 2,
-                                    r.getHeight() + outlineWidth * 2);
-                    outline.setX(r.getX() - outlineWidth);
-                    outline.setY(r.getY() - outlineWidth);
+                    Rectangle inside = new Rectangle(r.getX() + outlineWidth,
+                            r.getY() + outlineWidth,
+                            r.getWidth() - outlineWidth * 2,
+                            r.getHeight() - outlineWidth * 2);
 
-                    Shape occOutline = Shape.subtract(outline, r);
-                    occOutline = Shape.intersect(occOutline, light.shape);
+                    Shape occObstacle = Shape.subtract(r, inside);
+                    occObstacle = Shape.intersect(occObstacle, light.shape);
 
-                    RadialGradient outlineGrad = makeRadialGradient(
+                    RadialGradient obstacleGrad = makeRadialGradient(
                             light.getCenterX(), light.getCenterY(),
                             GameSettings.Security.lightRadius, Color.WHITE,
                             Color.TRANSPARENT);
 
-                    occOutline.setFill(outlineGrad);
-                    occObstacleShapes.add(occOutline);
+                    occObstacle.setFill(obstacleGrad);
+                    occObstacleShapes.add(occObstacle);
                 }
 
                 // Treasures
@@ -291,22 +291,21 @@ public class GameDrawer {
                 // Obstacles
                 for (Rectangle r : obstacleRects) {
 
-                    Rectangle outline =
-                            new Rectangle(r.getWidth() + outlineWidth * 2,
-                                    r.getHeight() + outlineWidth * 2);
-                    outline.setX(r.getX() - outlineWidth);
-                    outline.setY(r.getY() - outlineWidth);
+                    Rectangle inside = new Rectangle(r.getX() + outlineWidth,
+                            r.getY() + outlineWidth,
+                            r.getWidth() - outlineWidth * 2,
+                            r.getHeight() - outlineWidth * 2);
 
-                    Shape occOutline = Shape.subtract(outline, r);
-                    occOutline = Shape.intersect(occOutline, vision.shape);
+                    Shape occObstacle = Shape.subtract(r, inside);
+                    occObstacle = Shape.intersect(occObstacle, vision.shape);
 
-                    RadialGradient outlineGrad = makeRadialGradient(
+                    RadialGradient obstacleGrad = makeRadialGradient(
                             vision.getCenterX(), vision.getCenterY(),
                             GameSettings.Thief.visionRadius, Color.WHITE,
                             Color.TRANSPARENT);
 
-                    occOutline.setFill(outlineGrad);
-                    occObstacleShapes.add(occOutline);
+                    occObstacle.setFill(obstacleGrad);
+                    occObstacleShapes.add(occObstacle);
                 }
 
                 // Treasures

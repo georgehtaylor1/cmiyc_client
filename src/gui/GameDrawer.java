@@ -130,6 +130,12 @@ public class GameDrawer {
                 thiefVisionShapes.add(new CenteredShape(vision));
             }
 
+            if (player.clientID == main.player.clientID) {
+                // Active player
+                c.setStroke(Color.WHITE);
+                c.setStrokeWidth(1.5);
+            }
+
             if (main.player.faction == player.faction) {
                 c.setFill(Color.GREEN);
                 allyShapes.add(c);

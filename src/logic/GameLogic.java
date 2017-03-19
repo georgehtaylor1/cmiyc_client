@@ -139,6 +139,7 @@ public class GameLogic {
                                  // because it will cause
                                  // concurrentModificationException.
                 System.out.println("Score! Add: " + tempT.value);
+                client.gameData.thiefScore += tempT.value;
                 client.gameData.treasures.remove(tempT); // So we remove it here
                 HashMap<Key, Object> map = new HashMap<Key, Object>();
                 map.put(Key.TREASURE_ID, tempT.id);
@@ -211,6 +212,8 @@ public class GameLogic {
 	        	}
         	}
         }
+        
+        client.gameData.secScore += (1.0/60.0);
 
         // TODO Catch thieves for camera
     }

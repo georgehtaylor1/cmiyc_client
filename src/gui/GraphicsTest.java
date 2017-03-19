@@ -37,7 +37,6 @@ public class GraphicsTest extends Application {
         main.gameData.treasures.add(new Treasure(400, 400));
         
         main.gameData.players.put("bob", new Player("bob"));
-        main.player.faction = Faction.THIEF;
         
         main.gameData.cameras.add(new Camera(500, 300, 0, 50));
         

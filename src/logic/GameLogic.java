@@ -203,7 +203,7 @@ public class GameLogic {
         	double tempY = client.player.position.y;
         	if (this.secHome.contains(tempX,tempY)) {
         		if (client.player.battery < 1) {
-	        		client.player.battery += (0.1/60);
+	        		client.player.battery += (GameSettings.Security.chargeValue);
 	        		if (client.player.state == PlayerState.STUCK)
 	    				client.player.state = PlayerState.NORMAL;
         		}
@@ -212,7 +212,7 @@ public class GameLogic {
         	}
         	else {
 	        	if (client.player.state == PlayerState.NORMAL) {
-	        		client.player.battery -= (0.1/60);
+	        		client.player.battery -= (GameSettings.Security.drainValue);
 	        		if (client.player.battery <= 0) {
 	        			client.player.battery = 0;
 	        			client.player.state = PlayerState.STUCK;

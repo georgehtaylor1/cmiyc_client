@@ -18,10 +18,10 @@ public enum Sound {
 
 	/**
 	 * Creates new interface for an Wav file
-	 * @param filename The path of the audio file relative to the location of the .class file 
+	 * @param filename The path of the audio file relative to /resources/sound/
 	 */
 	private Sound(String filename) {
-		this.audiofile = new File(getClass().getResource(filename).getPath());
+		this.audiofile = new File("sound/" + filename);
 		this.player = new AudioWav(this.audiofile);
 		this.type = AudioType.WAV;
 	}

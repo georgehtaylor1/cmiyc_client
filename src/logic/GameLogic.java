@@ -1,17 +1,21 @@
 package logic;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import game.Faction;
 import game.Obstacle;
+import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
+import game.states.PlayerState;
 import game.states.TreasureState;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import launcher.Main;
+import util.Debug;
 import util.Maths;
 
 /**
@@ -66,6 +70,10 @@ public class GameLogic {
         client.player.direction = Maths.normalizeAngle(angle); // Updates client's direction
                                          // (currently in radians)
 
+        if (Math.pow(client.player.position.x - mouseX, 2) + Math.pow(client.player.position.y - mouseY, 2) < Math.pow(10, 2)) {
+        	return;
+        }
+        
         if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)) {
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
@@ -114,36 +122,84 @@ public class GameLogic {
         if (Faction.THIEF == faction && keys.containsKey(KeyCode.SPACE)
                 && keys.get(KeyCode.SPACE)) { // Action button to collect
                                               // treasures (FOR THIEVES)
-            Treasure tempT = null; // Saves a treasures to be collected
+        	double px = client.player.position.x;
+        	double py = client.player.position.y;
+
+        	Treasure tempT = null; // Saves a treasures to be collected
             for (Treasure t : client.gameData.treasures) {
                 double tx = t.position.x;
                 double ty = t.position.y;
-                double px = client.player.position.x;
-                double py = client.player.position.y;
-                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) < Math
+                
+                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math
                         .pow(GameSettings.Thief.stealRadius, 2)) { // Treasure
                                                                    // is in
                                                                    // catch
                                                                    // range.
                     tempT = t; // This is the treasure to delete
-                    t.state = TreasureState.PICKED;
+                    break;
                 }
             }
-            if (tempT != null) { // We can't remove the treasure in the for loop
-                                 // because it will cause
-                                 // concurrentModificationException.
-                System.out.println("Score! Add: " + tempT.value);
-                client.gameData.treasures.remove(tempT); // So we remove it here
-            }
-
-            try { // Adds a little delay so villains won't spam action button.
-                Thread.sleep(100);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            collectTreasure(tempT);
         }
-
-        // TODO Catch thieves for security
-        // TODO Catch thieves for camera
+        
+        if (faction == Faction.SECURITY && keys.containsKey(KeyCode.SPACE) && keys.get(KeyCode.SPACE)) {
+        	double px = client.player.position.x;
+        	double py = client.player.position.y;
+        	String nameToBeRemoved = null;
+        	Player thiefToBeRemoved = null;
+        	for (Map.Entry<String, Player> p : client.gameData.players.entrySet()) {
+        		Player tempP = p.getValue();
+        		
+        		if (tempP.faction == Faction.SECURITY) {
+        			continue;
+        		}
+        		
+        		double tx = tempP.position.x;
+        		double ty = tempP.position.y;	
+    			if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math.pow(GameSettings.Security.catchRadius, 2)) {
+    				nameToBeRemoved = p.getKey();
+    				thiefToBeRemoved = tempP;
+    				break;
+        		}
+        	}
+        	captureThief(nameToBeRemoved,thiefToBeRemoved);
+        }
+        	
     }
+    
+    /**
+     * Method to collect treasure for thief if in range
+     * @param t to be removed
+     */
+    public void collectTreasure(Treasure treasure) {
+    	if (treasure != null) {
+    		treasure.state = TreasureState.PICKED;
+    		client.gameData.treasures.remove(treasure);
+            Debug.say("Score! Add: " + treasure.value);
+            try { // Adds a little delay so villains won't spam action button.
+            	Thread.sleep(100);
+            } catch (Exception e) {
+            	e.printStackTrace();
+            }
+    	}
+    }
+    
+    /**
+     * Method to capture thief
+     * @param thief to be removed
+     */
+    public void captureThief(String name, Player thief) {
+    	if (thief != null) {
+    		thief.state = PlayerState.CAUGHT;
+    		client.gameData.players.remove(name);
+    		Debug.say("Thief " + thief.clientID + " captured. Add 100 points!");
+    		try { // Adds a little delay so villains won't spam action button.
+    			Thread.sleep(100);
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    	}
+    }
+    
+   
 }

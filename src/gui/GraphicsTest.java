@@ -49,14 +49,14 @@ public class GraphicsTest extends Application {
         Player tom = new Player("tom");
         tom.faction = Faction.THIEF;
         tom.position = new Position(100, 150);
-        //main.gameData.players.put("tom", tom);
-        main.player.faction = Faction.THIEF;
+        // main.gameData.players.put("tom", tom);
+        main.player.faction = Faction.SECURITY;
         main.gameData.players.put(main.player.clientID, main.player);
 
         Player bob = new Player("bob");
         main.gameData.players.put("bob", bob);
 
-        main.gameData.cameras.add(new Camera(500, 300, 270, 50));
+        main.gameData.cameras.add(new Camera(500, 300, Math.PI / 6.0, 50));
 
         Pane pane = new Pane();
 
@@ -69,13 +69,13 @@ public class GraphicsTest extends Application {
         stage.setScene(scene);
         stage.sizeToScene();
         stage.setTitle("Graphics test");
-        
+
         stage.setOnCloseRequest(e -> {
-        	e.consume();
-        	h.end();
-        	Platform.exit();
+            e.consume();
+            h.end();
+            Platform.exit();
         });
-        
+
         stage.show();
         // requestFocus() only works after stage.show().
         pane.requestFocus();
@@ -85,5 +85,4 @@ public class GraphicsTest extends Application {
         drawerThread.start();
 
     }
-    
 }

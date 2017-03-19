@@ -6,11 +6,13 @@ import java.util.Map;
 
 import constants.Colors;
 
+import game.Camera;
 import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
+import game.states.TreasureState;
 
 import gui.util.FxUtils;
 
@@ -66,22 +68,42 @@ public class GameDrawer {
         }
 
         // Make treasure shapes
-        ArrayList<Circle> treasureShapes = new ArrayList<>();
+        ArrayList<TreasureShape> treasureShapes = new ArrayList<>();
         for (Treasure t : main.gameData.treasures) {
-            Circle c = new Circle(GameSettings.Treasure.radius);
-            c.setCenterX(t.position.x);
-            c.setCenterY(t.position.y);
-            treasureShapes.add(c);
+            treasureShapes.add(new TreasureShape(t));
+        }
+
+        final double arcAngle =
+                (GameSettings.Security.lightArcPercentage / 100.0) * 360;
+        final double cameraBoxLength = 10;
+
+        // Make camera shapes
+        ArrayList<Rectangle> cameraShapes = new ArrayList<>();
+        ArrayList<CenteredShape> securityLightShapes = new ArrayList<>();
+        for (Camera c : main.gameData.cameras) {
+
+            Rectangle box = new Rectangle(cameraBoxLength, cameraBoxLength);
+            box.setX(c.position.x - cameraBoxLength / 2.0);
+            box.setY(c.position.y - cameraBoxLength / 2.0);
+            box.setRotate(-Math.toDegrees(c.direction));
+
+            box.setStroke(Color.WHITE);
+            box.setStrokeWidth(2);
+            cameraShapes.add(box);
+
+            Arc cameraLight = new Arc(c.position.x, c.position.y,
+                    GameSettings.Security.lightRadius,
+                    GameSettings.Security.lightRadius,
+                    Math.toDegrees(c.direction) - arcAngle / 2.0, arcAngle);
+            cameraLight.setType(ArcType.ROUND);
+
+            securityLightShapes.add(new CenteredShape(cameraLight));
         }
 
         // Make player shapes
-        ArrayList<CenteredShape> securityLightShapes = new ArrayList<>();
         ArrayList<CenteredShape> thiefVisionShapes = new ArrayList<>();
         ArrayList<Circle> allyShapes = new ArrayList<>();
         ArrayList<Circle> enemyShapes = new ArrayList<>();
-
-        final double arcAngle = (GameSettings.Security.lightArcPercentage / 100)
-                * 360;
 
         for (Map.Entry<String, Player> entry : main.gameData.players
                 .entrySet()) {
@@ -96,7 +118,7 @@ public class GameDrawer {
                 Arc light = new Arc(player.position.x, player.position.y,
                         GameSettings.Security.lightRadius,
                         GameSettings.Security.lightRadius,
-                        -Math.toDegrees(player.direction) - arcAngle / 2,
+                        -Math.toDegrees(player.direction) - arcAngle / 2.0,
                         arcAngle);
                 light.setType(ArcType.ROUND);
                 securityLightShapes.add(new CenteredShape(light));
@@ -108,6 +130,12 @@ public class GameDrawer {
                 thiefVisionShapes.add(new CenteredShape(vision));
             }
 
+            if (player.clientID.equals(main.player.clientID)) {
+                // Active player
+                c.setStroke(Color.WHITE);
+                c.setStrokeWidth(1.5);
+            }
+
             if (main.player.faction == player.faction) {
                 c.setFill(Color.GREEN);
                 allyShapes.add(c);
@@ -116,13 +144,15 @@ public class GameDrawer {
             }
         }
 
+        final double outlineWidth = 2;
+
         // Collect all edges
         ArrayList<Line> obstacleEdges = new ArrayList<>();
         for (Rectangle r : obstacleRects) {
-            double leftX = r.getX();
-            double rightX = r.getX() + r.getWidth();
-            double topY = r.getY();
-            double bottomY = r.getY() + r.getHeight();
+            double leftX = r.getX() + outlineWidth;
+            double rightX = r.getX() + r.getWidth() - outlineWidth;
+            double topY = r.getY() + outlineWidth;
+            double bottomY = r.getY() + r.getHeight() - outlineWidth;
             obstacleEdges.add(new Line(leftX, topY, leftX, bottomY));
             obstacleEdges.add(new Line(leftX, bottomY, rightX, bottomY));
             obstacleEdges.add(new Line(leftX, topY, rightX, topY));
@@ -172,9 +202,10 @@ public class GameDrawer {
         }
 
         // Occlude hidden shapes
-        final double outlineWidth = 2;
         ArrayList<Shape> occObstacleShapes = new ArrayList<>();
         ArrayList<Shape> occTreasureShapes = new ArrayList<>();
+        ArrayList<Shape> occShadowTreasureShapes = new ArrayList<>();
+        ArrayList<Shape> occCameraShapes = new ArrayList<>();
         ArrayList<Shape> occEnemyShapes = new ArrayList<>();
         ArrayList<Shape> occHiddenSecurityLightShapes = new ArrayList<>();
 
@@ -186,35 +217,37 @@ public class GameDrawer {
                 // Obstacles
                 for (Rectangle r : obstacleRects) {
 
-                    Rectangle outline = new Rectangle(
-                            r.getWidth() + outlineWidth * 2,
-                            r.getHeight() + outlineWidth * 2);
-                    outline.setX(r.getX() - outlineWidth);
-                    outline.setY(r.getY() - outlineWidth);
+                    Rectangle inside = new Rectangle(r.getX() + outlineWidth,
+                            r.getY() + outlineWidth,
+                            r.getWidth() - outlineWidth * 2,
+                            r.getHeight() - outlineWidth * 2);
 
-                    Shape occOutline = Shape.subtract(outline, r);
-                    occOutline = Shape.intersect(occOutline, light.shape);
+                    Shape occObstacle = Shape.subtract(r, inside);
+                    occObstacle = Shape.intersect(occObstacle, light.shape);
 
-                    RadialGradient outlineGrad = makeRadialGradient(
+                    RadialGradient obstacleGrad = makeRadialGradient(
                             light.getCenterX(), light.getCenterY(),
                             GameSettings.Security.lightRadius, Color.WHITE,
                             Color.TRANSPARENT);
 
-                    occOutline.setFill(outlineGrad);
-                    occObstacleShapes.add(occOutline);
+                    occObstacle.setFill(obstacleGrad);
+                    occObstacleShapes.add(occObstacle);
                 }
 
                 // Treasures
-                for (Circle c : treasureShapes) {
-                    Shape occTreasure = Shape.intersect(c, light.shape);
+                for (TreasureShape t : treasureShapes) {
+                    if (t.treasure.state == TreasureState.UNPICKED) {
+                        Shape occTreasure =
+                                Shape.intersect(t.circle, light.shape);
 
-                    RadialGradient treasureGrad = makeRadialGradient(
-                            light.getCenterX(), light.getCenterY(),
-                            GameSettings.Security.lightRadius, Colors.treasure,
-                            Color.TRANSPARENT);
+                        RadialGradient treasureGrad = makeRadialGradient(
+                                light.getCenterX(), light.getCenterY(),
+                                GameSettings.Security.lightRadius,
+                                Colors.treasure, Color.TRANSPARENT);
 
-                    occTreasure.setFill(treasureGrad);
-                    occTreasureShapes.add(occTreasure);
+                        occTreasure.setFill(treasureGrad);
+                        occTreasureShapes.add(occTreasure);
+                    }
                 }
 
                 // Thieves
@@ -228,6 +261,19 @@ public class GameDrawer {
 
                     occEnemy.setFill(enemyGrad);
                     occEnemyShapes.add(occEnemy);
+                }
+            }
+
+            // Treasure shadows
+            for (TreasureShape t : treasureShapes) {
+                if (t.treasure.state != TreasureState.PICKED_AND_SEEN) {
+                    Shape occShadowTreasure = t.circle;
+                    for (CenteredShape light : occSecurityLightShapes) {
+                        occShadowTreasure =
+                                Shape.subtract(occShadowTreasure, light.shape);
+                    }
+                    occShadowTreasure.setFill(Colors.treasureShadow);
+                    occShadowTreasureShapes.add(occShadowTreasure);
                 }
             }
         } else {
@@ -251,35 +297,50 @@ public class GameDrawer {
                 // Obstacles
                 for (Rectangle r : obstacleRects) {
 
-                    Rectangle outline = new Rectangle(
-                            r.getWidth() + outlineWidth * 2,
-                            r.getHeight() + outlineWidth * 2);
-                    outline.setX(r.getX() - outlineWidth);
-                    outline.setY(r.getY() - outlineWidth);
+                    Rectangle inside = new Rectangle(r.getX() + outlineWidth,
+                            r.getY() + outlineWidth,
+                            r.getWidth() - outlineWidth * 2,
+                            r.getHeight() - outlineWidth * 2);
 
-                    Shape occOutline = Shape.subtract(outline, r);
-                    occOutline = Shape.intersect(occOutline, vision.shape);
+                    Shape occObstacle = Shape.subtract(r, inside);
+                    occObstacle = Shape.intersect(occObstacle, vision.shape);
 
-                    RadialGradient outlineGrad = makeRadialGradient(
+                    RadialGradient obstacleGrad = makeRadialGradient(
                             vision.getCenterX(), vision.getCenterY(),
                             GameSettings.Thief.visionRadius, Color.WHITE,
                             Color.TRANSPARENT);
 
-                    occOutline.setFill(outlineGrad);
-                    occObstacleShapes.add(occOutline);
+                    occObstacle.setFill(obstacleGrad);
+                    occObstacleShapes.add(occObstacle);
                 }
 
                 // Treasures
-                for (Circle c : treasureShapes) {
-                    Shape occTreasure = Shape.intersect(c, vision.shape);
+                for (TreasureShape t : treasureShapes) {
+                    if (t.treasure.state == TreasureState.UNPICKED) {
+                        Shape occTreasure =
+                                Shape.intersect(t.circle, vision.shape);
 
-                    RadialGradient treasureGrad = makeRadialGradient(
+                        RadialGradient treasureGrad = makeRadialGradient(
+                                vision.getCenterX(), vision.getCenterY(),
+                                GameSettings.Thief.visionRadius,
+                                Colors.treasure, Color.TRANSPARENT);
+
+                        occTreasure.setFill(treasureGrad);
+                        occTreasureShapes.add(occTreasure);
+                    }
+                }
+
+                // Cameras
+                for (Rectangle r : cameraShapes) {
+                    Shape occCamera = Shape.intersect(r, vision.shape);
+
+                    RadialGradient lightGrad = makeRadialGradient(
                             vision.getCenterX(), vision.getCenterY(),
-                            GameSettings.Thief.visionRadius, Colors.treasure,
-                            Color.TRANSPARENT);
+                            GameSettings.Security.lightRadius,
+                            Colors.flashlight, Color.TRANSPARENT);
 
-                    occTreasure.setFill(treasureGrad);
-                    occTreasureShapes.add(occTreasure);
+                    occCamera.setFill(lightGrad);
+                    occCameraShapes.add(occCamera);
                 }
 
                 // Security
@@ -309,12 +370,18 @@ public class GameDrawer {
         ch.add(innerArena);
         ch.addAll(occObstacleShapes);
         ch.addAll(occTreasureShapes);
+
+        if (main.player.faction == Faction.SECURITY) {
+            ch.addAll(occShadowTreasureShapes);
+        }
+
         ch.addAll(occEnemyShapes);
 
         if (main.player.faction == Faction.SECURITY) {
             for (CenteredShape s : occSecurityLightShapes) {
                 ch.add(s.shape);
             }
+            ch.addAll(cameraShapes);
         } else {
             // Thief
             for (Shape s : occHiddenSecurityLightShapes) {
@@ -323,6 +390,7 @@ public class GameDrawer {
             for (CenteredShape s : occThiefVisionShapes) {
                 ch.add(s.shape);
             }
+            ch.addAll(occCameraShapes);
         }
 
         ch.addAll(allyShapes);

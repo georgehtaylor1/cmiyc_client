@@ -167,7 +167,7 @@ public class GameLogic {
 	            String id = null; // initialisation
 	            for (String k : client.gameData.players.keySet()) {
 	            	Player p = client.gameData.players.get(k);
-	            	if (p.faction == Faction.THIEF) {
+	            	if (p.faction == Faction.THIEF && p.state == PlayerState.NORMAL) {
 		                double tx = p.position.x;
 		                double ty = p.position.y;
 		                double px = client.player.position.x;

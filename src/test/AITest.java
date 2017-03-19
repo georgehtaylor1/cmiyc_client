@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.After;
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 import ai.Helper;
 import game.Faction;
+import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.util.Position;
@@ -21,6 +23,11 @@ public class AITest {
 	ArrayList<Treasure> sampleTreasures = new ArrayList<Treasure>();
 	ConcurrentHashMap<String, Player> samplePlayers = new ConcurrentHashMap<String, Player>();
 
+	/**
+	 * Setup the data for the tests
+	 * 
+	 * @throws Exception
+	 */
 	@Before
 	public void setUp() throws Exception {
 
@@ -71,16 +78,20 @@ public class AITest {
 		samplePlayers.put("t4", sample);
 	}
 
+	/**
+	 * Reset the tests
+	 * 
+	 * @throws Exception
+	 */
 	@After
 	public void tearDown() throws Exception {
 		sampleTreasures = null;
+		samplePlayers = null;
 	}
 
-	@Test
-	public void test() {
-		fail("Not yet implemented");
-	}
-
+	/**
+	 * Test the function Helper.getClosestTreasure()
+	 */
 	@Test
 	public void testGetClosestTreasure() {
 		assertTrue(sampleTreasures.get(0).equals(Helper.getClosestTreasure(new Position(2, 2), sampleTreasures)));
@@ -90,6 +101,9 @@ public class AITest {
 		assertTrue(sampleTreasures.get(4).equals(Helper.getClosestTreasure(new Position(15, 20), sampleTreasures)));
 	}
 
+	/**
+	 * Test the function Helper.getClosestThief()
+	 */
 	@Test
 	public void testGetClosestThief() {
 		assertTrue(samplePlayers.get("t1")
@@ -102,19 +116,48 @@ public class AITest {
 				Helper.getClosestThief(new Position(70, 5), "", new ArrayList<Player>(samplePlayers.values()))));
 	}
 
+	/**
+	 * Test the function Helper.getNextWaypoint()
+	 */
 	@Test
 	public void testGetNextWaypoint() {
-
+		assertTrue(sampleTreasures.get(1).equals(Helper.getNextWayPoint(new Position(1, 0), sampleTreasures,
+				sampleTreasures.get(0).position, 0, new Random())));
+		assertTrue(sampleTreasures.get(3).equals(Helper.getNextWayPoint(new Position(30, 30), sampleTreasures,
+				sampleTreasures.get(4).position, 0, new Random())));
+		assertTrue(sampleTreasures.get(3).equals(Helper.getNextWayPoint(new Position(0, 15), sampleTreasures,
+				sampleTreasures.get(2).position, 0, new Random())));
 	}
 
+	/**
+	 * Test the function Helper.closestCorner()
+	 */
 	@Test
 	public void testClosestCorner() {
-
+		Obstacle obs = new Obstacle(20, 20, 50, 50);
+		try{
+		assertTrue(
+				(new Position(20, 20)).at(Helper.closestCorner(obs, new Position(10, 10), new Position(100, 100)), 1));
+		assertTrue(
+				(new Position(70, 70)).at(Helper.closestCorner(obs, new Position(60, 80), new Position(100, 100)), 1));
+		assertTrue((new Position(20, 70)).at(Helper.closestCorner(obs, new Position(0, 80), new Position(10, 75)), 1));
+		}catch(Exception ex){
+			System.out.println("Unexpected error occured");
+			assert(false);
+		}
 	}
 
+	/**
+	 * Test the function that gets the collision point on an obstacle
+	 */
 	@Test
 	public void testGetCollisionPoint() {
-
+		Obstacle obs = new Obstacle(20, 20, 50, 50);
+		assertTrue((new Position(20, 20)).at(Helper.getCollisionPoint(new Position(10, 10), obs), 0.1));
+		assertTrue((new Position(50, 20)).at(Helper.getCollisionPoint(new Position(50, 10), obs), 0.1));
+		assertTrue((new Position(70, 20)).at(Helper.getCollisionPoint(new Position(90, 10), obs), 0.1));
+		assertTrue((new Position(70, 60)).at(Helper.getCollisionPoint(new Position(90, 60), obs), 0.1));
+		assertTrue((new Position(50, 70)).at(Helper.getCollisionPoint(new Position(50, 90), obs), 0.1));
 	}
 
 }

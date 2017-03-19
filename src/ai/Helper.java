@@ -286,14 +286,17 @@ public class Helper {
 		if (p.x > o.bottomRight.x)
 			return new Position(o.bottomRight.x, p.y);
 		return p;
-
 	}
 
 	/**
-	 * Move the AI forward without allowing it to move through walls
+	 * Move the given player with the given speed without allowing them to pass through an obstacle
 	 * 
+	 * @param p
+	 *            The player to move
+	 * @param obstacles
+	 *            The obstacles in the arena
 	 * @param speed
-	 *            The speed the AI should move
+	 *            The speed that the player should move at
 	 */
 	public static void move(Player p, ArrayList<Obstacle> obstacles, double speed) {
 		boolean xFine = true;

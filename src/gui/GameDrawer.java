@@ -76,6 +76,10 @@ public class GameDrawer {
         clientFlashlightArc.setFill(Color.YELLOW);
 
         flashlightShapes.add(clientFlashlightArc);
+        
+        Rectangle exit = new Rectangle(10,50,Color.AQUAMARINE);
+        exit.setX(GameSettings.Arena.exit.x - exit.getX()/2);
+        exit.setY(GameSettings.Arena.exit.y - exit.getY()/2);
 
         // Make obstacle shapes
         ArrayList<Shape> obstacleShapes = new ArrayList<>();
@@ -111,11 +115,14 @@ public class GameDrawer {
         TextField text = new TextField(String.valueOf(main.player.battery));
         
         // Draw
+        pane.getChildren().add(exit);
         pane.getChildren().add(secHome);
         pane.getChildren().add(text);
         pane.getChildren().addAll(obstacleShapes);
         pane.getChildren().addAll(treasureShapes);
-    	pane.getChildren().addAll(flashlightShapes);
-        pane.getChildren().add(clientPlayerShape);
+    	if (main.player.state != PlayerState.ESCAPED && main.player.state != PlayerState.CAUGHT) {
+        	pane.getChildren().addAll(flashlightShapes);
+    		pane.getChildren().add(clientPlayerShape);
+    	}
     }
 }

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ProjectModuleManager">
-    <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/cmiyc_client.iml" filepath="$PROJECT_DIR$/.idea/cmiyc_client.iml" />
-      <module fileurl="file://$USER_HOME$/cmiyc_shared/.idea/cmiyc_shared.iml" filepath="$USER_HOME$/cmiyc_shared/.idea/cmiyc_shared.iml" />
-    </modules>
-  </component>
-</project>

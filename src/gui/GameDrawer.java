@@ -71,17 +71,18 @@ public class GameDrawer {
     	pane2.getChildren().clear();
         double w = width.get();
         double h = height.get();
-        double ratio = w/h;
-        this.scalingRatio = ratio/initialRatio;
-        if (scalingRatio == 1) scalingRatio = w/GraphicsSettings.initialPaneWidth;
-        else if (scalingRatio > 1) scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth/h);
-        else scalingRatio = (w/GraphicsSettings.initalPaneHeight) / initialRatio;
+        double wRatio = w/GraphicsSettings.initialPaneWidth;
+        double hRatio = h/GraphicsSettings.initalPaneHeight;
+        this.scalingRatio = Math.min(wRatio, hRatio);
 
         //System.out.println("width " + w + " height " + h);
 
         pane.setMaxSize(GraphicsSettings.initialPaneWidth * scalingRatio,
                 GraphicsSettings.initalPaneHeight * scalingRatio);
-        pane2.setMinSize(w, h);
+        pane2.setPrefSize(w, h);
+        wRatio = pane2.getWidth()/GraphicsSettings.initialPaneWidth;
+        hRatio = pane2.getHeight()/GraphicsSettings.initalPaneHeight;
+        this.scalingRatio = Math.min(wRatio, hRatio);
 
         // Make obstacle shapes
         ArrayList<Rectangle> obstacleRects = new ArrayList<>();
@@ -324,7 +325,7 @@ public class GameDrawer {
             }
         }
 
-        Shape outerArena = new Rectangle(0, 0, 840 *scalingRatio, 530* scalingRatio);
+        Shape outerArena = new Rectangle(0, 0, pane.getWidth(), pane.getHeight());
         Rectangle innerArena = new Rectangle(20* scalingRatio, 20* scalingRatio, 800* scalingRatio, 450* scalingRatio);
         outerArena.setFill(Colors.outerArena);
         innerArena.setFill(Colors.fog);

@@ -20,6 +20,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.stage.Stage;
 import launcher.Main;
 import util.Debug;
 import util.Maths;
@@ -48,10 +49,10 @@ public class GameLogic {
     private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
     private double scalingRatio;
     
-    private double border;
-    private BorderType borderType;
+    private double borderX;
+    private double borderY;
     
-    public GameLogic(Main client, Pane pane, StackPane pane2) {
+    public GameLogic(Main client, Pane pane, StackPane pane2, Stage stage) {
         this.client = client;
         this.pane = pane;
         this.faction = client.player.faction;
@@ -66,20 +67,12 @@ public class GameLogic {
         pane2.setOnMouseMoved(e -> {
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
-            switch (borderType) {
-            case WIDE:
-            	mouseX -= border;
-            	break;
-            case HIGH:
-            	mouseY -= border;
-            	break;
-            case NONE:
-            	break;
-            }
+            mouseX -= this.borderX;
+            mouseY -= this.borderY;
         });
         
-        this.border = 0;
-        this.borderType = BorderType.NONE;
+        this.borderX = 0;
+        this.borderY = 0;
         
         this.width = new SimpleDoubleProperty();
         this.width.bind(pane.widthProperty());
@@ -93,34 +86,16 @@ public class GameLogic {
         this.height2 = new SimpleDoubleProperty();
         this.height2.bind(pane2.heightProperty());
     }
-    
-    private enum BorderType {
-    	WIDE, HIGH, NONE;
-    }
 
     /**
      * Updates the game periodically
      */
     public void update() {
-    	double w = width.get();
-    	double h = height.get();
-    	double ratio = w/h;
-    	this.scalingRatio = ratio/initialRatio;
-    	if (scalingRatio == 1) scalingRatio = w/GraphicsSettings.initialPaneWidth;
-    	else if (scalingRatio > 1) scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth/h);
-    	else scalingRatio = (w/GraphicsSettings.initalPaneHeight) / initialRatio;
-    	if (width2.get() - w != 0) {
-    		border = (width2.get() - w)/2.0;
-    		borderType = BorderType.WIDE;
-    	}
-    	else if (height2.get() - h != 0) {
-    		border = (height2.get() - h)/2.0;
-    		borderType = BorderType.HIGH;
-    	}
-    	else {
-    		border = 0;
-    		borderType = BorderType.NONE;
-    	}
+    	double w = width2.get();
+    	double h = height2.get();
+    	scalingRatio = Math.min(w/GraphicsSettings.initialPaneWidth, h/GraphicsSettings.initalPaneHeight);
+    	borderX = (w - width.get())/2.0;
+    	borderY = (h - height.get())/2.0;
 		this.fullMap = new Rectangle(20, 20, 800, 450 ); // Must change this to
     	// inner arena size
     	this.walkableArea = this.fullMap;
@@ -157,6 +132,8 @@ public class GameLogic {
 
             if (walkableArea.contains(client.player.position.x, tempY)) 
             	client.player.position.y = tempY;
+            System.out.println(mouseX + " " + mouseY);
+    		System.out.println((client.player.position.x * scalingRatio) + " " + (scalingRatio * client.player.position.y));
         }
         if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S)) {
             double tempX = client.player.position.x,

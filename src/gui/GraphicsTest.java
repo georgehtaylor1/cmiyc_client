@@ -58,7 +58,7 @@ public class GraphicsTest extends Application {
         Pane pane2 = new Pane();
         pane.getChildren().add(pane2);
 
-        GameLogic logic = new GameLogic(main, pane2, pane);
+        GameLogic logic = new GameLogic(main, pane2, pane, stage);
         GameDrawer drawer = new GameDrawer(main, pane, stage, pane2);
 
         Scene scene = new Scene(pane);

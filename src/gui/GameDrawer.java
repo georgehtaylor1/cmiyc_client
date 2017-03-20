@@ -11,12 +11,12 @@ import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
 import gui.util.FxUtils;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
@@ -37,6 +37,7 @@ import launcher.Main;
 public class GameDrawer {
 
     private Main main;
+    private StackPane pane2;
     private Pane pane;
 
     private DoubleProperty width;
@@ -48,7 +49,8 @@ public class GameDrawer {
      * Constructs a new GameDrawer. Default graphics settings are set on the
      * Pane.
      */
-    public GameDrawer(Main main, Pane pane, Stage stage) {
+    public GameDrawer(Main main, StackPane pane2, Stage stage, Pane pane) {
+        this.pane2 = pane2;
         this.pane = pane;
         this.main = main;
         pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black) + ";");
@@ -66,6 +68,7 @@ public class GameDrawer {
      * Draws the current state of the game to the Pane.
      */
     public void draw() {
+    	pane2.getChildren().clear();
         double w = width.get();
         double h = height.get();
         double ratio = w/h;
@@ -74,10 +77,11 @@ public class GameDrawer {
         else if (scalingRatio > 1) scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth/h);
         else scalingRatio = (w/GraphicsSettings.initalPaneHeight) / initialRatio;
 
-        System.out.println("width " + w + " height " + h);
+        //System.out.println("width " + w + " height " + h);
 
-        pane.setPrefSize(GraphicsSettings.initialPaneWidth * scalingRatio,
+        pane.setMaxSize(GraphicsSettings.initialPaneWidth * scalingRatio,
                 GraphicsSettings.initalPaneHeight * scalingRatio);
+        pane2.setMinSize(w, h);
 
         // Make obstacle shapes
         ArrayList<Rectangle> obstacleRects = new ArrayList<>();
@@ -352,6 +356,7 @@ public class GameDrawer {
 
         TextField battery = new TextField("Battery : " + String.valueOf(main.player.battery));
         pane.getChildren().add(battery);
+        pane2.getChildren().add(pane);
     }
 
     /**

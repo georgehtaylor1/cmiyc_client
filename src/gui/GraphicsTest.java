@@ -9,11 +9,10 @@ import game.Treasure;
 import game.util.Position;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import launcher.Main;
 import logic.GameLogic;
@@ -55,10 +54,12 @@ public class GraphicsTest extends Application {
 
         main.gameData.cameras.add(new Camera(500, 300, 270, 50));
 
-        Pane pane = new Pane();
+        StackPane pane = new StackPane();
+        Pane pane2 = new Pane();
+        pane.getChildren().add(pane2);
 
-        GameLogic logic = new GameLogic(main, pane);
-        GameDrawer drawer = new GameDrawer(main, pane, stage);
+        GameLogic logic = new GameLogic(main, pane2, pane);
+        GameDrawer drawer = new GameDrawer(main, pane, stage, pane2);
 
         Scene scene = new Scene(pane);
        

@@ -3,7 +3,6 @@ package logic;
 import java.util.HashMap;
 import java.util.Map;
 
-import constants.Colors;
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
@@ -18,6 +17,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import launcher.Main;
@@ -43,31 +43,59 @@ public class GameLogic {
     
     private DoubleProperty width;
     private DoubleProperty height;
+    private DoubleProperty width2;
+    private DoubleProperty height2;
     private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
     private double scalingRatio;
     
-    public GameLogic(Main client, Pane pane) {
+    private double border;
+    private BorderType borderType;
+    
+    public GameLogic(Main client, Pane pane, StackPane pane2) {
         this.client = client;
         this.pane = pane;
         this.faction = client.player.faction;
         // Adds listeners
-        pane.requestFocus();
-        pane.setOnKeyPressed(e -> {
+        //pane.requestFocus();
+        pane2.setOnKeyPressed(e -> {
             keys.put(e.getCode(), true);
         });
-        pane.setOnKeyReleased(e -> {
+        pane2.setOnKeyReleased(e -> {
             keys.put(e.getCode(), false);
         });
-        pane.setOnMouseMoved(e -> {
+        pane2.setOnMouseMoved(e -> {
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
+            switch (borderType) {
+            case WIDE:
+            	mouseX -= border;
+            	break;
+            case HIGH:
+            	mouseY -= border;
+            	break;
+            case NONE:
+            	break;
+            }
         });
+        
+        this.border = 0;
+        this.borderType = BorderType.NONE;
         
         this.width = new SimpleDoubleProperty();
         this.width.bind(pane.widthProperty());
         
         this.height = new SimpleDoubleProperty();
         this.height.bind(pane.heightProperty());
+        
+        this.width2 = new SimpleDoubleProperty();
+        this.width2.bind(pane2.widthProperty());
+        
+        this.height2 = new SimpleDoubleProperty();
+        this.height2.bind(pane2.heightProperty());
+    }
+    
+    private enum BorderType {
+    	WIDE, HIGH, NONE;
     }
 
     /**
@@ -81,7 +109,18 @@ public class GameLogic {
     	if (scalingRatio == 1) scalingRatio = w/GraphicsSettings.initialPaneWidth;
     	else if (scalingRatio > 1) scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth/h);
     	else scalingRatio = (w/GraphicsSettings.initalPaneHeight) / initialRatio;
-
+    	if (width2.get() - w != 0) {
+    		border = (width2.get() - w)/2.0;
+    		borderType = BorderType.WIDE;
+    	}
+    	else if (height2.get() - h != 0) {
+    		border = (height2.get() - h)/2.0;
+    		borderType = BorderType.HIGH;
+    	}
+    	else {
+    		border = 0;
+    		borderType = BorderType.NONE;
+    	}
 		this.fullMap = new Rectangle(20, 20, 800, 450 ); // Must change this to
     	// inner arena size
     	this.walkableArea = this.fullMap;

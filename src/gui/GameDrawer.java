@@ -81,12 +81,12 @@ public class GameDrawer {
 		double offsetW = 0, offsetH = 0;
 		Rectangle outerArena = new Rectangle(0, 0, 840 * scalingRatio, 530 * scalingRatio);
 		double outerArenaW = outerArena.getWidth();
-		
+		double outerArenaH = outerArena.getHeight();
 		// Offset centering
 		if (ratio > initialRatio) {
 			offsetW = calcScreenOffset(w, outerArenaW);
 		} else {
-			offsetH = calcScreenOffset(GraphicsSettings.initalPaneHeight, h);
+			offsetH = calcScreenOffset(h, outerArenaH);
 		}
 		outerArena.setX(0 + offsetW);
 		
@@ -444,7 +444,6 @@ public class GameDrawer {
 	 */
 	private double calcScreenOffset(double original, double after) {
 		double result = (original/2 - after/2);
-		System.out.println(result);
 		return result;
 	}
 }

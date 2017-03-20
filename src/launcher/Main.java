@@ -295,47 +295,28 @@ public class Main extends Application {
         StackPane base = new StackPane();
         Scene scene = new Scene(base);
         
-        // SlideScreen slideScreen = new SlideScreen();
-        // primaryStage.initStyle(StageStyle.UNDECORATED);
         WelcomeScreen welcomeScreen = new WelcomeScreen();
+        
+        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+        	welcomeScreen.setAnchor(newValue.doubleValue());
+        });
+        this.gameData.treasures.add(new Treasure(450,450));
+        this.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
+        
+        GameScreen gameScreen = new GameScreen(this, base);
+        SlideScreen slideScreen = new SlideScreen(gameScreen);
 
+        gameScreen.requestFocus();
+        this.gameData.players.put(this.player.clientID, this.player);
+        base.getChildren().addAll(gameScreen, slideScreen);
+        
         primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         primaryStage.setFullScreen(true);
         primaryStage.setScene(scene);
         primaryStage.show();
         
-        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
-        	welcomeScreen.setAnchor(newValue.doubleValue());
-        });
-
-        this.gameData.treasures.add(new Treasure(450,450));
-        this.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
-        
-        
-        GameScreen gameScreen = new GameScreen(this, base);
-        SlideScreen slideScreen = new SlideScreen(gameScreen);
-        gameScreen.requestFocus();
-        //base.setCenter(gameScreen);
-        this.gameData.players.put(this.player.clientID, this.player);
-        base.getChildren().addAll(gameScreen, slideScreen);
-
-        /*
-        base.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
-        	double x = e.getSceneX();
-        	double y = e.getSceneY();
-        	if (x <= gameScreen.getWidth() && y <= gameScreen.getHeight() - 40) {
-        		if (!slideScreen.getSlide()) {
-        			base.getChildren().clear();
-        			base.getChildren().addAll(slideScreen, gameScreen);
-        		} else {
-        		}
-        	} else {
-        		base.getChildren().clear();
-        		base.getChildren().addAll(gameScreen, slideScreen);
-        	}
-        });
-        gameScreen.setOnKeyPressed(e -> System.out.println("typing"));
-        */
+        gameScreen.gameScreen.setPrefWidth(gameScreen.getWidth());
+        gameScreen.gameScreen.setPrefHeight(gameScreen.getHeight() - 40);
     }
 
 }

@@ -21,7 +21,7 @@ import logic.GameLoop;
  */
 public class GameScreen extends AnchorPane{
 
-    private BorderPane gameScreen;
+    public BorderPane gameScreen;
     private ToolBar gameControls;
     private GameLogic logic;
     private GameDrawer drawer;
@@ -65,13 +65,13 @@ public class GameScreen extends AnchorPane{
         this.setPrefHeight(GameSettings.Arena.outerSize.getWidth());
         this.getChildren().addAll(gameScreen, gameControls);
 
-        gameScreen.setPrefWidth(1000);
-        gameScreen.setPrefHeight(900-40);
+        gameScreen.setPrefWidth(1900);
+        gameScreen.setPrefHeight(1000);
 
         System.out.println(gameScreen.getHeight());
-//        AnchorPane.setBottomAnchor(gameControls, 0.0);
-//        AnchorPane.setRightAnchor(gameControls, 0.0);
-//        AnchorPane.setLeftAnchor(gameControls, 0.0);
+        AnchorPane.setBottomAnchor(gameControls, 0.0);
+        AnchorPane.setRightAnchor(gameControls, 0.0);
+        AnchorPane.setLeftAnchor(gameControls, 0.0);
 //        AnchorPane.setTopAnchor(gameScreen, 40.0);
 //        AnchorPane.setLeftAnchor(gameScreen, 40.0);
 //        AnchorPane.setRightAnchor(gameScreen, 40.0);

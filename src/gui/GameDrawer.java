@@ -15,7 +15,6 @@ import game.constants.GameSettings;
 import game.states.TreasureState;
 
 import gui.util.FxUtils;
-import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
@@ -53,9 +52,9 @@ public class GameDrawer {
 	public GameDrawer(Main main, Pane pane) {
 		this.pane = pane;
 		this.main = main;
-		pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black) + ";");
+		pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Color.GREY) + ";");
 		pane.setPrefSize(GraphicsSettings.initialPaneWidth, GraphicsSettings.initalPaneHeight);
-
+		
 		this.width = new SimpleDoubleProperty();
 		this.width.bind(pane.widthProperty());
 
@@ -67,6 +66,7 @@ public class GameDrawer {
 	 * Draws the current state of the game to the Pane.
 	 */
 	public void draw() {
+		// Scaling 
 		double w = width.get();
 		double h = height.get();
 		double ratio = w / h;
@@ -78,15 +78,24 @@ public class GameDrawer {
 		else
 			scalingRatio = (w / GraphicsSettings.initalPaneHeight) / initialRatio;
 
-		pane.setPrefSize(GraphicsSettings.initialPaneWidth * scalingRatio,
-				GraphicsSettings.initalPaneHeight * scalingRatio);
-
+		double offsetW = 0, offsetH = 0;
+		Rectangle outerArena = new Rectangle(0, 0, 840 * scalingRatio, 530 * scalingRatio);
+		double outerArenaW = outerArena.getWidth();
+		
+		// Offset centering
+		if (ratio > initialRatio) {
+			offsetW = calcScreenOffset(w, outerArenaW);
+		} else {
+			offsetH = calcScreenOffset(GraphicsSettings.initalPaneHeight, h);
+		}
+		outerArena.setX(0 + offsetW);
+		
 		// Make obstacle shapes
 		ArrayList<Rectangle> obstacleRects = new ArrayList<>();
 		for (Obstacle o : main.gameData.obstacles) {
 			Rectangle r = new Rectangle(o.width * scalingRatio, o.height * scalingRatio);
-			r.setX(o.topLeft.x * scalingRatio);
-			r.setY(o.topLeft.y * scalingRatio);
+			r.setX(o.topLeft.x * scalingRatio + offsetW);
+			r.setY(o.topLeft.y * scalingRatio + offsetH);
 			obstacleRects.add(r);
 		}
 
@@ -347,8 +356,11 @@ public class GameDrawer {
 			}
 		}
 
-		Shape outerArena = new Rectangle(0, 0, 840 * scalingRatio, 530 * scalingRatio);
-		Rectangle innerArena = new Rectangle(20 * scalingRatio, 20 * scalingRatio, 800 * scalingRatio,
+
+		
+		//pane.setPrefSize(outerArena.getWidth(), outerArena.getHeight());
+		
+		Rectangle innerArena = new Rectangle(20 * scalingRatio + offsetW, 20 * scalingRatio + offsetH, 800 * scalingRatio,
 				450 * scalingRatio);
 		outerArena.setFill(Colors.outerArena);
 		innerArena.setFill(Colors.fog);
@@ -422,5 +434,17 @@ public class GameDrawer {
 		double y4 = originY + v4y;
 
 		return new Polygon(edge.getStartX(), edge.getStartY(), edge.getEndX(), edge.getEndY(), x3, y3, x4, y4);
+	}
+	
+	/**
+	 * Method to get the offset of the graphics
+	 * @param original
+	 * @param after
+	 * @return offset
+	 */
+	private double calcScreenOffset(double original, double after) {
+		double result = (original/2 - after/2);
+		System.out.println(result);
+		return result;
 	}
 }

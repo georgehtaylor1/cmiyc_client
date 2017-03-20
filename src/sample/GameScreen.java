@@ -1,26 +1,26 @@
 package sample;
 
+import java.io.IOException;
+
 import ai.handler.Handler;
-import game.Obstacle;
 import gui.GameDrawer;
 import javafx.scene.Scene;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import launcher.Main;
 import logic.GameLogic;
 import logic.GameLoop;
-
-import java.io.IOException;
 
 /**
  * Created by Gerta on 24/02/2017.
  */
 public class GameScreen extends AnchorPane{
 
-    private BorderPane gameScreen;
+    private StackPane gameScreen;
     private ToolBar gameControls;
     private GameLogic logic;
     private GameDrawer drawer;
@@ -31,7 +31,7 @@ public class GameScreen extends AnchorPane{
     private Stage stage;
 
     public GameScreen(Main _main, Pane base) throws IOException {
-        this.gameScreen = new BorderPane();
+        this.gameScreen = new StackPane();
         this.gameControls = new ToolBar();
         this.launcherMain = _main;
         this.base = base;
@@ -57,15 +57,12 @@ public class GameScreen extends AnchorPane{
 
     public void drawScene() {
 
-        this.getStylesheets().add("styles/welcomeLayer.css");
+        this.getStylesheets().add("welcomeLayer.css");
 
         gameControls.setPrefHeight(40);
         this.setPrefWidth(Constants.ScreenWidth);
         this.setPrefHeight(Constants.ScreenHeight);
         this.getChildren().addAll(gameScreen, gameControls);
-
-        gameScreen.setPrefWidth(500);
-        gameScreen.setPrefHeight(300);
 
         AnchorPane.setBottomAnchor(gameControls, 0.0);
         AnchorPane.setRightAnchor(gameControls, 0.0);
@@ -74,7 +71,7 @@ public class GameScreen extends AnchorPane{
         AnchorPane.setLeftAnchor(gameScreen, 40.0);
         AnchorPane.setRightAnchor(gameScreen, 40.0);
 
-        this.getStylesheets().add("styles/gameLayer.css");
+        this.getStylesheets().add("gameLayer.css");
         this.setId("gameLayer");
         gameScreen.setId("gameScreen");
         gameControls.setId("gameControls");

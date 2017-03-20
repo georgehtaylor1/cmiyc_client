@@ -311,14 +311,15 @@ public class Main extends Application {
         this.gameData.treasures.add(new Treasure(450,450));
         this.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
         
-        /**
-        GameScreen gameScreen = new GameScreen(this, base, primaryStage);
-        SlideScreen slideScreen = new SlideScreen(gameScreen, primaryStage);
+        
+        GameScreen gameScreen = new GameScreen(this, base);
+        SlideScreen slideScreen = new SlideScreen(gameScreen);
         gameScreen.requestFocus();
         //base.setCenter(gameScreen);
         this.gameData.players.put(this.player.clientID, this.player);
         base.getChildren().addAll(gameScreen, slideScreen);
 
+        /*
         base.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
         	double x = e.getSceneX();
         	double y = e.getSceneY();

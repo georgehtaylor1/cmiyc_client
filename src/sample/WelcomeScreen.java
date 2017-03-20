@@ -1,5 +1,6 @@
 package sample;
 
+import game.constants.GameSettings;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;

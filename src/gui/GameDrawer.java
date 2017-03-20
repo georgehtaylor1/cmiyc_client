@@ -3,9 +3,7 @@ package gui;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import constants.Colors;
-
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
@@ -13,7 +11,6 @@ import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
 import game.states.TreasureState;
-
 import gui.util.FxUtils;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
@@ -21,6 +18,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.RadialGradient;
@@ -32,6 +30,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.stage.Stage;
 import launcher.Main;
 
 /**
@@ -39,49 +38,57 @@ import launcher.Main;
  */
 public class GameDrawer {
 
-	private Main main;
-	private Pane pane;
+    private Main main;
+    private StackPane pane2;
+    private Pane pane;
 
-	private DoubleProperty width;
-	private DoubleProperty height;
-	private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
-	private double scalingRatio;
+    private DoubleProperty width;
+    private DoubleProperty height;
+    private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
+    private double scalingRatio;
+		final double arcAngle = (GameSettings.Security.lightArcPercentage / 100.0) * 360;
+		final double cameraBoxLength = 10 * scalingRatio;
+  
+    /**
+     * Constructs a new GameDrawer. Default graphics settings are set on the
+     * Pane.
+     */
+    public GameDrawer(Main main, StackPane pane2, Stage stage, Pane pane) {
+        this.pane2 = pane2;
+        this.pane = pane;
+        this.main = main;
+        pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black) + ";");
+        pane.setPrefSize(GraphicsSettings.initialPaneWidth,
+                GraphicsSettings.initalPaneHeight);
 
-	/**
-	 * Constructs a new GameDrawer. Default graphics settings are set on the Pane.
-	 */
-	public GameDrawer(Main main, Pane pane) {
-		this.pane = pane;
-		this.main = main;
-		pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black) + ";");
-		pane.setPrefSize(GraphicsSettings.initialPaneWidth, GraphicsSettings.initalPaneHeight);
+        this.width = new SimpleDoubleProperty();
+        this.width.bind(stage.widthProperty());
 
-		this.width = new SimpleDoubleProperty();
-		this.width.bind(pane.widthProperty());
+        this.height = new SimpleDoubleProperty();
+        this.height.bind(stage.heightProperty());
+    }
+  
+    /**
+     * Draws the current state of the game to the Pane.
+     */
+    public void draw() {
+    	pane2.getChildren().clear();
+      double w = width.get();
+        double h = height.get();
+        double wRatio = w/GraphicsSettings.initialPaneWidth;
+        double hRatio = h/GraphicsSettings.initalPaneHeight;
+        this.scalingRatio = Math.min(wRatio, hRatio);
 
-		this.height = new SimpleDoubleProperty();
-		this.height.bind(pane.heightProperty());
-	}
+        //System.out.println("width " + w + " height " + h);
 
-	/**
-	 * Draws the current state of the game to the Pane.
-	 */
-	public void draw() {
-		double w = width.get();
-		double h = height.get();
-		double ratio = w / h;
-		this.scalingRatio = ratio / initialRatio;
-		if (scalingRatio == 1)
-			scalingRatio = w / GraphicsSettings.initialPaneWidth;
-		else if (scalingRatio > 1)
-			scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth / h);
-		else
-			scalingRatio = (w / GraphicsSettings.initalPaneHeight) / initialRatio;
-
-		pane.setPrefSize(GraphicsSettings.initialPaneWidth * scalingRatio,
-				GraphicsSettings.initalPaneHeight * scalingRatio);
-
-		// Make obstacle shapes
+        pane.setMaxSize(GraphicsSettings.initialPaneWidth * scalingRatio,
+                GraphicsSettings.initalPaneHeight * scalingRatio);
+        pane2.setPrefSize(w, h);
+        wRatio = pane2.getWidth()/GraphicsSettings.initialPaneWidth;
+        hRatio = pane2.getHeight()/GraphicsSettings.initalPaneHeight;
+        this.scalingRatio = Math.min(wRatio, hRatio);
+    
+      // Make obstacle shapes
 		ArrayList<Rectangle> obstacleRects = new ArrayList<>();
 		for (Obstacle o : main.gameData.obstacles) {
 			Rectangle r = new Rectangle(o.width * scalingRatio, o.height * scalingRatio);
@@ -387,6 +394,7 @@ public class GameDrawer {
 
 		TextField battery = new TextField("Battery : " + String.valueOf(main.player.battery));
 		pane.getChildren().add(battery);
+    pane2.getChildren().add(pane);
 	}
 
 	/**

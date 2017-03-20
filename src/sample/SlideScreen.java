@@ -58,7 +58,6 @@ public class SlideScreen extends AnchorPane {
         this.toggleButton1vs2 = new ToggleButton("1vs2");
         this.toggleButton2vs3 = new ToggleButton("2vs3");
         this.group = new ToggleGroup();
-
         this.security = new ToggleButton("Security");
         this.thief = new ToggleButton("Thief");
         this.group2 = new ToggleGroup();
@@ -66,7 +65,7 @@ public class SlideScreen extends AnchorPane {
         this.launcherMain = new Main();
         this.pane = new Pane();
         this.gameLogic = new GameLogic(launcherMain, pane);
-        this.gameDrawer = new GameDrawer(launcherMain, pane);
+        this.gameDrawer = new GameDrawer(launcherMain, pane, stage);
         this.gameScreen = gameScreen;
         this.drawScene();
     }
@@ -100,7 +99,6 @@ public class SlideScreen extends AnchorPane {
         together.setBottom(vBox2);
         slider.getChildren().addAll(together);
 
-
         AnchorPane.setBottomAnchor(toolBar, 0.0);
         AnchorPane.setRightAnchor(toolBar, 0.0);
         AnchorPane.setLeftAnchor(toolBar, 0.0);
@@ -114,6 +112,7 @@ public class SlideScreen extends AnchorPane {
         AnchorPane.setRightAnchor(together, 0.0);
 
         toolBar.setPrefWidth(Constants.ScreenWidth);
+        //toolBar.setPrefWidth(GameSettings.Arena.size.getWidth());
         slider.setId("slider");
         this.setId("sliderLayer");
         toolBar.setId("toolbar");
@@ -126,12 +125,10 @@ public class SlideScreen extends AnchorPane {
         toggleButton2vs3.setId("2vs3");
         security.setId("security");
         thief.setId("thief");
-
-
+      
         security.setToggleGroup(group2);
         security.setSelected(true);
         thief.setToggleGroup(group2);
-
         username.setEditable(true);
 
 
@@ -177,7 +174,7 @@ public class SlideScreen extends AnchorPane {
         toggleButton1vs2.setSelected(true);
         toggleButton2vs3.setToggleGroup(group);
     }
-
+  
     public void slideIn(){
         sliderTranslation.setRate(-1);
         sliderTranslation.play();

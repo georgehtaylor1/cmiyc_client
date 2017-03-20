@@ -1,0 +1,19 @@
+#gameLayer {
+    -fx-background-color: #404040 ;
+    -fx-pref-width: 920;
+    -fx-pref-height: 600;
+
+}
+
+#gameScreen {
+    -fx-background-color: #808080;
+    -fx-pref-height: 490;
+    -fx-pref-width: 840;
+
+}
+
+
+#gameControls {
+    -fx-background-color: #606060;
+    -fx-alignment: center-right;
+}

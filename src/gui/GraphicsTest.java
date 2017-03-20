@@ -14,6 +14,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import launcher.Main;
 import logic.GameLogic;
@@ -40,7 +41,7 @@ public class GraphicsTest extends Application {
         main.gameData.treasures.add(new Treasure(390, 400));
 
         Handler h = new Handler(main.gameData);
-        //h.addPlayers(0, 1);
+        h.addPlayers(0, 1);
         h.start();
 
         Player tom = new Player("tom");
@@ -57,8 +58,14 @@ public class GraphicsTest extends Application {
 
         Pane pane = new Pane();
 
-        GameLogic logic = new GameLogic(main, pane);
-        GameDrawer drawer = new GameDrawer(main, pane);
+        main.gameData.cameras.add(new Camera(500, 300, 270, 50));
+
+        StackPane pane = new StackPane();
+        Pane pane2 = new Pane();
+        pane.getChildren().add(pane2);
+
+        GameLogic logic = new GameLogic(main, pane2, pane, stage);
+        GameDrawer drawer = new GameDrawer(main, pane, stage, pane2);
 
         Scene scene = new Scene(pane);
        

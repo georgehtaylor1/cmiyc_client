@@ -18,8 +18,10 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.stage.Stage;
 import launcher.Main;
 import util.Debug;
 import util.Maths;
@@ -43,49 +45,59 @@ public class GameLogic {
     
     private DoubleProperty width;
     private DoubleProperty height;
+    private DoubleProperty width2;
+    private DoubleProperty height2;
     private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
     private double scalingRatio;
     
-    public GameLogic(Main client, Pane pane) {
+    private double borderX;
+    private double borderY;
+    
+    public GameLogic(Main client, Pane pane, StackPane pane2, Stage stage) {
         this.client = client;
         this.pane = pane;
         this.faction = client.player.faction;
         // Adds listeners
-        pane.requestFocus();
-        pane.setOnKeyPressed(e -> {
+        //pane.requestFocus();
+        pane2.setOnKeyPressed(e -> {
             keys.put(e.getCode(), true);
         });
-        pane.setOnKeyReleased(e -> {
+        pane2.setOnKeyReleased(e -> {
             keys.put(e.getCode(), false);
         });
-        pane.setOnMouseMoved(e -> {
+        pane2.setOnMouseMoved(e -> {
             mouseX = e.getSceneX();
             mouseY = e.getSceneY();
+            mouseX -= this.borderX;
+            mouseY -= this.borderY;
         });
+        
+        this.borderX = 0;
+        this.borderY = 0;
         
         this.width = new SimpleDoubleProperty();
         this.width.bind(pane.widthProperty());
         
         this.height = new SimpleDoubleProperty();
         this.height.bind(pane.heightProperty());
+        
+        this.width2 = new SimpleDoubleProperty();
+        this.width2.bind(pane2.widthProperty());
+        
+        this.height2 = new SimpleDoubleProperty();
+        this.height2.bind(pane2.heightProperty());
     }
 
     /**
      * Updates the game periodically
      */
-    public void update() {    	
-    	double w = width.get();
-		double h = height.get();
-		double ratio = w / h;
-		this.scalingRatio = ratio / initialRatio;
-		if (scalingRatio == 1)
-			scalingRatio = w / GraphicsSettings.initialPaneWidth;
-		else if (scalingRatio > 1)
-			scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth / h);
-		else
-			scalingRatio = (w / GraphicsSettings.initalPaneHeight) / initialRatio;
-
-    	this.fullMap = new Rectangle(20, 20, 800, 450 ); // Must change this to
+    public void update() {
+    	double w = width2.get();
+    	double h = height2.get();
+    	scalingRatio = Math.min(w/GraphicsSettings.initialPaneWidth, h/GraphicsSettings.initalPaneHeight);
+    	borderX = (w - width.get())/2.0;
+    	borderY = (h - height.get())/2.0;
+		this.fullMap = new Rectangle(20, 20, 800, 450 ); // Must change this to
     	// inner arena size
     	this.walkableArea = this.fullMap;
     	this.chargingArea = new Rectangle(20 ,20 ,50 ,50 ); // FIXME: This is still hardcoded. The security's charging area
@@ -225,7 +237,7 @@ public class GameLogic {
     
     /**
      * Method to collect treasure for thief if in range
-     * @param t to be removed
+     * @param treasure to be removed
      */
     public void collectTreasure(Treasure treasure) {
     	if (treasure != null) {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$USER_HOME$/cmiyc_shared-master/cmiyc_shared.iml" filepath="$USER_HOME$/cmiyc_shared-master/cmiyc_shared.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fxgui.iml" filepath="$PROJECT_DIR$/fxgui.iml" />
+    </modules>
+  </component>
+</project>

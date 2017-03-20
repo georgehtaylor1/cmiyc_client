@@ -1,0 +1,15 @@
+#welcomeLayer {
+    -fx-background-color: #404040 ;
+    -fx-pref-width: 920;
+    -fx-pref-height: 600;
+}
+
+#welcomeScreen {
+    -fx-background-color: #404040;
+}
+
+
+#welcomeControls {
+    -fx-background-color: #606060;
+    -fx-alignment: center-right;
+}

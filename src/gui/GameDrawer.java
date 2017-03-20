@@ -15,8 +15,11 @@ import game.constants.GameSettings;
 import game.states.TreasureState;
 
 import gui.util.FxUtils;
-
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -29,7 +32,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-
 import launcher.Main;
 
 /**
@@ -40,6 +42,11 @@ public class GameDrawer {
     private Main main;
     private Pane pane;
 
+    private DoubleProperty width;
+    private DoubleProperty height;
+    private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
+    private double scalingRatio;
+    
     /**
      * Constructs a new GameDrawer. Default graphics settings are set on the
      * Pane.
@@ -47,30 +54,48 @@ public class GameDrawer {
     public GameDrawer(Main main, Pane pane) {
         this.pane = pane;
         this.main = main;
-        pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black)
-                + ";");
+        pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Colors.black) + ";");
         pane.setPrefSize(GraphicsSettings.initialPaneWidth,
                 GraphicsSettings.initalPaneHeight);
+        
+        this.width = new SimpleDoubleProperty();
+        this.width.bind(pane.widthProperty());
+        
+        this.height = new SimpleDoubleProperty();
+        this.height.bind(pane.heightProperty());
     }
 
     /**
      * Draws the current state of the game to the Pane.
      */
     public void draw() {
+    	double w = width.get();
+    	double h = height.get();
+    	double ratio = w/h;
+    	this.scalingRatio = ratio/initialRatio;
+    	if (scalingRatio == 1) scalingRatio = w/GraphicsSettings.initialPaneWidth;
+    	else if (scalingRatio > 1) scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth/h);
+    	else scalingRatio = (w/GraphicsSettings.initalPaneHeight) / initialRatio;
 
+    	pane.setPrefSize(GraphicsSettings.initialPaneWidth * scalingRatio,
+                 GraphicsSettings.initalPaneHeight * scalingRatio);
+        
         // Make obstacle shapes
         ArrayList<Rectangle> obstacleRects = new ArrayList<>();
         for (Obstacle o : main.gameData.obstacles) {
-            Rectangle r = new Rectangle(o.width, o.height);
-            r.setX(o.topLeft.x);
-            r.setY(o.topLeft.y);
+            Rectangle r = new Rectangle(o.width * scalingRatio, o.height * scalingRatio);
+            r.setX(o.topLeft.x * scalingRatio);
+            r.setY(o.topLeft.y * scalingRatio);
             obstacleRects.add(r);
         }
 
         // Make treasure shapes
         ArrayList<TreasureShape> treasureShapes = new ArrayList<>();
         for (Treasure t : main.gameData.treasures) {
-            treasureShapes.add(new TreasureShape(t));
+            Circle c = new Circle(GameSettings.Treasure.radius * scalingRatio);
+            c.setCenterX(t.position.x * scalingRatio);
+            c.setCenterY(t.position.y * scalingRatio);
+            treasureShapes.add(c);
         }
 
         final double arcAngle =
@@ -109,24 +134,24 @@ public class GameDrawer {
                 .entrySet()) {
 
             Player player = entry.getValue();
-            Circle c = new Circle(player.position.x, player.position.y,
-                    GameSettings.Player.radius);
+            Circle c = new Circle(player.position.x * scalingRatio, player.position.y * scalingRatio,
+                    GameSettings.Player.radius * scalingRatio);
 
             // Vision
             if (player.faction == Faction.SECURITY) {
                 // Security
-                Arc light = new Arc(player.position.x, player.position.y,
-                        GameSettings.Security.lightRadius,
-                        GameSettings.Security.lightRadius,
-                        -Math.toDegrees(player.direction) - arcAngle / 2.0,
+                Arc light = new Arc(player.position.x * scalingRatio, player.position.y * scalingRatio,
+                        GameSettings.Security.lightRadius * scalingRatio,
+                        GameSettings.Security.lightRadius * scalingRatio,
+                        -Math.toDegrees(player.direction) - arcAngle / 2,
                         arcAngle);
                 light.setType(ArcType.ROUND);
                 securityLightShapes.add(new CenteredShape(light));
             } else {
                 // Thief
-                Circle vision = new Circle(GameSettings.Thief.visionRadius);
-                vision.setCenterX(player.position.x);
-                vision.setCenterY(player.position.y);
+                Circle vision = new Circle(GameSettings.Thief.visionRadius * scalingRatio);
+                vision.setCenterX(player.position.x * scalingRatio);
+                vision.setCenterY(player.position.y * scalingRatio);
                 thiefVisionShapes.add(new CenteredShape(vision));
             }
 
@@ -173,7 +198,7 @@ public class GameDrawer {
             }
 
             RadialGradient lightGrad = makeRadialGradient(light.getCenterX(),
-                    light.getCenterY(), GameSettings.Security.lightRadius,
+                    light.getCenterY(), GameSettings.Security.lightRadius * scalingRatio,
                     Colors.flashlight, Color.TRANSPARENT);
 
             occLight.shape.setFill(lightGrad);
@@ -194,7 +219,7 @@ public class GameDrawer {
             }
 
             RadialGradient visionGrad = makeRadialGradient(vision.getCenterX(),
-                    vision.getCenterY(), GameSettings.Thief.visionRadius,
+                    vision.getCenterY(), GameSettings.Thief.visionRadius * scalingRatio,
                     Colors.thiefVision, Color.TRANSPARENT);
 
             occVision.shape.setFill(visionGrad);
@@ -227,7 +252,7 @@ public class GameDrawer {
 
                     RadialGradient obstacleGrad = makeRadialGradient(
                             light.getCenterX(), light.getCenterY(),
-                            GameSettings.Security.lightRadius, Color.WHITE,
+                            GameSettings.Security.lightRadius * scalingRatio, Color.WHITE,
                             Color.TRANSPARENT);
 
                     occObstacle.setFill(obstacleGrad);
@@ -240,10 +265,10 @@ public class GameDrawer {
                         Shape occTreasure =
                                 Shape.intersect(t.circle, light.shape);
 
-                        RadialGradient treasureGrad = makeRadialGradient(
-                                light.getCenterX(), light.getCenterY(),
-                                GameSettings.Security.lightRadius,
-                                Colors.treasure, Color.TRANSPARENT);
+                    RadialGradient treasureGrad = makeRadialGradient(
+                            light.getCenterX(), light.getCenterY(),
+                            GameSettings.Security.lightRadius * scalingRatio, Colors.treasure,
+                            Color.TRANSPARENT);
 
                         occTreasure.setFill(treasureGrad);
                         occTreasureShapes.add(occTreasure);
@@ -256,7 +281,7 @@ public class GameDrawer {
 
                     RadialGradient enemyGrad = makeRadialGradient(
                             light.getCenterX(), light.getCenterY(),
-                            GameSettings.Security.lightRadius, Color.RED,
+                            GameSettings.Security.lightRadius * scalingRatio, Color.RED,
                             Color.TRANSPARENT);
 
                     occEnemy.setFill(enemyGrad);
@@ -287,7 +312,7 @@ public class GameDrawer {
 
                     RadialGradient lightGrad = makeRadialGradient(
                             light.getCenterX(), light.getCenterY(),
-                            GameSettings.Security.lightRadius,
+                            GameSettings.Security.lightRadius * scalingRatio,
                             Colors.flashlight, Color.TRANSPARENT);
 
                     occLight.setFill(lightGrad);
@@ -307,7 +332,7 @@ public class GameDrawer {
 
                     RadialGradient obstacleGrad = makeRadialGradient(
                             vision.getCenterX(), vision.getCenterY(),
-                            GameSettings.Thief.visionRadius, Color.WHITE,
+                            GameSettings.Thief.visionRadius * scalingRatio, Color.WHITE,
                             Color.TRANSPARENT);
 
                     occObstacle.setFill(obstacleGrad);
@@ -336,8 +361,8 @@ public class GameDrawer {
 
                     RadialGradient lightGrad = makeRadialGradient(
                             vision.getCenterX(), vision.getCenterY(),
-                            GameSettings.Security.lightRadius,
-                            Colors.flashlight, Color.TRANSPARENT);
+                            GameSettings.Thief.visionRadius * scalingRatio, Colors.treasure,
+                            Color.TRANSPARENT);
 
                     occCamera.setFill(lightGrad);
                     occCameraShapes.add(occCamera);
@@ -349,7 +374,7 @@ public class GameDrawer {
 
                     RadialGradient enemyGrad = makeRadialGradient(
                             vision.getCenterX(), vision.getCenterY(),
-                            GameSettings.Security.lightRadius, Color.RED,
+                            GameSettings.Security.lightRadius * scalingRatio, Color.RED,
                             Color.TRANSPARENT);
 
                     occEnemy.setFill(enemyGrad);
@@ -358,8 +383,8 @@ public class GameDrawer {
             }
         }
 
-        Shape outerArena = new Rectangle(0, 0, 840, 530);
-        Rectangle innerArena = new Rectangle(20, 20, 800, 450);
+        Shape outerArena = new Rectangle(0, 0, 840 *scalingRatio, 530* scalingRatio);
+        Rectangle innerArena = new Rectangle(20* scalingRatio, 20* scalingRatio, 800* scalingRatio, 450* scalingRatio);
         outerArena.setFill(Colors.outerArena);
         innerArena.setFill(Colors.fog);
 
@@ -394,6 +419,9 @@ public class GameDrawer {
         }
 
         ch.addAll(allyShapes);
+
+        TextField battery = new TextField("Battery : " + String.valueOf(main.player.battery));
+        pane.getChildren().add(battery);
     }
 
     /**

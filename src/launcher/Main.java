@@ -1,33 +1,39 @@
 package launcher;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Event;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import javax.swing.JFrame;
-
 import com.ClientReceiver;
 import com.ClientSender;
 
 import constants.Commands.Action;
-
 import game.Faction;
 import game.GameData;
 import game.GameMode;
+import game.Obstacle;
 import game.Player;
-import game.constants.GameSettings;
-
-
+import game.Treasure;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import sample.GameScreen;
+import sample.SlideScreen;
+import sample.WelcomeScreen;
 import states.ClientState;
-
 import util.Transferable;
 
 @SuppressWarnings("serial")
-public class Main extends JFrame {
+public class Main extends Application {
+
+    public Main m;
 
     public String id;
     public String username;
@@ -100,11 +106,11 @@ public class Main extends JFrame {
         inputs[1] = splits[1];
         inputs[2] = this.gui.userInput.getText();
     	*/
-    	String[] inputs = {"localhost","1234","Unknown"};
+        String[] inputs = {"localhost","1234","Unknown"};
         return inputs;
     }
 
-    private void useInputs(String[] _inputs) {
+    public void useInputs(String[] _inputs) {
 
         String host = _inputs[0];
         String port = _inputs[1];
@@ -113,12 +119,13 @@ public class Main extends JFrame {
         this.port = (this.validPort(port)) ? Integer.parseInt(port) : this.port;
         this.host = host;
         this.username = username;
+        connect();
 
     }
 
     private void connect() {
 
-        this.useInputs(this.getInputs());
+        System.out.println("connecting to " + this.host);
 
         Socket socket;
 
@@ -281,6 +288,53 @@ public class Main extends JFrame {
 
     public static void main(String _arguments[]) {
         new Main();
+        launch(_arguments);
+    }
+
+    public void start(Stage primaryStage) throws Exception{
+        StackPane base = new StackPane();
+        Scene scene = new Scene(base);
+        
+        // SlideScreen slideScreen = new SlideScreen();
+        // primaryStage.initStyle(StageStyle.UNDECORATED);
+        WelcomeScreen welcomeScreen = new WelcomeScreen();
+
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        primaryStage.setFullScreen(true);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+        	welcomeScreen.setAnchor(newValue.doubleValue());
+        });
+
+        this.gameData.treasures.add(new Treasure(450,450));
+        this.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
+        
+        /**
+        GameScreen gameScreen = new GameScreen(this, base, primaryStage);
+        SlideScreen slideScreen = new SlideScreen(gameScreen, primaryStage);
+        gameScreen.requestFocus();
+        //base.setCenter(gameScreen);
+        this.gameData.players.put(this.player.clientID, this.player);
+        base.getChildren().addAll(gameScreen, slideScreen);
+
+        base.addEventFilter(MouseEvent.MOUSE_MOVED, e -> {
+        	double x = e.getSceneX();
+        	double y = e.getSceneY();
+        	if (x <= gameScreen.getWidth() && y <= gameScreen.getHeight() - 40) {
+        		if (!slideScreen.getSlide()) {
+        			base.getChildren().clear();
+        			base.getChildren().addAll(slideScreen, gameScreen);
+        		} else {
+        		}
+        	} else {
+        		base.getChildren().clear();
+        		base.getChildren().addAll(gameScreen, slideScreen);
+        	}
+        });
+        gameScreen.setOnKeyPressed(e -> System.out.println("typing"));
+        */
     }
 
 }

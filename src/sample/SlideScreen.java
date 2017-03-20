@@ -82,8 +82,8 @@ public class SlideScreen extends AnchorPane {
 
 
     public void drawScene() {
-        slider.getStylesheets().add("slider.css");
-        this.getStylesheets().add("sliderLayer.css");
+        slider.getStylesheets().add("styles/slider.css");
+        this.getStylesheets().add("styles/sliderLayer.css");
 
         toolBar.setPrefHeight(40);
         this.setPrefWidth(Constants.ScreenWidth);

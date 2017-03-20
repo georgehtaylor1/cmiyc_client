@@ -39,19 +39,21 @@ import launcher.Main;
 public class GameDrawer {
 
 	private Main main;
-	private GameView pane;
+	private Pane pane;
 
 	private DoubleProperty width;
 	private DoubleProperty height;
 	private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
 	private double scalingRatio;
+	private OffsetHolder offsetHolder;
 
 	/**
 	 * Constructs a new GameDrawer. Default graphics settings are set on the Pane.
 	 */
-	public GameDrawer(Main main, GameView pane) {
+	public GameDrawer(Main main, Pane pane, OffsetHolder offsetHolder) {
 		this.pane = pane;
 		this.main = main;
+		this.offsetHolder = offsetHolder;
 		pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Color.GREY) + ";");
 		pane.setPrefSize(GraphicsSettings.initialPaneWidth, GraphicsSettings.initalPaneHeight);
 		
@@ -77,33 +79,33 @@ public class GameDrawer {
 			scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth / h);
 		else
 			scalingRatio = (w / GraphicsSettings.initalPaneHeight) / initialRatio;
-
+		offsetHolder.scaling = scalingRatio;
 		Rectangle outerArena = new Rectangle(0, 0, 840 * scalingRatio, 530 * scalingRatio);
 		
 		double outerArenaW = outerArena.getWidth();
 		double outerArenaH = outerArena.getHeight();
 		// Offset centering based on outerArena
 		if (ratio > initialRatio) {
-			pane.offsetW = calcScreenOffset(w, outerArenaW);
+			offsetHolder.offsetW = calcScreenOffset(w, outerArenaW);
 		} else {
-			pane.offsetH = calcScreenOffset(h, outerArenaH);
+			offsetHolder.offsetH = calcScreenOffset(h, outerArenaH);
 		}
-		outerArena.setX(0 + pane.offsetW);
-		outerArena.setY(0 + pane.offsetH);
+		outerArena.setX(0 + offsetHolder.offsetW);
+		outerArena.setY(0 + offsetHolder.offsetH);
 		
 		// Make obstacle shapes
 		ArrayList<Rectangle> obstacleRects = new ArrayList<>();
 		for (Obstacle o : main.gameData.obstacles) {
 			Rectangle r = new Rectangle(o.width * scalingRatio, o.height * scalingRatio);
-			r.setX(o.topLeft.x * scalingRatio + pane.offsetW);
-			r.setY(o.topLeft.y * scalingRatio + pane.offsetH);
+			r.setX(o.topLeft.x * scalingRatio + offsetHolder.offsetW);
+			r.setY(o.topLeft.y * scalingRatio + offsetHolder.offsetH);
 			obstacleRects.add(r);
 		}
 
 		// Make treasure shapes
 		ArrayList<TreasureShape> treasureShapes = new ArrayList<>();
 		for (Treasure t : main.gameData.treasures) {
-			treasureShapes.add(new TreasureShape(t, scalingRatio, pane.offsetW, pane.offsetH));
+			treasureShapes.add(new TreasureShape(t, scalingRatio, offsetHolder.offsetW, offsetHolder.offsetH));
 		}
 
 		final double arcAngle = (GameSettings.Security.lightArcPercentage / 100.0) * 360;
@@ -115,15 +117,15 @@ public class GameDrawer {
 		for (Camera c : main.gameData.cameras) {
 
 			Rectangle box = new Rectangle(cameraBoxLength, cameraBoxLength);
-			box.setX( (c.position.x * scalingRatio - cameraBoxLength / 2.0 ) + pane.offsetW);
-			box.setY( (c.position.y * scalingRatio - cameraBoxLength / 2.0 ) + pane.offsetH);
+			box.setX( (c.position.x * scalingRatio - cameraBoxLength / 2.0 ) + offsetHolder.offsetW);
+			box.setY( (c.position.y * scalingRatio - cameraBoxLength / 2.0 ) + offsetHolder.offsetH);
 			box.setRotate(-Math.toDegrees(c.direction));
 
 			box.setStroke(Color.WHITE);
 			box.setStrokeWidth(2);
 			cameraShapes.add(box);
 
-			Arc cameraLight = new Arc(c.position.x * scalingRatio + pane.offsetW, c.position.y * scalingRatio + pane.offsetH, GameSettings.Security.lightRadius * scalingRatio,
+			Arc cameraLight = new Arc(c.position.x * scalingRatio + offsetHolder.offsetW, c.position.y * scalingRatio + offsetHolder.offsetH, GameSettings.Security.lightRadius * scalingRatio,
 					GameSettings.Security.lightRadius * scalingRatio, Math.toDegrees(c.direction) - arcAngle / 2.0, arcAngle);
 			cameraLight.setType(ArcType.ROUND);
 
@@ -138,13 +140,13 @@ public class GameDrawer {
 		for (Map.Entry<String, Player> entry : main.gameData.players.entrySet()) {
 
 			Player player = entry.getValue();
-			Circle c = new Circle(player.position.x * scalingRatio + pane.offsetW, player.position.y * scalingRatio + pane.offsetH,
+			Circle c = new Circle(player.position.x * scalingRatio + offsetHolder.offsetW, player.position.y * scalingRatio + offsetHolder.offsetH,
 					GameSettings.Player.radius * scalingRatio);
 
 			// Vision
 			if (player.faction == Faction.SECURITY) {
 				// Security
-				Arc light = new Arc(player.position.x * scalingRatio + pane.offsetW, player.position.y * scalingRatio + pane.offsetH,
+				Arc light = new Arc(player.position.x * scalingRatio + offsetHolder.offsetW, player.position.y * scalingRatio + offsetHolder.offsetH,
 						GameSettings.Security.lightRadius * scalingRatio,
 						GameSettings.Security.lightRadius * scalingRatio,
 						-Math.toDegrees(player.direction) - arcAngle / 2, arcAngle);
@@ -153,8 +155,8 @@ public class GameDrawer {
 			} else {
 				// Thief
 				Circle vision = new Circle(GameSettings.Thief.visionRadius * scalingRatio);
-				vision.setCenterX(player.position.x * scalingRatio + pane.offsetW);
-				vision.setCenterY(player.position.y * scalingRatio + pane.offsetH);
+				vision.setCenterX(player.position.x * scalingRatio + offsetHolder.offsetW);
+				vision.setCenterY(player.position.y * scalingRatio + offsetHolder.offsetH);
 				thiefVisionShapes.add(new CenteredShape(vision));
 			}
 
@@ -361,7 +363,7 @@ public class GameDrawer {
 		
 		//pane.setPrefSize(outerArena.getWidth(), outerArena.getHeight());
 		
-		Rectangle innerArena = new Rectangle(20 * scalingRatio + pane.offsetW, 20 * scalingRatio + pane.offsetH, 800 * scalingRatio,
+		Rectangle innerArena = new Rectangle(20 * scalingRatio + offsetHolder.offsetW, 20 * scalingRatio + offsetHolder.offsetH, 800 * scalingRatio,
 				450 * scalingRatio);
 		outerArena.setFill(Colors.outerArena);
 		innerArena.setFill(Colors.fog);

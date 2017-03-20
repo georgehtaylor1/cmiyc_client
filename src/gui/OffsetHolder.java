@@ -1,8 +1,6 @@
 package gui;
 
-import javafx.scene.layout.Pane;
-
-public class GameView extends Pane {
+public class OffsetHolder {
 	public double offsetW = 0, offsetH = 0;
 	public double scaling = 1;
 	

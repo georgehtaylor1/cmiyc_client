@@ -5,7 +5,7 @@ import java.io.IOException;
 import ai.handler.Handler;
 import game.constants.GameSettings;
 import gui.GameDrawer;
-import gui.GameView;
+import gui.OffsetHolder;
 import javafx.scene.Scene;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
@@ -26,7 +26,7 @@ public class GameScreen extends AnchorPane{
     private GameLogic logic;
     private GameDrawer drawer;
     private Main launcherMain;
-    public GameView pane;
+    public Pane pane;
     public Pane base;
     private Scene scene;
     private Stage stage;
@@ -40,10 +40,12 @@ public class GameScreen extends AnchorPane{
     }
 
     public void drawGame() {
-        pane = new GameView();
+        pane = new Pane();
+        OffsetHolder offsetHolder = new OffsetHolder();
         
-        logic = new GameLogic(launcherMain, pane);
-        drawer = new GameDrawer(launcherMain, pane);
+        
+        logic = new GameLogic(launcherMain, base, offsetHolder);
+        drawer = new GameDrawer(launcherMain, pane, offsetHolder);
 
         
         Handler h = new Handler(launcherMain.gameData);

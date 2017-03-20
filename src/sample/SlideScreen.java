@@ -3,7 +3,7 @@ package sample;
 import java.io.IOException;
 
 import gui.GameDrawer;
-import gui.GameView;
+import gui.OffsetHolder;
 import javafx.animation.TranslateTransition;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -14,6 +14,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -41,7 +42,7 @@ public class SlideScreen extends AnchorPane {
     private ToggleButton security;
     private ToggleButton thief;
     private ToggleGroup group2;
-    private GameView pane;
+    private Pane pane;
     private GameLogic gameLogic;
     private GameDrawer gameDrawer;
     private Main launcherMain;
@@ -68,11 +69,13 @@ public class SlideScreen extends AnchorPane {
         this.security = new ToggleButton("Security");
         this.thief = new ToggleButton("Thief");
         this.group2 = new ToggleGroup();
+        
+        OffsetHolder offsetHolder = new OffsetHolder();
 
         this.launcherMain = new Main();
-        this.pane = new GameView();
-        this.gameLogic = new GameLogic(launcherMain, pane);
-        this.gameDrawer = new GameDrawer(launcherMain, pane);
+        this.pane = new Pane();
+        this.gameLogic = new GameLogic(launcherMain, pane, offsetHolder);
+        this.gameDrawer = new GameDrawer(launcherMain, pane, offsetHolder);
         this.gameScreen = gameScreen;
         this.drawScene();
     }

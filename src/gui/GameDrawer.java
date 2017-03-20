@@ -93,14 +93,11 @@ public class GameDrawer {
 		// Make treasure shapes
 		ArrayList<TreasureShape> treasureShapes = new ArrayList<>();
 		for (Treasure t : main.gameData.treasures) {
-			//Circle c = new Circle(GameSettings.Treasure.radius * scalingRatio);
-			//c.setCenterX(t.position.x * scalingRatio);
-			//c.setCenterY(t.position.y * scalingRatio);
-			treasureShapes.add(new TreasureShape(t));
+			treasureShapes.add(new TreasureShape(t, scalingRatio));
 		}
 
 		final double arcAngle = (GameSettings.Security.lightArcPercentage / 100.0) * 360;
-		final double cameraBoxLength = 10;
+		final double cameraBoxLength = 10 * scalingRatio;
 
 		// Make camera shapes
 		ArrayList<Rectangle> cameraShapes = new ArrayList<>();
@@ -108,16 +105,16 @@ public class GameDrawer {
 		for (Camera c : main.gameData.cameras) {
 
 			Rectangle box = new Rectangle(cameraBoxLength, cameraBoxLength);
-			box.setX(c.position.x - cameraBoxLength / 2.0);
-			box.setY(c.position.y - cameraBoxLength / 2.0);
+			box.setX(c.position.x * scalingRatio - cameraBoxLength / 2.0);
+			box.setY(c.position.y * scalingRatio - cameraBoxLength / 2.0);
 			box.setRotate(-Math.toDegrees(c.direction));
 
 			box.setStroke(Color.WHITE);
 			box.setStrokeWidth(2);
 			cameraShapes.add(box);
 
-			Arc cameraLight = new Arc(c.position.x, c.position.y, GameSettings.Security.lightRadius,
-					GameSettings.Security.lightRadius, Math.toDegrees(c.direction) - arcAngle / 2.0, arcAngle);
+			Arc cameraLight = new Arc(c.position.x * scalingRatio, c.position.y * scalingRatio, GameSettings.Security.lightRadius * scalingRatio,
+					GameSettings.Security.lightRadius * scalingRatio, Math.toDegrees(c.direction) - arcAngle / 2.0, arcAngle);
 			cameraLight.setType(ArcType.ROUND);
 
 			securityLightShapes.add(new CenteredShape(cameraLight));

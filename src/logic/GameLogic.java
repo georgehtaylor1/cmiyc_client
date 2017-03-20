@@ -73,15 +73,18 @@ public class GameLogic {
     /**
      * Updates the game periodically
      */
-    public void update() {
+    public void update() {    	
     	double w = width.get();
-    	double h = height.get();
-    	double ratio = w/h;
-    	this.scalingRatio = ratio/initialRatio;
-    	if (scalingRatio == 1) scalingRatio = w/GraphicsSettings.initialPaneWidth;
-    	else if (scalingRatio > 1) scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth/h);
-    	else scalingRatio = (w/GraphicsSettings.initalPaneHeight) / initialRatio;
-    	
+		double h = height.get();
+		double ratio = w / h;
+		this.scalingRatio = ratio / initialRatio;
+		if (scalingRatio == 1)
+			scalingRatio = w / GraphicsSettings.initialPaneWidth;
+		else if (scalingRatio > 1)
+			scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth / h);
+		else
+			scalingRatio = (w / GraphicsSettings.initalPaneHeight) / initialRatio;
+
     	this.fullMap = new Rectangle(20, 20, 800, 450 ); // Must change this to
     	// inner arena size
     	this.walkableArea = this.fullMap;

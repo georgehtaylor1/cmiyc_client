@@ -1,0 +1,29 @@
+#sliderLayer {
+    -fx-background-color: transparent;
+    -fx-pref-width: 500;
+    -fx-spacing: 5;
+}
+
+#toolbar {
+    -fx-background-color: #606060;
+    -fx-alignment: center-right;
+}
+
+
+#mainButton {
+    -fx-background-color: #3CB371;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #404040;
+    -fx-pref-height: 30;
+    -fx-pref-width: 248;
+    -fx-text-fill: white;
+}
+
+#sliderLayer .button:hover {
+    -fx-background-color: #606060;
+    -fx-border-color: #404040;
+    -fx-border-radius: 8px;
+}
+
+

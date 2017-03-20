@@ -1,0 +1,14 @@
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button ?><?import javafx.scene.layout.HBox?><?import javafx.scene.layout.VBox?>>
+
+<GridPane fx:controller="sample.Controllers.GameScreenController"
+          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+    <Canvas width="500" height="400" id="canvas">
+
+    </Canvas>
+
+    <VBox>
+
+    </VBox>
+</GridPane>

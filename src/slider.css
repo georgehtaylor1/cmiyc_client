@@ -1,0 +1,110 @@
+#slider {
+    -fx-background-color: #202020;
+    -fx-padding: 5.5;
+
+}
+
+#username {
+    -fx-background-color: #202020;
+    -fx-border-color: #000000;
+    -fx-pref-width: 294;
+    -fx-pref-height: 30;
+    -fx-text-fill: white;
+}
+
+#host {
+    -fx-background-color: #202020;
+    -fx-border-color: #000000;
+    -fx-pref-width: 294;
+    -fx-pref-height: 30;
+    -fx-text-fill: white;
+}
+
+#connect {
+    -fx-background-color: #3CB371;
+    -fx-pref-width: 300;
+    -fx-text-fill: white;
+}
+
+/*#cancel {
+    -fx-pref-height: 10;
+    -fx-pref-width: 300;
+    -fx-background-color: #CC0000;
+    -fx-text-fill: white;
+}*/
+
+#1vs2 {
+    -fx-background-color: #404040;
+    -fx-text-fill: white;
+    -fx-pref-height: 30;
+    -fx-pref-width: 147;
+
+}
+
+#1vs2:selected {
+    -fx-background-color: #000000;
+    -fx-text-fill: white;
+    -fx-pref-width: 147;
+}
+
+#1vs2:hover {
+    -fx-background-color: #606060;
+}
+
+#2vs3 {
+    -fx-background-color: #404040;
+    -fx-text-fill: white;
+    -fx-pref-height: 30;
+    -fx-pref-width: 147;
+}
+
+#2vs3:selected {
+    -fx-background-color: #000000;
+    -fx-text-fill: white;
+    -fx-pref-width: 147;
+}
+
+#2vs3:hover {
+    -fx-background-color: #606060;
+}
+
+#security {
+    -fx-background-color: #404040;
+    -fx-text-fill: white;
+    -fx-pref-width: 147;
+    -fx-pref-height: 30;
+}
+
+#security:selected {
+    -fx-background-color: #000000;
+    -fx-text-fill: white;
+    -fx-pref-width: 147;
+}
+
+
+#security:hover {
+    -fx-background-color: #606060;
+}
+
+#thief {
+    -fx-background-color: #404040;
+    -fx-text-fill: white;
+    -fx-pref-width: 147;
+    -fx-pref-height: 30;
+}
+
+#thief:selected {
+    -fx-background-color: #000000;
+    -fx-text-fill: white;
+    -fx-pref-width: 147;
+}
+
+#thief:hover {
+    -fx-background-color: #606060;
+}
+
+
+#slider .button:hover {
+    -fx-background-color: #606060;
+}
+

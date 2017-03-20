@@ -5,12 +5,12 @@ import java.io.IOException;
 import ai.handler.Handler;
 import game.constants.GameSettings;
 import gui.GameDrawer;
+import gui.GameView;
 import javafx.scene.Scene;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import launcher.Main;
 import logic.GameLogic;
@@ -26,7 +26,7 @@ public class GameScreen extends AnchorPane{
     private GameLogic logic;
     private GameDrawer drawer;
     private Main launcherMain;
-    public Pane pane;
+    public GameView pane;
     public Pane base;
     private Scene scene;
     private Stage stage;
@@ -40,8 +40,9 @@ public class GameScreen extends AnchorPane{
     }
 
     public void drawGame() {
-        pane = new Pane();
-        logic = new GameLogic(launcherMain, base);
+        pane = new GameView();
+        
+        logic = new GameLogic(launcherMain, pane);
         drawer = new GameDrawer(launcherMain, pane);
 
         

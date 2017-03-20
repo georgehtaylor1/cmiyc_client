@@ -3,7 +3,6 @@ package logic;
 import java.util.HashMap;
 import java.util.Map;
 
-import constants.Colors;
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
@@ -13,9 +12,11 @@ import game.constants.GameSettings;
 import game.states.PlayerState;
 import game.states.TreasureState;
 import game.util.Position;
+import gui.GameView;
 import gui.GraphicsSettings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
@@ -32,21 +33,24 @@ public class GameLogic {
     private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
 
     private Main client;
-    private Pane pane;
+    private GameView pane;
     private Faction faction; // Client's faction
     private double mouseX;
     private double mouseY;
     
+    private Scene scene;
     private Rectangle fullMap;
     private Shape walkableArea;
     private Rectangle chargingArea;
     
     private DoubleProperty width;
     private DoubleProperty height;
+    private double xMargin;
+    private double yMargin;
     private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
     private double scalingRatio;
     
-    public GameLogic(Main client, Pane pane) {
+    public GameLogic(Main client, GameView pane) {
         this.client = client;
         this.pane = pane;
         this.faction = client.player.faction;
@@ -73,7 +77,8 @@ public class GameLogic {
     /**
      * Updates the game periodically
      */
-    public void update() {    	
+    public void update() {
+    	
     	double w = width.get();
 		double h = height.get();
 		double ratio = w / h;

@@ -317,6 +317,8 @@ public class Main extends Application {
         
         gameScreen.gameScreen.setPrefWidth(gameScreen.getWidth());
         gameScreen.gameScreen.setPrefHeight(gameScreen.getHeight() - 40);
+        
+        slideScreen.setPickOnBounds(false);
     }
 
 }

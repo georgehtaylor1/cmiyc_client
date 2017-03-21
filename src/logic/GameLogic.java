@@ -146,6 +146,7 @@ public class GameLogic {
 		                                 // concurrentModificationException.
 		                System.out.println("Score! Add: " + tempT.value);
 		                client.gameData.thiefScore += tempT.value;
+		                client.player.treasureScore += tempT.value;
 		                client.gameData.treasures.remove(tempT); // So we remove it here
 		                HashMap<Key, Object> map = new HashMap<Key, Object>();
 		                map.put(Key.TREASURE_ID, tempT.id);
@@ -202,7 +203,7 @@ public class GameLogic {
         	double tempX = client.player.position.x;
         	double tempY = client.player.position.y;
         	if (this.secHome.contains(tempX,tempY)) {
-        		if (client.player.battery < 1) {
+        		if (client.player.battery < GameSettings.Security.fullBattery) {
 	        		client.player.battery += (GameSettings.Security.chargeValue);
 	        		if (client.player.state == PlayerState.STUCK)
 	    				client.player.state = PlayerState.NORMAL;
@@ -213,8 +214,8 @@ public class GameLogic {
         	else {
 	        	if (client.player.state == PlayerState.NORMAL) {
 	        		client.player.battery -= (GameSettings.Security.drainValue);
-	        		if (client.player.battery <= 0) {
-	        			client.player.battery = 0;
+	        		if (client.player.battery <= GameSettings.Security.noBattery) {
+	        			client.player.battery = GameSettings.Security.noBattery;
 	        			client.player.state = PlayerState.STUCK;
 	        		}
 	        	}

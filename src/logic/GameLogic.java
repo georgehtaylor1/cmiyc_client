@@ -3,7 +3,6 @@ package logic;
 import java.util.HashMap;
 import java.util.Map;
 
-import constants.Colors;
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
@@ -14,8 +13,10 @@ import game.states.PlayerState;
 import game.states.TreasureState;
 import game.util.Position;
 import gui.GraphicsSettings;
+import gui.OffsetHolder;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
@@ -37,18 +38,23 @@ public class GameLogic {
     private double mouseX;
     private double mouseY;
     
+    private Scene scene;
     private Rectangle fullMap;
     private Shape walkableArea;
     private Rectangle chargingArea;
+    private OffsetHolder offsetHolder;
     
     private DoubleProperty width;
     private DoubleProperty height;
+    private double xMargin;
+    private double yMargin;
     private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
     private double scalingRatio;
     
-    public GameLogic(Main client, Pane pane) {
+    public GameLogic(Main client, Pane pane, OffsetHolder offsetHolder) {
         this.client = client;
         this.pane = pane;
+        this.offsetHolder = offsetHolder;
         this.faction = client.player.faction;
         // Adds listeners
         pane.requestFocus();
@@ -73,18 +79,12 @@ public class GameLogic {
     /**
      * Updates the game periodically
      */
-    public void update() {    	
+    public void update() {
+    	
     	double w = width.get();
 		double h = height.get();
 		double ratio = w / h;
-		this.scalingRatio = ratio / initialRatio;
-		if (scalingRatio == 1)
-			scalingRatio = w / GraphicsSettings.initialPaneWidth;
-		else if (scalingRatio > 1)
-			scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth / h);
-		else
-			scalingRatio = (w / GraphicsSettings.initalPaneHeight) / initialRatio;
-
+		this.scalingRatio = offsetHolder.scaling;
     	this.fullMap = new Rectangle(20, 20, 800, 450 ); // Must change this to
     	// inner arena size
     	this.walkableArea = this.fullMap;
@@ -99,15 +99,15 @@ public class GameLogic {
     	}
     	
     	// First we find the angle from the mouse to the player
-        double angle = Maths.angle(client.player.position.x * scalingRatio,
-                client.player.position.y * scalingRatio, mouseX, mouseY);
+        double angle = Maths.angle(client.player.position.x * scalingRatio + offsetHolder.offsetW,
+                client.player.position.y * scalingRatio + offsetHolder.offsetH, mouseX, mouseY);
         client.player.direction = Maths.normalizeAngle(angle); // Updates client's direction
                                          // (currently in radians)
 
      // Movement
         if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)) {
-        	if (Math.pow(client.player.position.x  * scalingRatio - mouseX, 2) 
-        			+ Math.pow(client.player.position.y  * scalingRatio - mouseY, 2) 
+        	if (Math.pow(client.player.position.x  * scalingRatio + offsetHolder.offsetW - mouseX, 2) 
+        			+ Math.pow(client.player.position.y  * scalingRatio + offsetHolder.offsetH - mouseY, 2) 
         			<= Math.pow(GameSettings.Player.radius * scalingRatio, 2)) {
         		return; // This prevents spinning about mouse
         	}

@@ -1,18 +1,25 @@
 package sample;
 
-import game.constants.GameSettings;
+import java.io.IOException;
+
 import gui.GameDrawer;
+import gui.OffsetHolder;
 import javafx.animation.TranslateTransition;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import logic.GameLogic;
-import logic.GameLoop;
 import launcher.Main;
-
-import java.io.IOException;
+import logic.GameLogic;
 
 /**
  * Created by Gerta on 24/02/2017.
@@ -62,11 +69,13 @@ public class SlideScreen extends AnchorPane {
         this.security = new ToggleButton("Security");
         this.thief = new ToggleButton("Thief");
         this.group2 = new ToggleGroup();
+        
+        OffsetHolder offsetHolder = new OffsetHolder();
 
         this.launcherMain = new Main();
         this.pane = new Pane();
-        this.gameLogic = new GameLogic(launcherMain, pane);
-        this.gameDrawer = new GameDrawer(launcherMain, pane);
+        this.gameLogic = new GameLogic(launcherMain, pane, offsetHolder);
+        this.gameDrawer = new GameDrawer(launcherMain, pane, offsetHolder);
         this.gameScreen = gameScreen;
         this.drawScene();
     }

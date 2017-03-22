@@ -69,24 +69,28 @@ public class GameDrawer {
 		// Scaling 
 		double w = width.get();
 		double h = height.get();
-		double ratio = w / h;
+		w = w/GraphicsSettings.initialPaneWidth;
+		h = h/GraphicsSettings.initalPaneHeight;
+		scalingRatio = w/h;
+		/**double ratio = w / h;
 		this.scalingRatio = ratio / initialRatio;
 		if (scalingRatio == 1)
 			scalingRatio = w / GraphicsSettings.initialPaneWidth;
 		else if (scalingRatio > 1)
 			scalingRatio = initialRatio / (GraphicsSettings.initialPaneWidth / h);
 		else
-			scalingRatio = (w / GraphicsSettings.initalPaneHeight) / initialRatio;
+			scalingRatio = (w / GraphicsSettings.initalPaneHeight) / initialRatio;*/
 		offsetHolder.scaling = scalingRatio;
 		Rectangle outerArena = new Rectangle(0, 0, 840 * scalingRatio, 530 * scalingRatio);
 		
 		double outerArenaW = outerArena.getWidth();
 		double outerArenaH = outerArena.getHeight();
 		// Offset centering based on outerArena
-		if (ratio > initialRatio) {
-			offsetHolder.offsetW = calcScreenOffset(w, outerArenaW);
-		} else {
-			offsetHolder.offsetH = calcScreenOffset(h, outerArenaH);
+		if (w > 1) {
+			offsetHolder.offsetW = calcScreenOffset(width.get(), outerArenaW);
+		}
+		if (h > 1) {
+			offsetHolder.offsetH = calcScreenOffset(height.get(), outerArenaH);
 		}
 		outerArena.setX(0 + offsetHolder.offsetW);
 		outerArena.setY(0 + offsetHolder.offsetH);

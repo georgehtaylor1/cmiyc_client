@@ -63,8 +63,8 @@ public class GameScreen extends AnchorPane{
         this.setPrefHeight(GameSettings.Arena.outerSize.getWidth());
         this.getChildren().addAll(gameScreen, gameControls);
 
-        gameScreen.setPrefWidth(1900);
-        gameScreen.setPrefHeight(1000);
+        gameScreen.setPrefWidth(this.getWidth());
+        gameScreen.setPrefHeight(this.getHeight());
 
         System.out.println(gameScreen.getHeight());
         AnchorPane.setBottomAnchor(gameControls, 0.0);

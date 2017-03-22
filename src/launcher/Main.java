@@ -1,38 +1,19 @@
 package launcher;
 
-import java.awt.Event;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.UUID;
 
-import com.ClientReceiver;
-import com.ClientSender;
-
-import constants.Commands.Action;
-import game.Faction;
-import game.GameData;
-import game.GameMode;
-import game.Obstacle;
-import game.Player;
-import game.Treasure;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import sample.GameScreen;
 import sample.SlideScreen;
 import sample.WelcomeScreen;
-import states.ClientState;
 import util.Client;
 import util.Debug;
-import util.Transferable;
 
-@SuppressWarnings( "serial" )
 public class Main extends Application {
 
 	public Client client;
@@ -90,32 +71,19 @@ public class Main extends Application {
 
 	public void start( Stage primaryStage ) throws Exception {
 		StackPane base = new StackPane();
-		Scene scene = new Scene( base );
+        Scene scene = new Scene(base);
+        SlideScreen slideScreen = new SlideScreen(this);
+        WelcomeScreen welcomeScreen = new WelcomeScreen();
 
-		WelcomeScreen welcomeScreen = new WelcomeScreen();
+        GameScreen gameScreen = new GameScreen();
+        base.getChildren().addAll(gameScreen, welcomeScreen, slideScreen);
 
-		primaryStage.widthProperty().addListener( ( observable, oldValue, newValue ) -> {
-			welcomeScreen.setAnchor( newValue.doubleValue() );
-		} );
-		this.client.gameData.treasures.add( new Treasure( 450, 450 ) );
-		this.client.gameData.obstacles.add( new Obstacle( 400, 340, 120, 80 ) );
+        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            welcomeScreen.setAnchor(newValue.doubleValue());
+        });
 
-		GameScreen gameScreen = new GameScreen( this, base );
-		SlideScreen slideScreen = new SlideScreen( gameScreen );
-
-		gameScreen.requestFocus();
-		this.client.gameData.players.put( this.client.player.clientID, this.client.player );
-		base.getChildren().addAll( gameScreen, slideScreen );
-
-		primaryStage.setFullScreenExitKeyCombination( KeyCombination.NO_MATCH );
-		primaryStage.setFullScreen( true );
-		primaryStage.setScene( scene );
-		primaryStage.show();
-
-		gameScreen.gameScreen.setPrefWidth( gameScreen.getWidth() );
-		gameScreen.gameScreen.setPrefHeight( gameScreen.getHeight() - 40 );
-
-		slideScreen.setPickOnBounds( false );
+        primaryStage.setScene(scene);
+        primaryStage.show();
 	}
 
 }

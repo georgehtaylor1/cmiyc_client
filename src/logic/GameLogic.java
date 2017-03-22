@@ -35,14 +35,14 @@ public class GameLogic {
 
     public GameLogic(Main client, Pane pane) {
         this.client = client;
-        this.faction = client.player.faction;
+        this.faction = client.client.player.faction;
         this.fullMap = new Rectangle(0, 0, 800, 450); // Must change this to
                                                       // inner arena size
         this.walkableArea = this.fullMap;
         this.secHome = new Rectangle(0,0,GameSettings.Arena.secHomeSize.getWidth(),GameSettings.Arena.secHomeSize.getHeight());
 
         // Makes the walkable area
-        for (Obstacle o : client.gameData.obstacles) {
+        for (Obstacle o : client.client.gameData.obstacles) {
             Rectangle object = new Rectangle(o.topLeft.x, o.topLeft.y, o.width,
                     o.height);
             Shape s = Rectangle.subtract(walkableArea, object);
@@ -65,74 +65,74 @@ public class GameLogic {
 
     public void update() {
     	// Check if player is not in the game
-    	if (client.player.state != PlayerState.CAUGHT && client.player.state != PlayerState.ESCAPED) {
+    	if (client.client.player.state != PlayerState.CAUGHT && client.client.player.state != PlayerState.ESCAPED) {
 	        // First we find the angle from the mouse to the player
-	        double angle = Maths.angle(client.player.position.x,
-	                client.player.position.y, mouseX, mouseY);
-	        client.player.direction = angle; // Updates client's direction
+	        double angle = Maths.angle(client.client.player.position.x,
+	                client.client.player.position.y, mouseX, mouseY);
+	        client.client.player.direction = angle; // Updates client's direction
 	                                         // (currently in radians)
 	
 	        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)) {
-	            double tempX = client.player.position.x,
-	                    tempY = client.player.position.y;
-	            tempX += client.player.speed * Math.cos(angle);
-	            tempY += client.player.speed * Math.sin(angle);
+	            double tempX = client.client.player.position.x,
+	                    tempY = client.client.player.position.y;
+	            tempX += client.client.player.speed * Math.cos(angle);
+	            tempY += client.client.player.speed * Math.sin(angle);
 	            if (walkableArea.contains(tempX, tempY)) { // Only update movement
 	                                                       // when the area is still
 	                                                       // walkable
-	                client.player.position.x = tempX;
-	                client.player.position.y = tempY;
+	                client.client.player.position.x = tempX;
+	                client.client.player.position.y = tempY;
 	            }
 	        }
 	        if (keys.containsKey(KeyCode.S) && keys.get(KeyCode.S)) {
-	            double tempX = client.player.position.x,
-	                    tempY = client.player.position.y;
-	            tempX -= client.player.speed * Math.cos(angle);
-	            tempY -= client.player.speed * Math.sin(angle);
+	            double tempX = client.client.player.position.x,
+	                    tempY = client.client.player.position.y;
+	            tempX -= client.client.player.speed * Math.cos(angle);
+	            tempY -= client.client.player.speed * Math.sin(angle);
 	            if (walkableArea.contains(tempX, tempY)) { // Only update movement
 	                                                       // when the area is still
 	                                                       // walkable
-	                client.player.position.x = tempX;
-	                client.player.position.y = tempY;
+	                client.client.player.position.x = tempX;
+	                client.client.player.position.y = tempY;
 	            }
 	        }
 	        if (keys.containsKey(KeyCode.A) && keys.get(KeyCode.A)) {
-	            double tempX = client.player.position.x,
-	                    tempY = client.player.position.y;
-	            tempX += client.player.speed * Math.cos(angle - Math.PI / 2);
-	            tempY += client.player.speed * Math.sin(angle - Math.PI / 2);
+	            double tempX = client.client.player.position.x,
+	                    tempY = client.client.player.position.y;
+	            tempX += client.client.player.speed * Math.cos(angle - Math.PI / 2);
+	            tempY += client.client.player.speed * Math.sin(angle - Math.PI / 2);
 	            if (walkableArea.contains(tempX, tempY)) { // Only update movement
 	                                                       // when the area is still
 	                                                       // walkable
-	                client.player.position.x = tempX;
-	                client.player.position.y = tempY;
+	                client.client.player.position.x = tempX;
+	                client.client.player.position.y = tempY;
 	            }
 	        }
 	        if (keys.containsKey(KeyCode.D) && keys.get(KeyCode.D)) {
-	            double tempX = client.player.position.x,
-	                    tempY = client.player.position.y;
-	            tempX += client.player.speed * Math.cos(angle + Math.PI / 2);
-	            tempY += client.player.speed * Math.sin(angle + Math.PI / 2);
+	            double tempX = client.client.player.position.x,
+	                    tempY = client.client.player.position.y;
+	            tempX += client.client.player.speed * Math.cos(angle + Math.PI / 2);
+	            tempY += client.client.player.speed * Math.sin(angle + Math.PI / 2);
 	            if (walkableArea.contains(tempX, tempY)) { // Only update movement
 	                                                       // when the area is still
 	                                                       // walkable
-	                client.player.position.x = tempX;
-	                client.player.position.y = tempY;
+	                client.client.player.position.x = tempX;
+	                client.client.player.position.y = tempY;
 	            }
 	        }
 	        if (Faction.THIEF == faction && keys.containsKey(KeyCode.SPACE)
 	                && keys.get(KeyCode.SPACE)) { // Action button to collect
 	                                              // treasures (FOR THIEVES)
-	        	if (GameSettings.Arena.exit.at(client.player.position, 20)) {
-	        		client.player.state = PlayerState.ESCAPED;
+	        	if (GameSettings.Arena.exit.at(client.client.player.position, 20)) {
+	        		client.client.player.state = PlayerState.ESCAPED;
 	        	}
 	        	else {
 		            Treasure tempT = null; // Saves a treasures to be collected
-		            for (Treasure t : client.gameData.treasures) {
+		            for (Treasure t : client.client.gameData.treasures) {
 		                double tx = t.position.x;
 		                double ty = t.position.y;
-		                double px = client.player.position.x;
-		                double py = client.player.position.y;
+		                double px = client.client.player.position.x;
+		                double py = client.client.player.position.y;
 		                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) < Math
 		                        .pow(GameSettings.Thief.stealRadius, 2)) { // Treasure
 		                                                                   // is in
@@ -145,9 +145,9 @@ public class GameLogic {
 		                                 // because it will cause
 		                                 // concurrentModificationException.
 		                System.out.println("Score! Add: " + tempT.value);
-		                client.gameData.thiefScore += tempT.value;
-		                client.player.treasureScore += tempT.value;
-		                client.gameData.treasures.remove(tempT); // So we remove it here
+		                client.client.gameData.thiefScore += tempT.value;
+		                client.client.player.treasureScore += tempT.value;
+		                client.client.gameData.treasures.remove(tempT); // So we remove it here
 		                HashMap<Key, Object> map = new HashMap<Key, Object>();
 		                map.put(Key.TREASURE_ID, tempT.id);
 		                map.put(Key.TREASURE_STATE, TreasureState.PICKED);
@@ -166,13 +166,13 @@ public class GameLogic {
 	                && keys.get(KeyCode.SPACE)) { // Action button to catch
 	                                              // thieves (FOR SECURITY)
 	            String id = null; // initialisation
-	            for (String k : client.gameData.players.keySet()) {
-	            	Player p = client.gameData.players.get(k);
+	            for (String k : client.client.gameData.players.keySet()) {
+	            	Player p = client.client.gameData.players.get(k);
 	            	if (p.faction == Faction.THIEF && p.state == PlayerState.NORMAL) {
 		                double tx = p.position.x;
 		                double ty = p.position.y;
-		                double px = client.player.position.x;
-		                double py = client.player.position.y;
+		                double px = client.client.player.position.x;
+		                double py = client.client.player.position.y;
 		                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) < Math
 		                        .pow(GameSettings.Security.catchRadius, 2)) { // Player
 		                                                                   // is in
@@ -183,7 +183,7 @@ public class GameLogic {
 	            	}
 		            if (id != null) {
 		                System.out.println("Catching Thief");
-		                client.gameData.players.get(id).state = PlayerState.CAUGHT;
+		                client.client.gameData.players.get(id).state = PlayerState.CAUGHT;
 		                HashMap<Key, Object> map = new HashMap<Key, Object>();
 		                map.put(Key.CLIENT_ID, id);
 		                map.put(Key.PLAYER_STATE, PlayerState.CAUGHT);
@@ -199,30 +199,30 @@ public class GameLogic {
 	        }
     	}
         
-        if (client.player.faction == Faction.SECURITY) {
-        	double tempX = client.player.position.x;
-        	double tempY = client.player.position.y;
+        if (client.client.player.faction == Faction.SECURITY) {
+        	double tempX = client.client.player.position.x;
+        	double tempY = client.client.player.position.y;
         	if (this.secHome.contains(tempX,tempY)) {
-        		if (client.player.battery < GameSettings.Security.fullBattery) {
-	        		client.player.battery += (GameSettings.Security.chargeValue);
-	        		if (client.player.state == PlayerState.STUCK)
-	    				client.player.state = PlayerState.NORMAL;
+        		if (client.client.player.battery < GameSettings.Security.fullBattery) {
+	        		client.client.player.battery += (GameSettings.Security.chargeValue);
+	        		if (client.client.player.state == PlayerState.STUCK)
+	    				client.client.player.state = PlayerState.NORMAL;
         		}
         		else
-        			client.player.battery = 1;
+        			client.client.player.battery = 1;
         	}
         	else {
-	        	if (client.player.state == PlayerState.NORMAL) {
-	        		client.player.battery -= (GameSettings.Security.drainValue);
-	        		if (client.player.battery <= GameSettings.Security.noBattery) {
-	        			client.player.battery = GameSettings.Security.noBattery;
-	        			client.player.state = PlayerState.STUCK;
+	        	if (client.client.player.state == PlayerState.NORMAL) {
+	        		client.client.player.battery -= (GameSettings.Security.drainValue);
+	        		if (client.client.player.battery <= GameSettings.Security.noBattery) {
+	        			client.client.player.battery = GameSettings.Security.noBattery;
+	        			client.client.player.state = PlayerState.STUCK;
 	        		}
 	        	}
         	}
         }
         
-        client.gameData.secScore += (1.0/60.0);
+        client.client.gameData.secScore += (1.0/60.0);
 
         // TODO Catch thieves for camera
     }

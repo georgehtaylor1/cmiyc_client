@@ -124,7 +124,7 @@ public class SlideScreen extends AnchorPane {
         	ret[0] = splits[0];
         	ret[1] = splits[1];
         	ret[2] = user;
-        	main.useInputs(ret);
+        	main.client.useInputs(ret);
         });
 
         toggleButton1vs2.setToggleGroup(group);

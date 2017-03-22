@@ -55,19 +55,19 @@ public class GameDrawer {
         // Client player
         Arc clientFlashlightArc;
         // Check that player has not run out of battery
-        if (main.player.state != PlayerState.STUCK) {	
-	        clientFlashlightArc = new Arc(main.player.position.x,
-	                main.player.position.y, GameSettings.Security.lightRadius,
+        if (main.client.player.state != PlayerState.STUCK) {	
+	        clientFlashlightArc = new Arc(main.client.player.position.x,
+	                main.client.player.position.y, GameSettings.Security.lightRadius,
 	                GameSettings.Security.lightRadius,
-	                -Math.toDegrees(main.player.direction)
+	                -Math.toDegrees(main.client.player.direction)
 	                        - GameSettings.Security.lightRadius / 2,
 	                GameSettings.Security.lightArcPercentage * 360 / 100);
         }
         else {
-        	clientFlashlightArc = new Arc(main.player.position.x,
-	                main.player.position.y, GameSettings.Security.lightRadius/2,
+        	clientFlashlightArc = new Arc(main.client.player.position.x,
+	                main.client.player.position.y, GameSettings.Security.lightRadius/2,
 	                GameSettings.Security.lightRadius/2,
-	                -Math.toDegrees(main.player.direction)
+	                -Math.toDegrees(main.client.player.direction)
 	                        - GameSettings.Security.lightRadius / 2,
 	                GameSettings.Security.lightArcPercentage * 360 / 100);
         }
@@ -83,7 +83,7 @@ public class GameDrawer {
 
         // Make obstacle shapes
         ArrayList<Shape> obstacleShapes = new ArrayList<>();
-        for (Obstacle o : main.gameData.obstacles) {
+        for (Obstacle o : main.client.gameData.obstacles) {
             Rectangle r = new Rectangle(o.width, o.height, Color.LIGHTBLUE);
             r.setX(o.topLeft.x);
             r.setY(o.topLeft.y);
@@ -96,7 +96,7 @@ public class GameDrawer {
 
         // Make treasure shapes
         ArrayList<Shape> treasureShapes = new ArrayList<>();
-        for (Treasure t : main.gameData.treasures) {
+        for (Treasure t : main.client.gameData.treasures) {
             Circle c = new Circle(GameSettings.Treasure.radius,
                     Color.LIGHTYELLOW);
             c.setCenterX(t.position.x);
@@ -109,10 +109,10 @@ public class GameDrawer {
         // Client player
         Circle clientPlayerShape = new Circle(GameSettings.Player.radius,
                 Color.GREEN);
-        clientPlayerShape.setCenterX(main.player.position.x);
-        clientPlayerShape.setCenterY(main.player.position.y);
+        clientPlayerShape.setCenterX(main.client.player.position.x);
+        clientPlayerShape.setCenterY(main.client.player.position.y);
 
-        TextField text = new TextField(String.valueOf(main.player.battery));
+        TextField text = new TextField(String.valueOf(main.client.player.battery));
         
         // Draw
         pane.getChildren().add(exit);
@@ -120,7 +120,7 @@ public class GameDrawer {
         pane.getChildren().add(text);
         pane.getChildren().addAll(obstacleShapes);
         pane.getChildren().addAll(treasureShapes);
-    	if (main.player.state != PlayerState.ESCAPED && main.player.state != PlayerState.CAUGHT) {
+    	if (main.client.player.state != PlayerState.ESCAPED && main.client.player.state != PlayerState.CAUGHT) {
         	pane.getChildren().addAll(flashlightShapes);
     		pane.getChildren().add(clientPlayerShape);
     	}

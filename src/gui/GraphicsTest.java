@@ -1,8 +1,6 @@
 package gui;
 
-import constants.Colors;
 import game.Camera;
-import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
@@ -27,18 +25,18 @@ public class GraphicsTest extends Application {
     public void start(Stage stage) {
         Main main = new Main();
 
-        main.gameData.obstacles.add(new Obstacle(20, 20, 50, 50));
-        main.gameData.obstacles.add(new Obstacle(400, 420, 120, 80));
-        main.gameData.obstacles.add(new Obstacle(200, 180, 60, 120));
-        main.gameData.obstacles.add(new Obstacle(600, 50, 100, 100));
+        main.client.gameData.obstacles.add(new Obstacle(20, 20, 50, 50));
+        main.client.gameData.obstacles.add(new Obstacle(400, 420, 120, 80));
+        main.client.gameData.obstacles.add(new Obstacle(200, 180, 60, 120));
+        main.client.gameData.obstacles.add(new Obstacle(600, 50, 100, 100));
 
-        main.gameData.treasures.add(new Treasure(300, 300));
-        main.gameData.treasures.add(new Treasure(310, 310));
-        main.gameData.treasures.add(new Treasure(400, 400));
+        main.client.gameData.treasures.add(new Treasure(300, 300));
+        main.client.gameData.treasures.add(new Treasure(310, 310));
+        main.client.gameData.treasures.add(new Treasure(400, 400));
         
-        main.gameData.players.put("bob", new Player("bob"));
+        main.client.gameData.players.put("bob", new Player("bob"));
         
-        main.gameData.cameras.add(new Camera(500, 300, 0, 50));
+        main.client.gameData.cameras.add(new Camera(500, 300, 0, 50));
         
         
         Pane pane = new Pane();

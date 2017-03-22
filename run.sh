@@ -1,3 +1,2 @@
 #!/bin/bash
-cd bin
-java graphics.GraphicsTest
+java -cp bin gui.GraphicsTest

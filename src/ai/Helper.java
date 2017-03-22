@@ -1,10 +1,14 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.Random;
 
+import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
+import game.constants.GameSettings;
+import game.states.TreasureState;
 import game.util.Position;
 import util.Maths;
 
@@ -20,8 +24,19 @@ public class Helper {
 	 * @return The closest treasure to the given point
 	 */
 	public static Treasure getClosestTreasure(Position p, ArrayList<Treasure> treasures) {
-		return treasures.stream()
-				.min((t1, t2) -> Double.compare(Maths.dist(p, t1.position), Maths.dist(p, t2.position))).get();
+		Treasure minTreasure = treasures.get(0);
+		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
+
+		for (Treasure t : treasures) {
+			if (t.state == TreasureState.UNPICKED) {
+				double currDist = Maths.dist(p, t.position);
+				if (currDist < minDist) {
+					minDist = currDist;
+					minTreasure = t;
+				}
+			}
+		}
+		return minTreasure;
 
 	}
 
@@ -30,13 +45,27 @@ public class Helper {
 	 * 
 	 * @param p
 	 *            The position to compare to
+	 * @param myName
+	 *            the clientID of the current player so that they can be ignored
 	 * @param players
 	 *            The players to check
 	 * @return The closest player
 	 */
-	public static Player getClosestPlayer(Position p, ArrayList<Player> players) {
-		return players.stream().min((p1, p2) -> Double.compare(Maths.dist(p, p1.position), Maths.dist(p, p2.position)))
-				.get();
+	public static Player getClosestThief(Position p, String myName, ArrayList<Player> players) {
+		Player minPlayer = null;
+		// No player can be further away than this
+		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
+
+		for (Player player : players) {
+			if (!player.clientID.equals(myName) && player.faction == Faction.THIEF) {
+				double dist = Maths.dist(player.position, p);
+				if (dist < minDist) {
+					minDist = dist;
+					minPlayer = player;
+				}
+			}
+		}
+		return minPlayer;
 
 	}
 
@@ -47,15 +76,31 @@ public class Helper {
 	 *            The posiiton of the AI
 	 * @param treasures
 	 *            The list of treasures
-	 * @param currentWaypoint
+	 * @param previousWaypoint
 	 *            The current waypoint so that it can be ignored
+	 * @param randomness
+	 *            A double value representing the probability of a random waypoint being selected
 	 * @return The next waypoint to go to
 	 */
-	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position currentWaypoint) {
-		double minDist = Maths.dist(p, treasures.get(0).position);
-		Position minPos = treasures.get(0).position;
+	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position previousWaypoint,
+			double randomness, Random rand) {
+
+		if (rand.nextDouble() < randomness) {
+
+			int index = rand.nextInt(treasures.size());
+			Position chosenPosition = treasures.get(index).position;
+			while (previousWaypoint != null ? chosenPosition.at(previousWaypoint, 2) : false) {
+				index = rand.nextInt(treasures.size());
+				chosenPosition = treasures.get(index).position;
+			}
+			return chosenPosition;
+		}
+
+		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
+		Position minPos = null;
 		for (Treasure t : treasures) {
-			if (!t.position.at(p)) {
+			if (t.state != TreasureState.PICKED && !t.position.at(p, 2)
+					&& (previousWaypoint != null ? !t.position.at(previousWaypoint, 2) : true)) {
 				double d = Maths.dist(p, t.position);
 				if (d < minDist) {
 					minDist = d;
@@ -63,6 +108,14 @@ public class Helper {
 				}
 			}
 		}
+
+		// If no treasure has been found then pick a random treasure instead
+		if (minPos == null) {
+			int index = rand.nextInt(treasures.size());
+			Position chosenPosition = treasures.get(index).position;
+			return chosenPosition;
+		}
+
 		return minPos;
 	}
 
@@ -144,6 +197,87 @@ public class Helper {
 			return minPos;
 		else
 			return null;
+	}
+
+	/**
+	 * Get the closest position on the obstacle to the given position
+	 * 
+	 * @param p
+	 *            The position to compare to
+	 * @param o
+	 *            The obstacle to be examined
+	 * @return The position on the border of the obstacle closest to the given position
+	 */
+	public static Position getCollisionPoint(Position p, Obstacle o) {
+		if (p.y > o.bottomRight.y) {
+			if (p.x < o.topLeft.x)
+				return o.bottomLeft;
+			if (p.x > o.bottomRight.x)
+				return o.bottomRight;
+			return new Position(p.x, o.bottomRight.y);
+		}
+		if (p.y < o.topLeft.y) {
+			if (p.x < o.topLeft.x)
+				return o.topLeft;
+			if (p.x > o.bottomRight.x)
+				return o.topRight;
+			return new Position(p.x, o.topLeft.y);
+		}
+		if (p.x < o.topLeft.x)
+			return new Position(o.topLeft.x, p.y);
+		if (p.x > o.bottomRight.x)
+			return new Position(o.bottomRight.x, p.y);
+		return p;
+
+	}
+
+	/**
+	 * Move the AI forward without allowing it to move through walls
+	 * 
+	 * @param speed
+	 *            The speed the AI should move
+	 */
+	public static void move(Player p, ArrayList<Obstacle> obstacles, double speed) {
+		boolean xFine = true;
+		boolean yFine = true;
+		boolean bothFine = true;
+
+		Position testXY = new Position(p.position.x + (speed * Math.cos(p.direction)),
+				p.position.y + (speed * Math.sin(p.direction)));
+		Position testX = new Position(p.position.x + (speed * Math.cos(p.direction)), p.position.y);
+		Position testY = new Position(p.position.x, p.position.y + (speed * Math.sin(p.direction)));
+
+		if (testY.y <= 0 || testY.y >= GameSettings.Arena.size.getHeight()) {
+			yFine = false;
+			bothFine = false;
+		}
+
+		if (testX.x <= 0 || testX.x >= GameSettings.Arena.size.getWidth()) {
+			xFine = false;
+			bothFine = false;
+		}
+
+		for (Obstacle o : obstacles) {
+			if (o.contains(testXY)) {
+				bothFine = false;
+			}
+			if (o.contains(testX))
+				xFine = false;
+			if (o.contains(testY))
+				yFine = false;
+		}
+		if (bothFine) {
+			p.position = testXY;
+			return;
+		}
+		if (xFine && !yFine) {
+			p.position = testX;
+			return;
+		}
+		if (!xFine && yFine) {
+			p.position = testY;
+			return;
+		}
 	}
 
 }

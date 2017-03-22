@@ -3,6 +3,7 @@ package ai;
 import java.util.UUID;
 
 import ai.handler.Handler;
+import game.Faction;
 import game.Player;
 
 public abstract class AI extends Player implements Runnable {
@@ -17,9 +18,10 @@ public abstract class AI extends Player implements Runnable {
 	 * @param handler
 	 *            The AI handler that the AI should use
 	 */
-	public AI(Handler handler) {
+	public AI(Handler handler, Faction faction) {
 		super(UUID.randomUUID().toString());
 		this.setHandler(handler);
+		super.faction = faction;
 		setRunning(false);
 	}
 

@@ -2,6 +2,8 @@ package sample;
 
 import java.io.IOException;
 
+import gui.GameDrawer;
+import gui.OffsetHolder;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -11,9 +13,11 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import launcher.Main;
+import logic.GameLogic;
+import util.Client;
 
 /**
  * Created by Gerta on 24/02/2017.
@@ -29,20 +33,22 @@ public class SlideScreen extends AnchorPane {
     private Button connect;
     private Button mainButton;
 
-    private final ToggleButton toggleButton2vs3;
-    private final ToggleButton toggleButton1vs2;
-    private final ToggleGroup group;
+    private ToggleButton toggleButton2vs3;
+    private ToggleButton toggleButton1vs2;
+    private ToggleGroup group;
 
-    private final ToggleButton security;
-    private final ToggleButton thief;
-    private final ToggleGroup group2;
-    
-    private Main main;
+    private ToggleButton security;
+    private ToggleButton thief;
+    private ToggleGroup group2;
+    private Pane pane;
+    private GameLogic gameLogic;
+    private GameDrawer gameDrawer;
+    private Client launcherMain;
+    private GameScreen gameScreen;
 
     private TranslateTransition sliderTranslation;
 
-    public SlideScreen(Main main) throws IOException {
-    	this.main = main;
+    public SlideScreen(GameScreen gameScreen) throws IOException {
         this.slider = new AnchorPane();
         this.together = new BorderPane();
         this.mainButton = new Button("Find Game");
@@ -59,6 +65,14 @@ public class SlideScreen extends AnchorPane {
         this.security = new ToggleButton("Security");
         this.thief = new ToggleButton("Thief");
         this.group2 = new ToggleGroup();
+        
+        OffsetHolder offsetHolder = new OffsetHolder();
+
+        this.launcherMain = new Client();
+        this.pane = new Pane();
+        this.gameLogic = new GameLogic(launcherMain, pane, offsetHolder);
+        this.gameDrawer = new GameDrawer(launcherMain, pane, offsetHolder);
+        this.gameScreen = gameScreen;
         this.drawScene();
     }
 
@@ -117,19 +131,7 @@ public class SlideScreen extends AnchorPane {
         toggleButton2vs3.setId("2vs3");
         security.setId("security");
         thief.setId("thief");
-        connect.setOnAction(e -> {
-        	String[] splits = host.getText().split(":");
-        	String user = username.getText();
-        	String[] ret = new String[3];
-        	ret[0] = splits[0];
-        	ret[1] = splits[1];
-        	ret[2] = user;
-        	main.client.useInputs(ret);
-        });
 
-        toggleButton1vs2.setToggleGroup(group);
-        toggleButton1vs2.setSelected(true);
-        toggleButton2vs3.setToggleGroup(group);
 
         security.setToggleGroup(group2);
         security.setSelected(true);
@@ -151,6 +153,10 @@ public class SlideScreen extends AnchorPane {
             sliderTranslation.play();
         });*/
 
+        connect.setOnAction(e -> {
+            gameScreen.drawGame();
+        });
+
         this.mainButton.setOnAction(e -> {
             if(this.sliderTranslation.getRate() == 1) {
                 slideIn();
@@ -163,6 +169,18 @@ public class SlideScreen extends AnchorPane {
             }
         });
 
+    }
+
+    public void SetActive() {
+        toggleButton1vs2.setToggleGroup(group);
+        toggleButton1vs2.setSelected(true);
+        toggleButton2vs3.setToggleGroup(group);
+    }
+
+    public void securitySetActive() {
+        toggleButton1vs2.setToggleGroup(group);
+        toggleButton1vs2.setSelected(true);
+        toggleButton2vs3.setToggleGroup(group);
     }
 
     public void slideIn(){

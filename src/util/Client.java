@@ -51,7 +51,7 @@ public class Client {
 		this.receiver = null;
 		this.sender = null;
 		this.queue = new ConcurrentLinkedQueue<Transferable>();
-		
+		this.gameData = new GameData();
 	}
 	
 	public void connect( ObjectInputStream _in, ObjectOutputStream _out ) {

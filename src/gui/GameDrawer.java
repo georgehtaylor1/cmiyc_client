@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import constants.Colors;
-
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
@@ -13,7 +12,6 @@ import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
 import game.states.TreasureState;
-
 import gui.util.FxUtils;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -32,13 +30,14 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import launcher.Main;
+import util.Client;
 
 /**
  * Draws the state of the game to a Pane.
  */
 public class GameDrawer {
 
-	private Main main;
+	private Client main;
 	private Pane pane;
 
 	private DoubleProperty width;
@@ -50,7 +49,7 @@ public class GameDrawer {
 	/**
 	 * Constructs a new GameDrawer. Default graphics settings are set on the Pane.
 	 */
-	public GameDrawer(Main main, Pane pane, OffsetHolder offsetHolder) {
+	public GameDrawer(Client main, Pane pane, OffsetHolder offsetHolder) {
 		this.pane = pane;
 		this.main = main;
 		this.offsetHolder = offsetHolder;

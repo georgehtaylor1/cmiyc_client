@@ -9,8 +9,6 @@ import game.Treasure;
 import game.util.Position;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -55,10 +53,10 @@ public class GraphicsTest extends Application {
 
         main.gameData.cameras.add(new Camera(500, 300, Math.PI / 6.0, 50));
 
-        GameView pane = new GameView();
-
-        GameLogic logic = new GameLogic(main, pane);
-        GameDrawer drawer = new GameDrawer(main, pane);
+        Pane pane = new Pane();
+        OffsetHolder o = new OffsetHolder();
+        GameLogic logic = new GameLogic(main, pane, o);
+        GameDrawer drawer = new GameDrawer(main, pane, o);
 
         Scene scene = new Scene(pane);
        

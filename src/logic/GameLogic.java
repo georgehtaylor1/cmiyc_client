@@ -21,7 +21,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import launcher.Main;
+import util.Client;
 import util.Debug;
 import util.Maths;
 
@@ -32,7 +32,7 @@ public class GameLogic {
 
     private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
 
-    private Main client;
+    private Client client;
     private Pane pane;
     private Faction faction; // Client's faction
     private double mouseX;
@@ -51,7 +51,7 @@ public class GameLogic {
     private final double initialRatio = GraphicsSettings.initialPaneWidth / GraphicsSettings.initalPaneHeight;
     private double scalingRatio;
     
-    public GameLogic(Main client, Pane pane, OffsetHolder offsetHolder) {
+    public GameLogic(Client client, Pane pane, OffsetHolder offsetHolder) {
         this.client = client;
         this.pane = pane;
         this.offsetHolder = offsetHolder;
@@ -89,6 +89,10 @@ public class GameLogic {
     	// inner arena size
     	this.walkableArea = this.fullMap;
     	this.chargingArea = new Rectangle(20 ,20 ,50 ,50 ); // FIXME: This is still hardcoded. The security's charging area
+    	
+//    	if (client.player.state != PlayerState.CAUGHT && client.player.state != PlayerState.ESCAPED) {
+//    		return;
+//    	}
     	
     	// Makes the walkable area
     	for (Obstacle o : client.gameData.obstacles) {
@@ -159,6 +163,10 @@ public class GameLogic {
         if (faction == Faction.THIEF) { // Thief functions
 	        if (keys.containsKey(KeyCode.SPACE) && keys.get(KeyCode.SPACE)) { // Action button to collect
 	                                              // treasures (FOR THIEVES)
+	        	
+	        	if (GameSettings.Arena.exit.at(client.player.position, 20)) {
+	        		client.player.state = PlayerState.ESCAPED;
+	        	}
 	        	double px = client.player.position.x;
 	        	double py = client.player.position.y;
 	
@@ -220,7 +228,6 @@ public class GameLogic {
 	        }
         }    
         
-        
     }
     
     /**
@@ -230,8 +237,10 @@ public class GameLogic {
     public void collectTreasure(Treasure treasure) {
     	if (treasure != null) {
     		treasure.state = TreasureState.PICKED;
+    		client.player.treasureScore += GameSettings.Score.treasureScore;
+    		client.gameData.thiefScore += GameSettings.Score.treasureScore;
     		client.gameData.treasures.remove(treasure);
-            Debug.say("Score! Add: " + treasure.value);
+            Debug.say("Collected! Score: " + client.player.treasureScore);
     	}
     }
     
@@ -241,10 +250,12 @@ public class GameLogic {
      * @param thief player to be removed
      */
     public void captureThief(String name, Player thief) {
-    	if (thief != null) {
+    	if (thief != null && thief.state != PlayerState.ESCAPED) {
     		thief.state = PlayerState.CAUGHT;
+    		client.gameData.secScore += GameSettings.Score.thiefCaptureScore;
+    		client.gameData.thiefScore -= thief.treasureScore;
     		client.gameData.players.remove(name);
-    		Debug.say("Thief " + thief.clientID + " captured. Add " + GameSettings.Score.thiefCaptureScore);
+    		Debug.say("Thief " + thief.clientID + " captured. Score " + client.gameData.secScore);
     	}
     }
     

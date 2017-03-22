@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import launcher.Main;
 import logic.GameLogic;
+import util.Client;
 
 /**
  * Created by Gerta on 24/02/2017.
@@ -45,7 +46,7 @@ public class SlideScreen extends AnchorPane {
     private Pane pane;
     private GameLogic gameLogic;
     private GameDrawer gameDrawer;
-    private Main launcherMain;
+    private Client launcherMain;
     private Scene scene;
     private Stage stage;
     private GameScreen gameScreen;
@@ -72,7 +73,7 @@ public class SlideScreen extends AnchorPane {
         
         OffsetHolder offsetHolder = new OffsetHolder();
 
-        this.launcherMain = new Main();
+        this.launcherMain = new Client();
         this.pane = new Pane();
         this.gameLogic = new GameLogic(launcherMain, pane, offsetHolder);
         this.gameDrawer = new GameDrawer(launcherMain, pane, offsetHolder);

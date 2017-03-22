@@ -12,9 +12,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import launcher.Main;
 import logic.GameLogic;
 import logic.GameLoop;
+import util.Client;
 
 /**
  * Created by Gerta on 24/02/2017.
@@ -25,13 +25,13 @@ public class GameScreen extends AnchorPane{
     private ToolBar gameControls;
     private GameLogic logic;
     private GameDrawer drawer;
-    private Main launcherMain;
+    private Client launcherMain;
     public Pane pane;
     public Pane base;
     private Scene scene;
     private Stage stage;
 
-    public GameScreen(Main _main, Pane base) throws IOException {
+    public GameScreen(Client _main, Pane base) throws IOException {
         this.gameScreen = new BorderPane();
         this.gameControls = new ToolBar();
         this.launcherMain = _main;
@@ -42,7 +42,6 @@ public class GameScreen extends AnchorPane{
     public void drawGame() {
         pane = new Pane();
         OffsetHolder offsetHolder = new OffsetHolder();
-        
         
         logic = new GameLogic(launcherMain, base, offsetHolder);
         drawer = new GameDrawer(launcherMain, pane, offsetHolder);

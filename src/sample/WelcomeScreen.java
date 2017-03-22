@@ -1,6 +1,5 @@
 package sample;
 
-import game.constants.GameSettings;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -42,6 +41,10 @@ public class WelcomeScreen extends AnchorPane{
     private Text text;
 
 
+    /**
+     * Create a new instance of the WelcomeScreen
+     * @throws IOException
+     */
     public WelcomeScreen() throws IOException {
 
         this.welcomeScreen = new AnchorPane();
@@ -50,17 +53,20 @@ public class WelcomeScreen extends AnchorPane{
 
     }
 
+    /**
+     * Draw the scene
+     */
     public void drawScene() {
 
         this.getStylesheets().add("styles/welcomeLayer.css");
 
         welcomeControls.setPrefHeight(40);
-        this.setPrefWidth(GameSettings.Arena.size.getWidth());
-        this.setPrefHeight(GameSettings.Arena.size.getHeight());
+        this.setPrefWidth(Constants.ScreenWidth);
+        this.setPrefHeight(Constants.ScreenHeight);
         this.getChildren().addAll(welcomeScreen, welcomeControls);
 
-        welcomeScreen.setPrefWidth(GameSettings.Arena.size.getWidth());
-        welcomeScreen.setPrefHeight(GameSettings.Arena.size.getHeight());
+        welcomeScreen.setPrefWidth(this.getPrefWidth());
+        welcomeScreen.setPrefHeight(350);
 
         AnchorPane.setBottomAnchor(welcomeControls, 0.0);
         AnchorPane.setRightAnchor(welcomeControls, 0.0);
@@ -190,8 +196,7 @@ public class WelcomeScreen extends AnchorPane{
 
 
         welcomeScreen.getChildren().addAll(arc1, ellipse1, arc2, ellipse2, arc3, ellipse3, arc4, ellipse4, ellipse4b, arc5, arc6, ellipse5, arc7, ellipse7, text);
-        //setAnchor(welcomeScreen.getPrefWidth());
-        setAnchor(GameSettings.Arena.size.getWidth());
+        setAnchor(welcomeScreen.getPrefWidth());
 
 
         this.setId("welcomeLayer");
@@ -201,74 +206,11 @@ public class WelcomeScreen extends AnchorPane{
 
     }
 
-    public AnchorPane getWelcomeScreen() {
-        return welcomeScreen;
-    }
 
-    public ToolBar getWelcomeControls() {
-        return welcomeControls;
-    }
-
-    public Arc getArc1() {
-        return arc1;
-    }
-
-    public Arc getArc2() {
-        return arc2;
-    }
-
-    public Arc getArc3() {
-        return arc3;
-    }
-
-    public Arc getArc4() {
-        return arc4;
-    }
-
-    public Arc getArc5() {
-        return arc5;
-    }
-
-    public Arc getArc6() {
-        return arc6;
-    }
-
-    public Arc getArc7() {
-        return arc7;
-    }
-
-    public Ellipse getEllipse2() {
-        return ellipse2;
-    }
-
-    public Ellipse getEllipse1() {
-        return ellipse1;
-    }
-
-    public Ellipse getEllipse3() {
-        return ellipse3;
-    }
-
-    public Ellipse getEllipse4() {
-        return ellipse4;
-    }
-
-    public Ellipse getEllipse4b() {
-        return ellipse4b;
-    }
-
-    public Ellipse getEllipse5() {
-        return ellipse5;
-    }
-
-    public Ellipse getEllipse7() {
-        return ellipse7;
-    }
-
-    public Text getText() {
-        return text;
-    }
-
+    /**
+     * Set the distance from the anchor pane's insets to the child's edges.
+     * @param size the size we want to set the anchor to
+     */
     public void setAnchor(double size){
         AnchorPane.setTopAnchor(arc1, 65.0);
         AnchorPane.setLeftAnchor(arc1, size/2-145);
@@ -309,5 +251,32 @@ public class WelcomeScreen extends AnchorPane{
         AnchorPane.setLeftAnchor(text, size/2 -113);
 
     }
+
+
+    /**
+     * Get the welcomeScreen
+     * @return welcomeScreen
+     */
+    public AnchorPane getWelcomeScreen() {
+        return welcomeScreen;
+    }
+
+    /**
+     * Get the welcomeControls
+     * @return welcomeControls
+     */
+    public ToolBar getWelcomeControls() {
+        return welcomeControls;
+    }
+
+    /**
+     * Get arc1
+     * @return arc1
+     */
+    public Arc getArc1() {
+        return arc1;
+    }
+
+
 
 }

@@ -1,3 +1,4 @@
+/*
 package gui;
 
 import ai.handler.Handler;
@@ -19,9 +20,11 @@ import launcher.Main;
 import logic.GameLogic;
 import logic.GameLoop;
 
+*/
 /**
  * Main class that tests the graphics module.
- */
+ *//*
+
 public class GraphicsTest extends Application {
 
 	public static void main(String[] args) {
@@ -40,25 +43,25 @@ public class GraphicsTest extends Application {
         main.gameData.treasures.add(new Treasure(390, 400));
 
         Handler h = new Handler(main.gameData);
-        h.addPlayers(0, 1);
+        //h.addPlayers(0, 1);
         h.start();
 
         Player tom = new Player("tom");
         tom.faction = Faction.THIEF;
         tom.position = new Position(100, 150);
         main.gameData.players.put("tom", tom);
-        main.player.faction = Faction.THIEF;
+        main.player.faction = Faction.SECURITY;
         main.gameData.players.put(main.player.clientID, main.player);
 
         Player bob = new Player("bob");
         main.gameData.players.put("bob", bob);
 
-        main.gameData.cameras.add(new Camera(500, 300, 270, 50));
+        main.gameData.cameras.add(new Camera(500, 300, Math.PI / 6.0, 50));
 
-        Pane pane = new Pane();
+        GameView pane = new GameView();
 
         GameLogic logic = new GameLogic(main, pane);
-        GameDrawer drawer = new GameDrawer(main, pane, stage);
+        GameDrawer drawer = new GameDrawer(main, pane);
 
         Scene scene = new Scene(pane);
        
@@ -67,13 +70,13 @@ public class GraphicsTest extends Application {
         stage.setScene(scene);
         stage.sizeToScene();
         stage.setTitle("Graphics test");
-        
+
         stage.setOnCloseRequest(e -> {
-        	e.consume();
-        	h.end();
-        	Platform.exit();
+            e.consume();
+            h.end();
+            Platform.exit();
         });
-        
+
         stage.show();
         // requestFocus() only works after stage.show().
         pane.requestFocus();
@@ -85,3 +88,4 @@ public class GraphicsTest extends Application {
     }
 
 }
+*/

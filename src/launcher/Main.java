@@ -15,14 +15,17 @@ import constants.Commands.Action;
 import game.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import sample.GameScreen;
 import sample.SlideScreen;
 import sample.WelcomeScreen;
 import states.ClientState;
 import util.Transferable;
+import javafx.scene.input.KeyCombination;
 
 @SuppressWarnings("serial")
 public class Main extends Application {
@@ -32,13 +35,13 @@ public class Main extends Application {
     public String id;
     public String username;
     public ClientState state;
+    //private ClientLauncher gui;
+
+    public ObjectInputStream in;
 
     private int port;
     private String host;
 
-    //private ClientLauncher gui;
-
-    public ObjectInputStream in;
     public ObjectOutputStream out;
 
     public Player player;
@@ -289,26 +292,30 @@ public class Main extends Application {
         StackPane base = new StackPane();
         Scene scene = new Scene(base);
 
-        // SlideScreen slideScreen = new SlideScreen();
-        // primaryStage.initStyle(StageStyle.UNDECORATED);
         WelcomeScreen welcomeScreen = new WelcomeScreen();
-        this.gameData.treasures.add(new Treasure(450,450));
-        this.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
-
-        GameScreen gameScreen = new GameScreen(this, base, primaryStage);
-        SlideScreen slideScreen = new SlideScreen(gameScreen, primaryStage);
-
-        base.getChildren().addAll(gameScreen, slideScreen);
 
         primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
             welcomeScreen.setAnchor(newValue.doubleValue());
         });
+        this.gameData.treasures.add(new Treasure(450,450));
+        this.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
 
+        GameScreen gameScreen = new GameScreen(this, base);
+        SlideScreen slideScreen = new SlideScreen(gameScreen);
+
+        gameScreen.requestFocus();
         this.gameData.players.put(this.player.clientID, this.player);
+        base.getChildren().addAll(gameScreen, slideScreen);
 
+        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        primaryStage.setFullScreen(true);
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        gameScreen.gameScreen.setPrefWidth(gameScreen.getWidth());
+        gameScreen.gameScreen.setPrefHeight(gameScreen.getHeight() - 40);
+
+        slideScreen.setPickOnBounds(false);
     }
 
 }

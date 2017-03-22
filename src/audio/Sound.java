@@ -104,4 +104,20 @@ public enum Sound {
 	public void setVol(double vol) {
 		if (this.type == AudioType.WAV) this.player.setVol((float) vol, (float) 0.5);
 	}
+	
+	/**
+	 * Gets volume of a Wav player
+	 * @return Volume as float
+	 */
+	public float getVol() {
+		return this.player.getVol();
+	}
+	
+	/**
+	 * Gets pan of a Wav player
+	 * @return Pan as float
+	 */
+	public float getPan() {
+		return this.player.getPan();
+	}
 }

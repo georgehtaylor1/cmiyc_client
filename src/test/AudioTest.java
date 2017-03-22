@@ -30,4 +30,11 @@ public class AudioTest {
 		Assert.assertEquals(true, Sound.MUSIC_MAIN.isRunning());
 	}
 	
+	/**
+	 * Test the setVol function
+	 */
+	@Test
+	public void testVol() {
+		//TODO
+	}
 }

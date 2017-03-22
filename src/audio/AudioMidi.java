@@ -85,5 +85,7 @@ public class AudioMidi implements AudioPlayer {
 	/**
 	 * Required by interface
 	 */
-	public void setVol(float vol, float pan) {};
+	public void setVol(float vol, float pan) {}
+	public float getVol() { return (float) 0.0; }
+	public float getPan() { return (float) 0.0; }
 }

@@ -76,4 +76,22 @@ public class AudioWav implements AudioPlayer {
 		if (-1 <= pan && pan <= 1) panControl.setValue(pan);
 		else Debug.say("Invalid pan parameter");
 	}
+	
+	/**
+	 * Gets volume
+	 * @return Volume as float
+	 */
+	public float getVol() {
+		FloatControl volControl = (FloatControl) player.getControl(FloatControl.Type.MASTER_GAIN);
+		return volControl.getValue();
+	}
+	
+	/**
+	 * Gets pan
+	 * @return Pan as float
+	 */
+	public float getPan() {
+		FloatControl panControl = (FloatControl) player.getControl(FloatControl.Type.PAN);
+		return panControl.getValue();
+	}
 }

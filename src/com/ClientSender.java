@@ -4,12 +4,12 @@ import java.util.HashMap;
 
 import constants.Commands.Action;
 import constants.Commands.Key;
-import game.Faction;
+import game.util.Movement;
 import states.ClientState;
 import util.Client;
+import util.Client.ConnectionState;
 import util.Debug;
 import util.Transferable;
-import util.Client.ConnectionState;
 
 public class ClientSender implements Runnable {
 
@@ -54,13 +54,9 @@ public class ClientSender implements Runnable {
 
 		Action action = Action.UPDATE_MOVEMENT;
 		HashMap<Key, Object> map = new HashMap<Key, Object>();
+		Movement _mov = new Movement(this.client.id, this.client.player.position, this.client.player.direction, this.client.player.battery);
 
-		map.put( Key.POSITION, this.client.player.position );
-
-		if (this.client.player.faction == Faction.SECURITY) {
-			map.put(Key.DIRECTION, this.client.player.direction);
-			map.put( Key.BATTERY, this.client.player.battery );
-		}
+		map.put( Key.POSITION, _mov );
 
 		return (new Transferable(action, map));
 

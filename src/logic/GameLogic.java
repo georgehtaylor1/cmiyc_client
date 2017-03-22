@@ -2,6 +2,7 @@ package logic;
 
 import java.util.HashMap;
 
+import constants.Commands.Action;
 import constants.Commands.Key;
 import game.Faction;
 import game.Obstacle;
@@ -16,6 +17,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import launcher.Main;
 import util.Maths;
+import util.Transferable;
 
 /**
  * The main logic of the game.
@@ -125,6 +127,9 @@ public class GameLogic {
 	                                              // treasures (FOR THIEVES)
 	        	if (GameSettings.Arena.exit.at(client.client.player.position, 20)) {
 	        		client.client.player.state = PlayerState.ESCAPED;
+	        		HashMap<Key, Object> map = new HashMap<Key, Object>();
+        			map.put(Key.PLAYER_STATE, client.client.player.state);
+        			client.client.send(new Transferable(Action.UPDATE_CLIENT_STATE, map));
 	        	}
 	        	else {
 		            Treasure tempT = null; // Saves a treasures to be collected
@@ -151,7 +156,10 @@ public class GameLogic {
 		                HashMap<Key, Object> map = new HashMap<Key, Object>();
 		                map.put(Key.TREASURE_ID, tempT.id);
 		                map.put(Key.TREASURE_STATE, TreasureState.PICKED);
-		                //client.send(new Transferable(Action.UPDATE_TREASURE_STATE, new HashMap<Key, Object>()));
+		                client.client.send(new Transferable(Action.UPDATE_TREASURE_STATE, map));
+		                map = new HashMap<Key, Object>();
+		                map.put(Key.SCORE, client.client.gameData.thiefScore);
+		                client.client.send(new Transferable(Action.UPDATE_THIEF_SCORE, map));
 		            }
 		
 		            try { // Adds a little delay so villains won't spam action button.
@@ -187,7 +195,10 @@ public class GameLogic {
 		                HashMap<Key, Object> map = new HashMap<Key, Object>();
 		                map.put(Key.CLIENT_ID, id);
 		                map.put(Key.PLAYER_STATE, PlayerState.CAUGHT);
-		                //client.send(new Transferable(Action.UPDATE_PLAYER_STATE, new HashMap<Key, Object>()));
+		                client.client.send(new Transferable(Action.UPDATE_PLAYER_STATE, map));
+		                map = new HashMap<Key, Object>();
+		                map.put(Key.SCORE, client.client.gameData.thiefScore);
+		                client.client.send(new Transferable(Action.UPDATE_THIEF_SCORE, map));
 		            }
 		
 		            try { // Adds a little delay so guards won't spam action button.
@@ -205,8 +216,12 @@ public class GameLogic {
         	if (this.secHome.contains(tempX,tempY)) {
         		if (client.client.player.battery < GameSettings.Security.fullBattery) {
 	        		client.client.player.battery += (GameSettings.Security.chargeValue);
-	        		if (client.client.player.state == PlayerState.STUCK)
+	        		if (client.client.player.state == PlayerState.STUCK) {
 	    				client.client.player.state = PlayerState.NORMAL;
+		        		HashMap<Key, Object> map = new HashMap<Key, Object>();
+	        			map.put(Key.PLAYER_STATE, client.client.player.state);
+	        			client.client.send(new Transferable(Action.UPDATE_CLIENT_STATE, map));
+	        		}
         		}
         		else
         			client.client.player.battery = 1;
@@ -217,6 +232,9 @@ public class GameLogic {
 	        		if (client.client.player.battery <= GameSettings.Security.noBattery) {
 	        			client.client.player.battery = GameSettings.Security.noBattery;
 	        			client.client.player.state = PlayerState.STUCK;
+	        			HashMap<Key, Object> map = new HashMap<Key, Object>();
+	        			map.put(Key.PLAYER_STATE, client.client.player.state);
+	        			client.client.send(new Transferable(Action.UPDATE_CLIENT_STATE, map));
 	        		}
 	        	}
         	}

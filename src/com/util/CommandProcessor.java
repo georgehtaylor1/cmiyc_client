@@ -1,11 +1,15 @@
 package com.util;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import constants.Commands.Key;
 import game.Camera;
+import game.Faction;
+import game.Player;
 import game.states.PlayerState;
 import game.states.TreasureState;
+import game.util.Movement;
 import states.ClientState;
 import util.Client;
 import util.Transferable;
@@ -39,7 +43,14 @@ public class CommandProcessor implements Runnable {
 	
 	private void processTransferable( Transferable _data ) {
 		switch( _data.action ) {
-			
+			case ADD_PLAYER:
+				Player _p = new Player((String) _data.object.get(Key.CLIENT_ID));
+				_p.faction = (Faction) _data.object.get(Key.FACTION);
+				client.gameData.players.put(_p.clientID, _p);
+				break;
+			case REMOVE_PLAYER:
+				client.gameData.players.remove(_data.object.get(Key.CLIENT_ID));
+				break;
 			case UPDATE_PLAYER_STATE:
 				this.client.gameData.players.get(_data.object.get(Key.CLIENT_ID)).state = (PlayerState) _data.object.get(Key.PLAYER_STATE);
 				break;
@@ -47,6 +58,12 @@ public class CommandProcessor implements Runnable {
 				this.client.state = (ClientState) _data.object.get(Key.CLIENT_STATE);
 				break;
 			case UPDATE_MOVEMENT:
+				@SuppressWarnings("unchecked") ArrayList<Movement> _poss = (ArrayList<Movement>) _data.object.get(Key.PLAYER_POSITIONS);
+				for(Movement e : _poss) {
+					client.gameData.players.get(e.clientID).position = e.position;
+					client.gameData.players.get(e.clientID).direction = e.direction;
+					client.gameData.players.get(e.clientID).battery = e.battery;
+				}
 				break;
 			case UPDATE_TREASURE_STATE:
 				for (int i=0; i < client.gameData.treasures.size(); i++) {
@@ -59,8 +76,9 @@ public class CommandProcessor implements Runnable {
 			case DEPLOY_CAMERA:
 				client.gameData.cameras.add((Camera) _data.object.get(Key.CAMERA));
 				break;
-			// Actions to be completed above
-			// Actions to be added below
+			case UPDATE_THIEF_SCORE:
+				client.gameData.thiefScore = (double) _data.object.get(Key.SCORE);
+				break;
 			default:
 				break;
 			

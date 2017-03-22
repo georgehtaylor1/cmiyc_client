@@ -4,9 +4,9 @@ import java.io.File;
 import java.net.URL;
 
 /**
- * Sound
- * @author harvey
  * Stores location of audio files and provides an interface to play them
+ * 
+ * @author harvey
  */
 public enum Sound {
 	//FOOTSTEP ("footsteps.wav"), MUSIC_MAIN ("output.midi", AudioType.MIDI), DOOR_OPEN ("open.wav"), BATTERY_LOW ("battery.wav"), WINDOW_BREAK ("window.wav");
@@ -63,6 +63,14 @@ public enum Sound {
 	 */
 	public void stop() {
 		this.player.stop();
+	}
+	
+	/**
+	 * Checks if player is running or not
+	 * @return True if player is running, false otherwise
+	 */
+	public boolean isRunning() {
+		return this.player.isRunning();
 	}
 	
 	/**

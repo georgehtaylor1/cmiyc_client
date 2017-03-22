@@ -12,9 +12,9 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Sequencer;
 
 /**
- * AudioMidi
- * @author harvey
  * Audio player for MIDI files
+ * 
+ * @author harvey
  */
 public class AudioMidi implements AudioPlayer {
 	

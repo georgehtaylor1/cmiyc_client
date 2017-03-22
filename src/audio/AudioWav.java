@@ -10,9 +10,9 @@ import javax.sound.sampled.FloatControl;
 import util.Debug;
 
 /**
- * AudioWav
- * @author harvey
  * Player for a Wav file
+ * 
+ * @author harvey
  */
 public class AudioWav implements AudioPlayer {
 	private boolean running;

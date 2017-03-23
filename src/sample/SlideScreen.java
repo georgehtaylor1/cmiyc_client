@@ -122,6 +122,8 @@ public class SlideScreen extends AnchorPane implements Observer {
         together.setTop(connection);
         together.setBottom(settings);
         slider.getChildren().addAll(together);
+        settings.setSpacing(3.0);
+        connection.setSpacing(3.0);
 
 
 

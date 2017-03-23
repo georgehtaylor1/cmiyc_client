@@ -28,12 +28,14 @@ public class GameScreen extends AnchorPane{
     public Client client;
     public Pane pane;
     public Pane base;
+    public Handler aiHandler;
 
     public GameScreen(Main _main, Pane base) throws IOException {
         this.gameScreen = new BorderPane();
         this.gameControls = new ToolBar();
         this.client = _main.client;
         this.base = base;
+        aiHandler = new Handler(client.gameData);
         this.drawScene();
     }
 
@@ -45,12 +47,10 @@ public class GameScreen extends AnchorPane{
         logic = new GameLogic(client, base, offsetHolder);
         drawer = new GameDrawer(client, pane, offsetHolder);
 
+        aiHandler.addPlayers(0, 0);
+        aiHandler.start();
         
-        Handler h = new Handler(client.gameData);
-        h.addPlayers(0, 0);
-        h.start();
-        
-        Thread drawerThread = new Thread(new GameLoop(drawer, logic, h));
+        Thread drawerThread = new Thread(new GameLoop(drawer, logic, aiHandler));
         drawerThread.setDaemon(true);
         drawerThread.start();
         gameScreen.setCenter(pane);

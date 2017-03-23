@@ -11,16 +11,18 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import sample.GameScreen;
 import sample.SlideScreen;
+import sample.SlideScreenData;
 import sample.WelcomeScreen;
 import util.Client;
 
 public class Main extends Application {
 
 	public Client client;
+	private SlideScreenData obData;
 
 	public Main() {
-		
-		this.client = new Client("u-n-owen");
+		this.obData = new SlideScreenData();
+		this.client = new Client("u-n-owen", obData);
 
 	}
 
@@ -50,6 +52,7 @@ public class Main extends Application {
 		
 		GameScreen gameScreen = new GameScreen( this, base );
 		SlideScreen slideScreen = new SlideScreen( gameScreen );
+		obData.addObserver(slideScreen);
 
 		gameScreen.requestFocus();
 		//this.client.player.faction = Faction.THIEF;

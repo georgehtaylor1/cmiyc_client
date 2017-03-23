@@ -173,8 +173,8 @@ public class GameLogic {
 		
 		        	Treasure tempT = null; // Saves a treasures to be collected
 		            for (Treasure t : client.gameData.treasures) {
-			            if (t.state == TreasureState.UNPICKED) {
-		            		double tx = t.position.x;
+		            	if (t.state == TreasureState.UNPICKED) {
+			                double tx = t.position.x;
 			                double ty = t.position.y;
 			                
 			                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math
@@ -185,7 +185,7 @@ public class GameLogic {
 			                    tempT = t; // This is the treasure to delete
 			                    break;
 			                }
-			            }
+		            	}
 		            }
 		            collectTreasure(tempT);
 	        	}

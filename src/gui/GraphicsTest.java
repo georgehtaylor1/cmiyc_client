@@ -71,6 +71,7 @@ public class GraphicsTest extends Application {
         stage.sizeToScene();
         stage.setTitle("Graphics test");
 
+        // Terminate this application when there is a close request
         stage.setOnCloseRequest(e -> {
             e.consume();
             h.end();

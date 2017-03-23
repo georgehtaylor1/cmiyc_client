@@ -38,16 +38,16 @@ import util.Client;
  */
 public class GameDrawer {
 
-    private Client main;
+    private Client client;
     private Pane pane;
 
     /**
      * Constructs a new GameDrawer. Default graphics settings are set on the
      * Pane.
      */
-    public GameDrawer(Client main, Pane pane) {
+    public GameDrawer(Client client, Pane pane) {
         this.pane = pane;
-        this.main = main;
+        this.client = client;
         pane.setStyle(
                 "-fx-background-color: " + FxUtils.toRGBCode(Color.GREY) + ";");
     }
@@ -61,7 +61,7 @@ public class GameDrawer {
 
         // Make obstacle shapes
         ArrayList<Rectangle> obstacleRects = new ArrayList<>();
-        for (Obstacle o : main.gameData.obstacles) {
+        for (Obstacle o : client.gameData.obstacles) {
             Rectangle r = new Rectangle(o.width * vals.scaleFactor,
                     o.height * vals.scaleFactor);
             r.setX(o.topLeft.x * vals.scaleFactor + vals.xOffset);
@@ -71,7 +71,7 @@ public class GameDrawer {
 
         // Make treasure shapes
         ArrayList<TreasureShape> treasureShapes = new ArrayList<>();
-        for (Treasure t : main.gameData.treasures) {
+        for (Treasure t : client.gameData.treasures) {
             treasureShapes.add(new TreasureShape(t, vals.scaleFactor,
                     vals.xOffset, vals.yOffset));
         }
@@ -83,7 +83,7 @@ public class GameDrawer {
         // Make camera shapes
         ArrayList<Rectangle> cameraShapes = new ArrayList<>();
         ArrayList<CenteredShape> cameraVisionShapes = new ArrayList<>();
-        for (Camera c : main.gameData.cameras) {
+        for (Camera c : client.gameData.cameras) {
 
             Rectangle box = new Rectangle(cameraBoxLength, cameraBoxLength);
             box.setX((c.position.x * vals.scaleFactor - cameraBoxLength / 2.0)
@@ -113,7 +113,7 @@ public class GameDrawer {
         ArrayList<Circle> allyShapes = new ArrayList<>();
         ArrayList<Circle> enemyShapes = new ArrayList<>();
 
-        for (Map.Entry<String, Player> entry : main.gameData.players
+        for (Map.Entry<String, Player> entry : client.gameData.players
                 .entrySet()) {
 
             Player player = entry.getValue();
@@ -145,13 +145,13 @@ public class GameDrawer {
                 thiefVisionShapes.add(new CenteredShape(vision));
             }
 
-            if (player.clientID.equals(main.player.clientID)) {
+            if (player.clientID.equals(client.player.clientID)) {
                 // Active player
                 c.setStroke(Color.WHITE);
                 c.setStrokeWidth(1.5 * vals.scaleFactor);
             }
 
-            if (main.player.faction == player.faction) {
+            if (client.player.faction == player.faction) {
                 c.setFill(Color.GREEN);
                 allyShapes.add(c);
             } else {
@@ -247,7 +247,7 @@ public class GameDrawer {
         ArrayList<Shape> occEnemyShapes = new ArrayList<>();
         ArrayList<Shape> occHiddenSecurityLightShapes = new ArrayList<>();
 
-        if (main.player.faction == Faction.SECURITY) {
+        if (client.player.faction == Faction.SECURITY) {
             // Security
 
             for (CenteredShape light : occSecurityLightShapes) {
@@ -415,14 +415,14 @@ public class GameDrawer {
         ch.addAll(occObstacleShapes);
         ch.addAll(occTreasureShapes);
 
-        if (main.player.faction == Faction.SECURITY) {
+        if (client.player.faction == Faction.SECURITY) {
             // Security
             ch.addAll(occShadowTreasureShapes);
         }
 
         ch.addAll(occEnemyShapes);
 
-        if (main.player.faction == Faction.SECURITY) {
+        if (client.player.faction == Faction.SECURITY) {
             // Security
             for (CenteredShape s : occSecurityLightShapes) {
                 ch.add(s.shape);
@@ -444,7 +444,7 @@ public class GameDrawer {
         ch.addAll(allyShapes);
 
         Text battery = new Text(
-                "Battery : " + String.valueOf(main.player.battery));
+                "Battery : " + String.valueOf(client.player.battery));
         battery.setId("fancytext");
         battery.setX(0.0);
         battery.setY(0.0);

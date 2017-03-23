@@ -22,6 +22,9 @@ public class GameLoop implements Runnable {
         this.aiHandler = aiHandler;
     }
 
+    /**
+     * Make this GameLoop print FPS to stdout.
+     */
     public void showFps() {
         this.fps = true;
     }
@@ -53,6 +56,7 @@ public class GameLoop implements Runnable {
             try {
                 Thread.sleep(16);
             } catch (InterruptedException e) {
+                // Break out of the main loop
                 break;
             }
 

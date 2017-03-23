@@ -376,9 +376,9 @@ public class GameDrawer {
 		innerArena.setFill(Colors.fog);
 		
 		Rectangle chargeArea = new Rectangle(GameSettings.Arena.secHomeSize.getWidth() * scalingRatio + offsetHolder.offsetW, GameSettings.Arena.secHomeSize.getHeight() * scalingRatio + offsetHolder.offsetH);
-		chargeArea.setX(0);
-		chargeArea.setY(0);
-		chargeArea.setFill(Color.AQUAMARINE);
+		chargeArea.setX(0 + offsetHolder.offsetW);
+		chargeArea.setY(0 + offsetHolder.offsetH);
+		chargeArea.setFill(Color.CADETBLUE);
 
 		// Draw
 		List<Node> ch = pane.getChildren();

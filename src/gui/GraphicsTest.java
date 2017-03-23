@@ -81,9 +81,11 @@ public class GraphicsTest extends Application {
         // requestFocus() only works after stage.show().
         pane.requestFocus();
 
-        Thread drawerThread = new Thread(new GameLoop(drawer, logic, h));
-        drawerThread.setDaemon(true);
-        drawerThread.start();
+        GameLoop loop = new GameLoop(drawer, logic, h);
+        loop.showFps();
+        Thread loopThread = new Thread(loop);
+        loopThread.setDaemon(true);
+        loopThread.start();
 
     }
 

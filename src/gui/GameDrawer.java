@@ -53,7 +53,6 @@ public class GameDrawer {
 		this.main = main;
 		this.offsetHolder = offsetHolder;
 		pane.setStyle("-fx-background-color: " + FxUtils.toRGBCode(Color.GREY) + ";");
-		//pane.setPrefSize(GraphicsSettings.initialPaneWidth, GraphicsSettings.initalPaneHeight);
 		
 		this.width = new SimpleDoubleProperty();
 		this.width.bind(pane.widthProperty());
@@ -69,9 +68,6 @@ public class GameDrawer {
 		// Scaling 
 		double w = width.get();
 		double h = height.get();
-		/**w = w/GraphicsSettings.initialPaneWidth;
-		h = h/GraphicsSettings.initalPaneHeight;
-		scalingRatio = w/h;*/
 		double ratio = w / h;
 		this.scalingRatio = ratio / initialRatio;
 		if (scalingRatio == 1)

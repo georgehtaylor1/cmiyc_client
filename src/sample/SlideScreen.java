@@ -2,8 +2,6 @@ package sample;
 
 import java.io.IOException;
 
-import gui.GameDrawer;
-import gui.OffsetHolder;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -13,11 +11,8 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import logic.GameLogic;
-import util.Client;
 
 /**
  * Created by Gerta on 24/02/2017.
@@ -40,10 +35,6 @@ public class SlideScreen extends AnchorPane {
     private ToggleButton security;
     private ToggleButton thief;
     private ToggleGroup group2;
-    private Pane pane;
-    private GameLogic gameLogic;
-    private GameDrawer gameDrawer;
-    private Client launcherMain;
     private GameScreen gameScreen;
 
     private TranslateTransition sliderTranslation;
@@ -65,13 +56,7 @@ public class SlideScreen extends AnchorPane {
         this.security = new ToggleButton("Security");
         this.thief = new ToggleButton("Thief");
         this.group2 = new ToggleGroup();
-        
-        OffsetHolder offsetHolder = new OffsetHolder();
 
-        this.launcherMain = new Client();
-        this.pane = new Pane();
-        this.gameLogic = new GameLogic(launcherMain, pane, offsetHolder);
-        this.gameDrawer = new GameDrawer(launcherMain, pane, offsetHolder);
         this.gameScreen = gameScreen;
         this.drawScene();
     }
@@ -154,6 +139,11 @@ public class SlideScreen extends AnchorPane {
         });*/
 
         connect.setOnAction(e -> {
+        	String[] _data = host.getText().split(":");
+        	String _ip = _data[0];
+        	int _port = Integer.parseInt(_data[1]);
+        	String _name = username.getText();
+        	gameScreen.client.connect(_port, _ip, _name);
             gameScreen.drawGame();
         });
 

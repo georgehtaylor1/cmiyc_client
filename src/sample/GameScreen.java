@@ -3,7 +3,6 @@ package sample;
 import java.io.IOException;
 
 import ai.handler.Handler;
-import game.constants.GameSettings;
 import gui.GameDrawer;
 import gui.OffsetHolder;
 import javafx.geometry.Rectangle2D;
@@ -12,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
+import launcher.Main;
 import logic.GameLogic;
 import logic.GameLoop;
 import util.Client;
@@ -25,14 +25,16 @@ public class GameScreen extends AnchorPane{
     private ToolBar gameControls;
     private GameLogic logic;
     private GameDrawer drawer;
-    private Client launcherMain;
+    public Main main;
+    public Client client;
     public Pane pane;
     public Pane base;
 
-    public GameScreen(Client _main, Pane base) throws IOException {
+    public GameScreen(Main _main, Pane base) throws IOException {
         this.gameScreen = new BorderPane();
         this.gameControls = new ToolBar();
-        this.launcherMain = _main;
+        this.main = main;
+        this.client = _main.client;
         this.base = base;
         this.drawScene();
     }
@@ -42,11 +44,11 @@ public class GameScreen extends AnchorPane{
         pane.setPrefSize(base.getWidth(), base.getHeight());
         OffsetHolder offsetHolder = new OffsetHolder();
         
-        logic = new GameLogic(launcherMain, base, offsetHolder);
-        drawer = new GameDrawer(launcherMain, pane, offsetHolder);
+        logic = new GameLogic(client, base, offsetHolder);
+        drawer = new GameDrawer(client, pane, offsetHolder);
 
         
-        Handler h = new Handler(launcherMain.gameData);
+        Handler h = new Handler(client.gameData);
         h.addPlayers(0, 0);
         h.start();
         

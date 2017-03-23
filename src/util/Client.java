@@ -3,6 +3,7 @@ package util;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -37,8 +38,10 @@ public class Client {
 	public ClientReceiver receiver;
 	
 	public volatile ConcurrentLinkedQueue<Transferable> queue;
-
-	public Client() { this( "Unknown" ); }
+	
+	public int port;
+	public String host;
+	private Socket socket;
 	
 	public Client( String _username ) {
 		this.id = UUID.randomUUID().toString();
@@ -54,7 +57,38 @@ public class Client {
 		this.gameData = new GameData();
 	}
 	
-	public void connect( ObjectInputStream _in, ObjectOutputStream _out ) {
+	public void connect(int _port, String _host, String _username) {
+		this.username = _username;
+		this.port = _port;
+		this.host = _host;
+		
+		System.out.println("Connecting to " + host + ":" + port);
+
+		ObjectOutputStream out = null;
+		ObjectInputStream in = null;
+
+		try { socket = new Socket( this.host, this.port ); }
+		catch( Exception _exception ) { return; } // TODO: Socket Error output
+
+		try {
+			out = new ObjectOutputStream( socket.getOutputStream() );
+			out.flush();
+		}
+		catch( Exception _exception ) {
+			Debug.say("Error Occured while trying to open new Output Stream.");
+			return;
+		}
+
+		try { in = new ObjectInputStream( socket.getInputStream() ); }
+		catch( Exception _exception ) {
+			Debug.say("Error Occured while trying to open new Input Stream.");
+			return;
+		}
+		
+		this.start(in, out);
+	}
+	
+	public void start( ObjectInputStream _in, ObjectOutputStream _out ) {
 		this.in = _in;
 		this.out = _out;
 
@@ -88,6 +122,12 @@ public class Client {
 
 		this.sender = null;
 		this.receiver = null;
+		
+		try {
+			this.socket.close();
+		} catch (IOException e) {
+			Debug.say("Cannot close socket");
+		}
 		
 	}
 

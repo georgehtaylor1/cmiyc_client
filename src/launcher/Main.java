@@ -1,71 +1,24 @@
 package launcher;
 
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-
 import game.Obstacle;
 import game.Treasure;
 import javafx.application.Application;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import sample.GameScreen;
 import sample.SlideScreen;
 import sample.WelcomeScreen;
 import util.Client;
-import util.Debug;
 
 public class Main extends Application {
 
 	public Client client;
-	
-	private int port;
-	private String host;
-
-	private void connect() {
-
-		Socket socket;
-		ObjectOutputStream out = null;
-		ObjectInputStream in = null;
-
-		try { socket = new Socket( this.host, this.port ); }
-		catch( Exception _exception ) { return; } // TODO: Socket Error output
-
-		try {
-			out = new ObjectOutputStream( socket.getOutputStream() );
-			out.flush();
-		}
-		catch( Exception _exception ) {
-			Debug.say("Error Occured while trying to open new Output Stream.");
-			return;
-		}
-
-		try { in = new ObjectInputStream( socket.getInputStream() ); }
-		catch( Exception _exception ) {
-			Debug.say("Error Occured while trying to open new Input Stream.");
-			return;
-		}
-
-		this.client.connect( in, out );
-	}
-
-
-	public void disconnect() {
-		this.client.disconnect();
-	}
 
 	public Main() {
 		
-		this.client = new Client();
-		
-		
-		// HARDCODED!!!!!!!!!
-		this.port = 1234;
-		this.host = "localhost";
+		this.client = new Client("u-n-owen");
 
 	}
 
@@ -80,13 +33,13 @@ public class Main extends Application {
 
 		WelcomeScreen welcomeScreen = new WelcomeScreen();
 
-		/**primaryStage.widthProperty().addListener( ( observable, oldValue, newValue ) -> {
+		primaryStage.widthProperty().addListener( ( observable, oldValue, newValue ) -> {
 			welcomeScreen.setAnchor( newValue.doubleValue() );
-		} );*/
+		} );
 		this.client.gameData.treasures.add( new Treasure( 450, 450 ) );
 		this.client.gameData.obstacles.add( new Obstacle( 400, 340, 120, 80 ) );
 
-		GameScreen gameScreen = new GameScreen( this.client, base );
+		GameScreen gameScreen = new GameScreen( this, base );
 		SlideScreen slideScreen = new SlideScreen( gameScreen );
 
 		gameScreen.requestFocus();

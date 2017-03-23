@@ -1,7 +1,10 @@
 package sample;
 
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
+import ai.handler.Handler;
 import game.Faction;
 import game.GameMode;
 import javafx.animation.TranslateTransition;
@@ -16,12 +19,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import states.ClientState;
 
 /**
  * Created by Gerta on 24/02/2017.
  */
 
-public class SlideScreen extends AnchorPane {
+public class SlideScreen extends AnchorPane implements Observer {
 
     private AnchorPane slider;
     private ToolBar toolBar;
@@ -32,10 +36,13 @@ public class SlideScreen extends AnchorPane {
     private Button disconnect;
     private ToggleButton ready;
     private Button mainButton;
+    private Button singlePlayer;
     private Text text;
     private Text text2;
     private VBox connection;
     private VBox settings;
+    
+    private State state;
 
     private ToggleButton toggleButton2vs3;
     private ToggleButton toggleButton1vs2;
@@ -50,7 +57,8 @@ public class SlideScreen extends AnchorPane {
 
     private TranslateTransition sliderTranslation;
 
-    public SlideScreen(GameScreen gameScreen) throws IOException {
+    public SlideScreen(GameScreen gameScreen) throws IOException  {
+    	this.state = State.START;
         this.slider = new AnchorPane();
         this.together = new BorderPane();
         this.mainButton = new Button("Start");
@@ -59,6 +67,7 @@ public class SlideScreen extends AnchorPane {
         this.host = new TextField();
         this.connect = new Button("Connect");
         this.disconnect = new Button("Disconnect");
+        this.singlePlayer = new Button("Single Player");
         this.ready = new ToggleButton("Ready");
         this.text = new Text();
         text.setId("fancytext");
@@ -97,7 +106,7 @@ public class SlideScreen extends AnchorPane {
         host.setPromptText("host");
 
 
-        connection.getChildren().addAll(username, host, connect);
+        connection.getChildren().addAll(username, host, connect, singlePlayer);
         connection.setDisable(false);
         HBox hBox1 = new HBox();
         hBox1.getChildren().addAll(toggleButton1vs2, toggleButton2vs3);
@@ -131,6 +140,7 @@ public class SlideScreen extends AnchorPane {
         connect.setId("connect");
         disconnect.setId("connect");
         ready.setId("connect");
+        singlePlayer.setId("connect");
         toggleButton1vs2.setId("1vs2");
         toggleButton2vs3.setId("2vs3");
         security.setId("security");
@@ -186,6 +196,13 @@ public class SlideScreen extends AnchorPane {
         
         toggleButton2vs3.setOnAction(e -> {
         	gameScreen.client.player.mode = GameMode.LONG;
+        });
+        
+        singlePlayer.setOnAction(e -> {
+        	Handler h = new Handler(gameScreen.client.gameData);
+        	h.addPlayers(1, 1);
+        	h.start();
+        	gameScreen.drawGame();
         });
 
         this.mainButton.setOnAction(e -> {
@@ -244,7 +261,7 @@ public class SlideScreen extends AnchorPane {
            case LOBBY:
                mainButton.setText("Menu");
                slider.getChildren().clear();
-               text.setText("Players found: 0");
+               text.setText("Players found: " + this.gameScreen.client.obData.getPlayers());
         	   slider.getChildren().add(text);
                slider.getChildren().add(ready);
                break;
@@ -259,6 +276,21 @@ public class SlideScreen extends AnchorPane {
                break;
        }
     }
+
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (this.state == State.LOBBY) {
+			if (this.gameScreen.client.obData.getState() == ClientState.PLAYING)
+				this.setState(State.INGAME);
+			else
+				this.setState(State.LOBBY);
+		}
+		else if (this.state == State.INGAME) {
+			if (this.gameScreen.client.obData.getState() == ClientState.POSTGAME)
+				this.state = State.START;
+		}
+	}
 }
 
 

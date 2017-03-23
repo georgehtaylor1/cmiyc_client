@@ -1,5 +1,7 @@
 package gui;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 import util.Client;
@@ -128,8 +131,8 @@ public class GameDrawer {
                 Arc light = new Arc(
                         player.position.x * vals.scaleFactor + vals.xOffset,
                         player.position.y * vals.scaleFactor + vals.yOffset,
-                        GameSettings.Security.lightRadius * vals.scaleFactor,
-                        GameSettings.Security.lightRadius * vals.scaleFactor,
+                        calcFlashlightRadius(player.battery) * vals.scaleFactor,
+                        calcFlashlightRadius(player.battery) * vals.scaleFactor,
                         -Math.toDegrees(player.direction) - arcAngle / 2.0,
                         arcAngle);
                 light.setType(ArcType.ROUND);
@@ -179,7 +182,7 @@ public class GameDrawer {
         for (CenteredShape light : securityLightShapes) {
 
             CenteredShape occLight = new CenteredShape(light.shape,
-                    light.getCenterX(), light.getCenterY());
+                    light.getCenterX(), light.getCenterY(), light.getRadius());
 
             for (Line edge : obstacleEdges) {
                 Polygon occlusion = calcOcclusion(light.getCenterX(),
@@ -188,9 +191,8 @@ public class GameDrawer {
             }
 
             RadialGradient lightGrad = makeRadialGradient(light.getCenterX(),
-                    light.getCenterY(),
-                    GameSettings.Security.lightRadius * vals.scaleFactor,
-                    Colors.flashlight, Color.TRANSPARENT);
+                    light.getCenterY(), light.getRadius(), Colors.flashlight,
+                    Color.TRANSPARENT);
 
             occLight.shape.setFill(lightGrad);
             occSecurityLightShapes.add(occLight);
@@ -201,7 +203,8 @@ public class GameDrawer {
         for (CenteredShape vision : cameraVisionShapes) {
 
             CenteredShape occVision = new CenteredShape(vision.shape,
-                    vision.getCenterX(), vision.getCenterY());
+                    vision.getCenterX(), vision.getCenterY(),
+                    vision.getRadius());
 
             for (Line edge : obstacleEdges) {
                 Polygon occlusion = calcOcclusion(vision.getCenterX(),
@@ -210,8 +213,7 @@ public class GameDrawer {
             }
 
             RadialGradient visionGrad = makeRadialGradient(vision.getCenterX(),
-                    vision.getCenterY(),
-                    GameSettings.Security.lightRadius * vals.scaleFactor,
+                    vision.getCenterY(), vision.getRadius(),
                     Colors.cameraVision, Color.TRANSPARENT);
 
             occVision.shape.setFill(visionGrad);
@@ -223,7 +225,8 @@ public class GameDrawer {
         for (CenteredShape vision : thiefVisionShapes) {
 
             CenteredShape occVision = new CenteredShape(vision.shape,
-                    vision.getCenterX(), vision.getCenterY());
+                    vision.getCenterX(), vision.getCenterY(),
+                    vision.getRadius());
 
             for (Line edge : obstacleEdges) {
                 Polygon occlusion = calcOcclusion(vision.getCenterX(),
@@ -265,9 +268,7 @@ public class GameDrawer {
 
                     RadialGradient obstacleGrad = makeRadialGradient(
                             light.getCenterX(), light.getCenterY(),
-                            GameSettings.Security.lightRadius
-                                    * vals.scaleFactor,
-                            Color.WHITE, Color.TRANSPARENT);
+                            light.getRadius(), Color.WHITE, Color.TRANSPARENT);
 
                     occObstacle.setFill(obstacleGrad);
                     occObstacleShapes.add(occObstacle);
@@ -281,9 +282,8 @@ public class GameDrawer {
 
                         RadialGradient treasureGrad = makeRadialGradient(
                                 light.getCenterX(), light.getCenterY(),
-                                GameSettings.Security.lightRadius
-                                        * vals.scaleFactor,
-                                Colors.treasure, Color.TRANSPARENT);
+                                light.getRadius(), Colors.treasure,
+                                Color.TRANSPARENT);
 
                         occTreasure.setFill(treasureGrad);
                         occTreasureShapes.add(occTreasure);
@@ -296,9 +296,7 @@ public class GameDrawer {
 
                     RadialGradient enemyGrad = makeRadialGradient(
                             light.getCenterX(), light.getCenterY(),
-                            GameSettings.Security.lightRadius
-                                    * vals.scaleFactor,
-                            Color.RED, Color.TRANSPARENT);
+                            light.getRadius(), Color.RED, Color.TRANSPARENT);
 
                     occEnemy.setFill(enemyGrad);
                     occEnemyShapes.add(occEnemy);
@@ -335,9 +333,8 @@ public class GameDrawer {
 
                     RadialGradient lightGrad = makeRadialGradient(
                             light.getCenterX(), light.getCenterY(),
-                            GameSettings.Security.lightRadius
-                                    * vals.scaleFactor,
-                            Colors.flashlight, Color.TRANSPARENT);
+                            light.getRadius(), Colors.flashlight,
+                            Color.TRANSPARENT);
 
                     occLight.setFill(lightGrad);
                     occHiddenSecurityLightShapes.add(occLight);
@@ -385,8 +382,7 @@ public class GameDrawer {
 
                     RadialGradient enemyGrad = makeRadialGradient(
                             vision.getCenterX(), vision.getCenterY(),
-                            GameSettings.Security.lightRadius
-                                    * vals.scaleFactor,
+                            GameSettings.Thief.visionRadius * vals.scaleFactor,
                             Color.RED, Color.TRANSPARENT);
 
                     occEnemy.setFill(enemyGrad);
@@ -443,12 +439,15 @@ public class GameDrawer {
 
         ch.addAll(allyShapes);
 
-        Text battery = new Text(
-                "Battery : " + String.valueOf(client.player.battery));
-        battery.setId("fancytext");
-        battery.setX(0.0);
-        battery.setY(0.0);
-        pane.getChildren().add(battery);
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        Text batText = new Text(
+                "Battery : " + df.format(client.player.battery));
+        batText.setId("fancytext");
+        batText.setFont(new Font(32));
+        batText.setX(30);
+        batText.setY(30);
+        pane.getChildren().add(batText);
     }
 
     /**
@@ -459,6 +458,18 @@ public class GameDrawer {
 
         return new RadialGradient(0, 0, centerX, centerY, radius, false,
                 CycleMethod.NO_CYCLE, new Stop(0, start), new Stop(1, end));
+    }
+
+    private static double calcFlashlightRadius(double battery) {
+        final double maxRadius = GameSettings.Security.lightRadius;
+        final double minRadius = GameSettings.Security.lightRadius / 2.0;
+
+        if (battery >= 1.0) {
+            return maxRadius;
+        } else {
+            // battery < 1.0
+            return (maxRadius - minRadius) * battery + minRadius;
+        }
     }
 
     /**

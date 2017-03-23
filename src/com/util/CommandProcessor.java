@@ -47,9 +47,11 @@ public class CommandProcessor implements Runnable {
 				Player _p = new Player((String) _data.object.get(Key.CLIENT_ID));
 				_p.faction = (Faction) _data.object.get(Key.FACTION);
 				client.gameData.players.put(_p.clientID, _p);
+				client.obData.setPlayers(client.obData.getPlayers() + 1);
 				break;
 			case REMOVE_PLAYER:
 				client.gameData.players.remove(_data.object.get(Key.CLIENT_ID));
+				client.obData.setPlayers(client.obData.getPlayers() - 1);
 				break;
 			case UPDATE_PLAYER_STATE:
 				this.client.gameData.players.get(_data.object.get(Key.CLIENT_ID)).state = (PlayerState) _data.object.get(Key.PLAYER_STATE);

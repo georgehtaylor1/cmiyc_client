@@ -14,6 +14,7 @@ import constants.Commands.Action;
 import constants.Commands.Key;
 import game.GameData;
 import game.Player;
+import sample.SlideScreenData;
 import states.ClientState;
 
 public class Client {
@@ -42,7 +43,9 @@ public class Client {
 	public String host;
 	private Socket socket;
 	
-	public Client( String _username ) {
+	public SlideScreenData obData;
+	
+	public Client( String _username, SlideScreenData _data ) {
 		this.id = UUID.randomUUID().toString();
 		this.username = _username;
 		this.player = new Player( this.id );
@@ -54,6 +57,7 @@ public class Client {
 		this.sender = null;
 		this.queue = new ConcurrentLinkedQueue<Transferable>();
 		this.gameData = new GameData();
+		this.obData = _data;
 	}
 	
 	public void connect(int _port, String _host, String _username) {

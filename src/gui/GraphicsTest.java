@@ -49,7 +49,7 @@ public class GraphicsTest extends Application {
         tom.faction = Faction.THIEF;
         tom.position = new Position(100, 150);
         main.client.gameData.players.put("tom", tom);
-        main.client.player.faction = Faction.THIEF;
+        main.client.player.faction = Faction.SECURITY;
         main.client.gameData.players.put(main.client.player.clientID,
                 main.client.player);
 

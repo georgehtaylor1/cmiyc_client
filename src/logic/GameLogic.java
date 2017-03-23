@@ -77,7 +77,8 @@ public class GameLogic {
             return;
         }
 
-        this.fullMap = new Rectangle(20, 20, 800, 450); // Must change this to
+        this.fullMap = new Rectangle(20, 20, 800, 490); // Must change this to
+
         // inner arena size
         this.walkableArea = this.fullMap;
         this.chargingArea = new Rectangle(20, 20, 50, 50); // FIXME: This is

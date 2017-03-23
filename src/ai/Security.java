@@ -216,7 +216,8 @@ public class Security extends AI {
 	 *            The speed at which the AI can move for this movement
 	 */
 	private void updateMovingPosition(Position goal, double turnSpeed, double moveSpeed) {
-		double goalForce = 1;
+		//The goal should exert more force than any other surrounding obstacles, too high and it won't look natural though
+		double goalForce = 1.3;
 
 		Obstacle obstruction = null;
 		double dist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();

@@ -1,6 +1,5 @@
 package util;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -115,7 +114,7 @@ public class Client {
 		this.connectionState = ConnectionState.DISCONNECTED;
 
 		try { this.in.close(); this.out.close(); }
-		catch( IOException _exception ) { /* Then they are already closed */ }
+		catch( Exception _exception ) { /* Then they are already closed */ }
 
 		this.in = null;
 		this.out = null;
@@ -125,7 +124,7 @@ public class Client {
 		
 		try {
 			this.socket.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Debug.say("Cannot close socket");
 		}
 		

@@ -26,6 +26,7 @@ public class SlideScreen extends AnchorPane {
     private TextField username;
     private TextField host;
     private Button connect;
+    private Button disconnect;
     private Button mainButton;
 
     private ToggleButton toggleButton2vs3;
@@ -47,6 +48,7 @@ public class SlideScreen extends AnchorPane {
         this.username = new TextField();
         this.host = new TextField();
         this.connect = new Button("Connect");
+        this.disconnect = new Button("Disconnect");
 
         //toggleButton for number of players
         this.toggleButton1vs2 = new ToggleButton("1vs2");
@@ -102,6 +104,10 @@ public class SlideScreen extends AnchorPane {
         AnchorPane.setBottomAnchor(together, 0.0);
         AnchorPane.setLeftAnchor(together, 0.0);
         AnchorPane.setRightAnchor(together, 0.0);
+        
+        AnchorPane.setTopAnchor(disconnect, 0.0);
+        AnchorPane.setLeftAnchor(disconnect, 0.0);
+        AnchorPane.setRightAnchor(disconnect, 0.0);
 
         toolBar.setPrefWidth(Constants.ScreenWidth);
         slider.setId("slider");
@@ -111,6 +117,7 @@ public class SlideScreen extends AnchorPane {
         username.setId("username");
         host.setId("host");
         connect.setId("connect");
+        disconnect.setId("connect");
        // cancel.setId("cancel");
         toggleButton1vs2.setId("1vs2");
         toggleButton2vs3.setId("2vs3");
@@ -145,6 +152,14 @@ public class SlideScreen extends AnchorPane {
         	String _name = username.getText();
         	gameScreen.client.connect(_port, _ip, _name);
             gameScreen.drawGame();
+            slider.getChildren().clear();
+            slider.getChildren().add(disconnect);
+        });
+        
+        disconnect.setOnAction(e -> {
+        	gameScreen.client.disconnect();
+        	slider.getChildren().clear();
+        	slider.getChildren().add(together);
         });
 
         this.mainButton.setOnAction(e -> {

@@ -25,7 +25,6 @@ public class GameScreen extends AnchorPane{
     private ToolBar gameControls;
     private GameLogic logic;
     private GameDrawer drawer;
-    public Main main;
     public Client client;
     public Pane pane;
     public Pane base;
@@ -33,7 +32,6 @@ public class GameScreen extends AnchorPane{
     public GameScreen(Main _main, Pane base) throws IOException {
         this.gameScreen = new BorderPane();
         this.gameControls = new ToolBar();
-        this.main = main;
         this.client = _main.client;
         this.base = base;
         this.drawScene();

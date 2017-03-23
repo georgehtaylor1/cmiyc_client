@@ -25,9 +25,7 @@ public class Security extends AI {
 	private final double moveSpeedSlow = 0.4;
 
 	private Position nextWaypoint;
-	private Position tempWaypoint;
 	private Position previousWaypoint;
-	private Obstacle obstruction;
 
 	private double leftVol;
 	private double rightVol;
@@ -142,10 +140,10 @@ public class Security extends AI {
 		}
 
 		// Are we currently scanning
-		Debug.say("Checking scan " + currentScanStep + " " + this.state);
+		//Debug.say("Checking scan " + currentScanStep + " " + this.state);
 		if (this.getState() == SecurityState.SCANNING) {
 			currentScanStep++;
-			Debug.say("Scanning");
+			//Debug.say("Scanning");
 			if (currentScanStep > scanTime) {
 				currentScanStep = 0;
 				setState(SecurityState.MOVING);
@@ -279,11 +277,6 @@ public class Security extends AI {
 	private void updateListeningPosition() {
 		turn(leftVol > rightVol, moveSpeedFast);
 		Helper.move(this, getHandler().gameData.obstacles, moveSpeedSlow);
-	}
-
-	private void updateChasePosition() {
-		// TODO Auto-generated method stub
-
 	}
 
 	/**

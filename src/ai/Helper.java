@@ -24,7 +24,7 @@ public class Helper {
 	 * @return The closest treasure to the given point
 	 */
 	public static Treasure getClosestTreasure(Position p, ArrayList<Treasure> treasures) {
-		Treasure minTreasure = treasures.get(0);
+		Treasure minTreasure = null;
 		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
 
 		for (Treasure t : treasures) {
@@ -38,6 +38,64 @@ public class Helper {
 		}
 		return minTreasure;
 
+	}
+
+	/**
+	 * Get a random start position that does not conflict with any existing players, treasures or obstacles
+	 * 
+	 * @param treasures
+	 *            The list of treasures to avoid
+	 * @param obstacles
+	 *            The list of obstacles to avoid
+	 * @param players
+	 *            The list of players to avoid
+	 * @param rand
+	 *            The random generator
+	 * @return A valid random position
+	 */
+	public static Position getStartPositon(ArrayList<Treasure> treasures, ArrayList<Obstacle> obstacles,
+			ArrayList<Player> players, Random rand) {
+		boolean notValid = true;
+		Position p = new Position();
+		while (notValid) {
+			int x = rand.nextInt(GameSettings.Arena.outerSize.width);
+			int y = rand.nextInt(GameSettings.Arena.outerSize.height);
+			p = new Position(x, y);
+			notValid = !validPos(p, treasures, obstacles, players, 10);
+		}
+		return p;
+	}
+
+	/**
+	 * A helper for the previous version it indicates whether a given position is valid
+	 * 
+	 * @param p
+	 *            The position to test
+	 * @param treasures
+	 *            The list of treasures to be avoided
+	 * @param obstacles
+	 *            The list of obstacles to be avoided
+	 * @param players
+	 *            The list of players to be avoided
+	 * @param threshold
+	 *            The threshold distance to avoid players and treasures
+	 * @return A boolean indicating whether or not the given position is valid
+	 */
+	private static boolean validPos(Position p, ArrayList<Treasure> treasures, ArrayList<Obstacle> obstacles,
+			ArrayList<Player> players, double threshold) {
+		for (Treasure t : treasures)
+			if (p.at(t.position, threshold))
+				return false;
+
+		for (Obstacle o : obstacles)
+			if (o.contains(p))
+				return false;
+
+		for (Player player : players)
+			if (player.position.at(p, threshold))
+				return false;
+
+		return true;
 	}
 
 	/**
@@ -228,14 +286,17 @@ public class Helper {
 		if (p.x > o.bottomRight.x)
 			return new Position(o.bottomRight.x, p.y);
 		return p;
-
 	}
 
 	/**
-	 * Move the AI forward without allowing it to move through walls
+	 * Move the given player with the given speed without allowing them to pass through an obstacle
 	 * 
+	 * @param p
+	 *            The player to move
+	 * @param obstacles
+	 *            The obstacles in the arena
 	 * @param speed
-	 *            The speed the AI should move
+	 *            The speed that the player should move at
 	 */
 	public static void move(Player p, ArrayList<Obstacle> obstacles, double speed) {
 		boolean xFine = true;

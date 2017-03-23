@@ -103,11 +103,11 @@ public class Security extends AI {
 	 * @see ai.AI#updateState()
 	 */
 	protected void updateState() {
-		
-		if(nextWaypoint == null){
+
+		if (nextWaypoint == null) {
 			nextWaypoint = Helper.getRandomFreePosition(getHandler().gameData);
 		}
-		
+
 		// Get the volume for the players
 		leftVol = Maths.getLeftVolume(this.position, this.clientID, this.getHandler().gameData.players);
 		rightVol = Maths.getLeftVolume(this.position, this.clientID, this.getHandler().gameData.players);
@@ -135,10 +135,10 @@ public class Security extends AI {
 			}
 		}
 
-		if(chasingPlayer != null && this.position.at(chasingPlayer.position, GameSettings.Security.catchRadius)){
+		if (chasingPlayer != null && this.position.at(chasingPlayer.position, GameSettings.Security.catchRadius)) {
 			//chasingPlayer.
 		}
-		
+
 		if (!inRange && chasingPlayer != null) {
 			setState(SecurityState.MOVING);
 			chasingPlayer = null;
@@ -152,7 +152,7 @@ public class Security extends AI {
 			if (currentScanStep > scanTime) {
 				currentScanStep = 0;
 				setState(SecurityState.MOVING);
-				Position newWaypoint = Helper.getNextWayPoint(nextWaypoint, getHandler().gameData.treasures,
+				Position newWaypoint = Helper.getNextWayPoint(nextWaypoint, getHandler().gameData,
 						this.previousWaypoint, 0.5, getHandler().gameData.rand);
 				previousWaypoint = nextWaypoint;
 				nextWaypoint = newWaypoint;

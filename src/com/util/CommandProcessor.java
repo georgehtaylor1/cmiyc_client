@@ -82,7 +82,7 @@ public class CommandProcessor implements Runnable {
 				break;
 			case UPDATE_TREASURE_STATE:
 				for (int i=0; i < client.gameData.treasures.size(); i++) {
-					if (client.gameData.treasures.get(i).id == _data.object.get(Key.TREASURE_ID)) {
+					if (client.gameData.treasures.get(i).id == (String) _data.object.get(Key.TREASURE_ID)) {
 						client.gameData.treasures.get(i).state = (TreasureState) _data.object.get(Key.TREASURE_STATE);
 						break;
 					}

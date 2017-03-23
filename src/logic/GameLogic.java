@@ -7,6 +7,7 @@ import constants.Commands.Action;
 import constants.Commands.Key;
 import game.Camera;
 import game.Faction;
+import game.GameMode;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
@@ -235,24 +236,28 @@ public class GameLogic {
         }
         
         // winning condition TODO
-        /**for (Map.Entry<String, Player> e : client.gameData.players.entrySet()) {
+        int oog = 0;
+        for (Map.Entry<String, Player> e : client.gameData.players.entrySet()) {
         	Player p = e.getValue();
-        	if (p.faction == Faction.THIEF && (p.state != PlayerState.CAUGHT || p.state != PlayerState.ESCAPED)) {
+        	if (p.faction == Faction.THIEF && (p.state != PlayerState.CAUGHT && p.state != PlayerState.ESCAPED)) {
         		break;
         	}
-        	
-        	Debug.say("Security: " + Math.round(client.gameData.secScore));
-        	Debug.say("Thief: " + Math.round(client.gameData.thiefScore));
-        	
-        	if (client.gameData.secScore > client.gameData.thiefScore) {
-        		Debug.say("Security wins!");
-        	} else if (client.gameData.secScore < client.gameData.thiefScore) {
-        		Debug.say("Thief wins!");
-        	} else {
-        		Debug.say("It's a draw!");
-        	}
-        	this.gameEnd = true;
-        }*/
+        	else if (p.faction == Faction.THIEF)
+        		oog++;
+        }
+        if ((this.client.gameData.mode == GameMode.SHORT && oog == 1) || (this.client.gameData.mode == GameMode.LONG && oog == 2)) {
+	        Debug.say("Security: " + Math.round(client.gameData.secScore));
+	    	Debug.say("Thief: " + Math.round(client.gameData.thiefScore));
+	    	
+	    	if (client.gameData.secScore > client.gameData.thiefScore) {
+	    		Debug.say("Security wins!");
+	    	} else if (client.gameData.secScore < client.gameData.thiefScore) {
+	    		Debug.say("Thief wins!");
+	    	} else {
+	    		Debug.say("It's a draw!");
+	    	}
+	    	this.gameEnd = true;
+        }
         
     }
     
@@ -311,6 +316,10 @@ public class GameLogic {
     		client.gameData.cameras.add(deployed);
     		client.player.cameras--;
     		Debug.say("deployed camera. Left " + client.player.cameras + " cameras");
+    		
+    		HashMap<Key, Object> map = new HashMap<Key, Object>();
+    		map.put(Key.CAMERA, deployed);
+    		client.send(new Transferable(Action.DEPLOY_CAMERA, map));
     		
     		try {
     			Thread.sleep(200);

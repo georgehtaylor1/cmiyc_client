@@ -11,6 +11,7 @@ import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
+import game.states.PlayerState;
 import game.states.TreasureState;
 import gui.util.FxUtils;
 import javafx.beans.property.DoubleProperty;
@@ -99,11 +100,16 @@ public class GameDrawer {
 			r.setY(o.topLeft.y * scalingRatio + offsetHolder.offsetH);
 			obstacleRects.add(r);
 		}
-
+		
+		Rectangle exit = new Rectangle(GameSettings.Arena.exitSize.width * scalingRatio, GameSettings.Arena.exitSize.height * scalingRatio);
+		exit.setX(GameSettings.Arena.exit.x * scalingRatio + offsetHolder.offsetW);
+		exit.setY(GameSettings.Arena.exit.y * scalingRatio + offsetHolder.offsetH);
+		exit.setFill(Color.GOLDENROD);
+		
 		// Make treasure shapes
 		ArrayList<TreasureShape> treasureShapes = new ArrayList<>();
 		for (Treasure t : main.gameData.treasures) {
-			if (t.state == TreasureState.UNPICKED || (t.state == TreasureState.PICKED && main.player.faction == Faction.SECURITY))
+			if (t.state.equals(TreasureState.UNPICKED) || (t.state.equals(TreasureState.PICKED) && main.player.faction.equals(Faction.SECURITY)))
 			treasureShapes.add(new TreasureShape(t, scalingRatio, offsetHolder.offsetW, offsetHolder.offsetH));
 		}
 
@@ -143,7 +149,7 @@ public class GameDrawer {
 					GameSettings.Player.radius * scalingRatio);
 
 			// Vision
-			if (player.faction == Faction.SECURITY) {
+			if (player.faction.equals(Faction.SECURITY)) {
 				// Security
 				Arc light = new Arc(player.position.x * scalingRatio + offsetHolder.offsetW, player.position.y * scalingRatio + offsetHolder.offsetH,
 						GameSettings.Security.lightRadius * scalingRatio,
@@ -153,10 +159,12 @@ public class GameDrawer {
 				securityLightShapes.add(new CenteredShape(light));
 			} else {
 				// Thief
-				Circle vision = new Circle(GameSettings.Thief.visionRadius * scalingRatio);
-				vision.setCenterX(player.position.x * scalingRatio + offsetHolder.offsetW);
-				vision.setCenterY(player.position.y * scalingRatio + offsetHolder.offsetH);
-				thiefVisionShapes.add(new CenteredShape(vision));
+				if (player.state.equals(PlayerState.NORMAL)) {
+					Circle vision = new Circle(GameSettings.Thief.visionRadius * scalingRatio);
+					vision.setCenterX(player.position.x * scalingRatio + offsetHolder.offsetW);
+					vision.setCenterY(player.position.y * scalingRatio + offsetHolder.offsetH);
+					thiefVisionShapes.add(new CenteredShape(vision));
+				}
 			}
 
 			if (player.clientID.equals(main.player.clientID)) {
@@ -165,10 +173,10 @@ public class GameDrawer {
 				c.setStrokeWidth(1.5);
 			}
 
-			if (main.player.faction == player.faction) {
+			if (main.player.faction.equals(player.faction)) {
 				c.setFill(Color.GREEN);
 				allyShapes.add(c);
-			} else {
+			} else if (player.state.equals(PlayerState.NORMAL)) {
 				enemyShapes.add(c);
 			}
 		}
@@ -232,7 +240,7 @@ public class GameDrawer {
 		ArrayList<Shape> occEnemyShapes = new ArrayList<>();
 		ArrayList<Shape> occHiddenSecurityLightShapes = new ArrayList<>();
 
-		if (main.player.faction == Faction.SECURITY) {
+		if (main.player.faction.equals(Faction.SECURITY)) {
 			// Security
 
 			for (CenteredShape light : occSecurityLightShapes) {
@@ -255,7 +263,7 @@ public class GameDrawer {
 
 				// Treasures
 				for (TreasureShape t : treasureShapes) {
-					if (t.treasure.state == TreasureState.UNPICKED) {
+					if (t.treasure.state.equals(TreasureState.UNPICKED) || (t.treasure.state.equals(TreasureState.PICKED) && main.player.faction.equals(Faction.SECURITY))) {
 						Shape occTreasure = Shape.intersect(t.circle, light.shape);
 
 						RadialGradient treasureGrad = makeRadialGradient(light.getCenterX(), light.getCenterY(),
@@ -323,7 +331,7 @@ public class GameDrawer {
 
 				// Treasures
 				for (TreasureShape t : treasureShapes) {
-					if (t.treasure.state == TreasureState.UNPICKED) {
+					if (t.treasure.state.equals(TreasureState.UNPICKED)) {
 						Shape occTreasure = Shape.intersect(t.circle, vision.shape);
 
 						RadialGradient treasureGrad = makeRadialGradient(vision.getCenterX(), vision.getCenterY(),
@@ -366,6 +374,11 @@ public class GameDrawer {
 				450 * scalingRatio);
 		outerArena.setFill(Colors.outerArena);
 		innerArena.setFill(Colors.fog);
+		
+		Rectangle chargeArea = new Rectangle(GameSettings.Arena.secHomeSize.getWidth() * scalingRatio + offsetHolder.offsetW, GameSettings.Arena.secHomeSize.getHeight() * scalingRatio + offsetHolder.offsetH);
+		chargeArea.setX(0);
+		chargeArea.setY(0);
+		chargeArea.setFill(Color.AQUAMARINE);
 
 		// Draw
 		List<Node> ch = pane.getChildren();
@@ -374,14 +387,17 @@ public class GameDrawer {
 		ch.add(innerArena);
 		ch.addAll(occObstacleShapes);
 		ch.addAll(occTreasureShapes);
+		if (main.player.faction == Faction.THIEF)
+			ch.add(exit);
+		ch.add(chargeArea);
 
-		if (main.player.faction == Faction.SECURITY) {
+		if (main.player.faction.equals(Faction.SECURITY)) {
 			ch.addAll(occShadowTreasureShapes);
 		}
 
 		ch.addAll(occEnemyShapes);
 
-		if (main.player.faction == Faction.SECURITY) {
+		if (main.player.faction.equals(Faction.SECURITY)) {
 			for (CenteredShape s : occSecurityLightShapes) {
 				ch.add(s.shape);
 			}

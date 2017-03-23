@@ -3,23 +3,27 @@ package sample;
 import java.io.IOException;
 
 import ai.handler.Handler;
+
 import gui.GameDrawer;
-import gui.OffsetHolder;
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
+
 import launcher.Main;
+
 import logic.GameLogic;
 import logic.GameLoop;
+
 import util.Client;
 
 /**
  * Created by Gerta on 24/02/2017.
  */
-public class GameScreen extends AnchorPane{
+public class GameScreen extends AnchorPane {
 
     public BorderPane gameScreen;
     private ToolBar gameControls;
@@ -42,20 +46,19 @@ public class GameScreen extends AnchorPane{
     public void drawGame() {
         pane = new Pane();
         pane.setPrefSize(base.getWidth(), base.getHeight());
-        OffsetHolder offsetHolder = new OffsetHolder();
-        
-        logic = new GameLogic(client, base, offsetHolder);
-        drawer = new GameDrawer(client, pane, offsetHolder);
+
+        logic = new GameLogic(client, base);
+        drawer = new GameDrawer(client, pane);
 
         aiHandler.addPlayers(0, 0);
         aiHandler.start();
-        
-        Thread drawerThread = new Thread(new GameLoop(drawer, logic, aiHandler));
+
+        Thread drawerThread =
+                new Thread(new GameLoop(drawer, logic, aiHandler));
         drawerThread.setDaemon(true);
         drawerThread.start();
         gameScreen.setCenter(pane);
     }
-
 
     public void drawScene() {
 
@@ -63,11 +66,11 @@ public class GameScreen extends AnchorPane{
 
         gameControls.setPrefHeight(40);
         this.getChildren().addAll(gameScreen, gameControls);
-        
+
         Screen screen = Screen.getPrimary();
-		Rectangle2D bounds = screen.getVisualBounds();
-		gameScreen.setPrefWidth( bounds.getWidth() );
-		gameScreen.setPrefHeight( bounds.getHeight() - 40 );
+        Rectangle2D bounds = screen.getVisualBounds();
+        gameScreen.setPrefWidth(bounds.getWidth());
+        gameScreen.setPrefHeight(bounds.getHeight() - 40);
 
         AnchorPane.setBottomAnchor(gameControls, 0.0);
         AnchorPane.setRightAnchor(gameControls, 0.0);

@@ -1,19 +1,23 @@
 package gui;
 
 import ai.handler.Handler;
+
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.util.Position;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
 import launcher.Main;
+
 import logic.GameLogic;
 import logic.GameLoop;
 
@@ -22,11 +26,11 @@ import logic.GameLoop;
  */
 public class GraphicsTest extends Application {
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    public static void main(String[] args) {
+        launch(args);
+    }
 
-	public void start(Stage stage) {
+    public void start(Stage stage) {
         Main main = new Main();
 
         main.client.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
@@ -44,28 +48,30 @@ public class GraphicsTest extends Application {
         Player tom = new Player("tom");
         tom.faction = Faction.THIEF;
         tom.position = new Position(100, 150);
-        //main.client.gameData.players.put("tom", tom);
+        // main.client.gameData.players.put("tom", tom);
         main.client.player.faction = Faction.SECURITY;
-        main.client.gameData.players.put(main.client.player.clientID, main.client.player);
+        main.client.gameData.players.put(main.client.player.clientID,
+                main.client.player);
 
         Player bob = new Player("bob");
         main.client.gameData.players.put("bob", bob);
 
-        main.client.gameData.cameras.add(new Camera(500, 300, Math.PI / 6.0, 50));
+        main.client.gameData.cameras
+                .add(new Camera(500, 300, Math.PI / 6.0, 50));
 
         Pane pane = new Pane();
-        OffsetHolder o = new OffsetHolder();
-        GameLogic logic = new GameLogic(main.client, pane, o);
-        GameDrawer drawer = new GameDrawer(main.client, pane, o);
+        GameLogic logic = new GameLogic(main.client, pane);
+        GameDrawer drawer = new GameDrawer(main.client, pane);
 
         Scene scene = new Scene(pane);
-       
+
         scene.setCursor(Cursor.CROSSHAIR); // TODO We could add our own cursor
                                            // later.
         stage.setScene(scene);
         stage.sizeToScene();
         stage.setTitle("Graphics test");
 
+        // Terminate this application when there is a close request
         stage.setOnCloseRequest(e -> {
             e.consume();
             h.end();
@@ -76,9 +82,11 @@ public class GraphicsTest extends Application {
         // requestFocus() only works after stage.show().
         pane.requestFocus();
 
-        Thread drawerThread = new Thread(new GameLoop(drawer, logic, h));
-        drawerThread.setDaemon(true);
-        drawerThread.start();
+        GameLoop loop = new GameLoop(drawer, logic, h);
+        loop.showFps();
+        Thread loopThread = new Thread(loop);
+        loopThread.setDaemon(true);
+        loopThread.start();
 
     }
 

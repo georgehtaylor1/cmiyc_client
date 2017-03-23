@@ -2,6 +2,8 @@ package sample;
 
 import java.io.IOException;
 
+import game.Faction;
+import game.GameMode;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -12,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 /**
@@ -27,7 +30,12 @@ public class SlideScreen extends AnchorPane {
     private TextField host;
     private Button connect;
     private Button disconnect;
+    private ToggleButton ready;
     private Button mainButton;
+    private Text text;
+    private Text text2;
+    private VBox connection;
+    private VBox settings;
 
     private ToggleButton toggleButton2vs3;
     private ToggleButton toggleButton1vs2;
@@ -37,18 +45,28 @@ public class SlideScreen extends AnchorPane {
     private ToggleButton thief;
     private ToggleGroup group2;
     private GameScreen gameScreen;
+    
+    private boolean gameRendering;
 
     private TranslateTransition sliderTranslation;
 
     public SlideScreen(GameScreen gameScreen) throws IOException {
         this.slider = new AnchorPane();
         this.together = new BorderPane();
-        this.mainButton = new Button("Find Game");
+        this.mainButton = new Button("Start");
         this.toolBar = new ToolBar(mainButton);
         this.username = new TextField();
         this.host = new TextField();
         this.connect = new Button("Connect");
         this.disconnect = new Button("Disconnect");
+        this.ready = new ToggleButton("Ready");
+        this.text = new Text();
+        text.setId("fancytext");
+        this.text2 = new Text();
+        text2.setId("fancytext");
+        this.connection = new VBox();
+        this.settings = new VBox();
+        this.gameRendering = false;
 
         //toggleButton for number of players
         this.toggleButton1vs2 = new ToggleButton("1vs2");
@@ -79,17 +97,15 @@ public class SlideScreen extends AnchorPane {
         host.setPromptText("host");
 
 
-        VBox vBox1 = new VBox();
-        vBox1.getChildren().addAll(username, host, connect);
-        vBox1.setDisable(false);
-        VBox vBox2 = new VBox();
+        connection.getChildren().addAll(username, host, connect);
+        connection.setDisable(false);
         HBox hBox1 = new HBox();
         hBox1.getChildren().addAll(toggleButton1vs2, toggleButton2vs3);
         HBox hBox2 = new HBox();
         hBox2.getChildren().addAll(security, thief);
-        vBox2.getChildren().addAll(hBox1, hBox2);
-        together.setTop(vBox1);
-        together.setBottom(vBox2);
+        settings.getChildren().addAll(hBox1, hBox2);
+        together.setTop(connection);
+        together.setBottom(settings);
         slider.getChildren().addAll(together);
 
 
@@ -104,10 +120,6 @@ public class SlideScreen extends AnchorPane {
         AnchorPane.setBottomAnchor(together, 0.0);
         AnchorPane.setLeftAnchor(together, 0.0);
         AnchorPane.setRightAnchor(together, 0.0);
-        
-        AnchorPane.setTopAnchor(disconnect, 0.0);
-        AnchorPane.setLeftAnchor(disconnect, 0.0);
-        AnchorPane.setRightAnchor(disconnect, 0.0);
 
         toolBar.setPrefWidth(Constants.ScreenWidth);
         slider.setId("slider");
@@ -118,13 +130,15 @@ public class SlideScreen extends AnchorPane {
         host.setId("host");
         connect.setId("connect");
         disconnect.setId("connect");
-       // cancel.setId("cancel");
+        ready.setId("connect");
         toggleButton1vs2.setId("1vs2");
         toggleButton2vs3.setId("2vs3");
         security.setId("security");
         thief.setId("thief");
 
-
+        toggleButton2vs3.setToggleGroup(group);
+        toggleButton1vs2.setToggleGroup(group);
+        toggleButton1vs2.setSelected(true);
         security.setToggleGroup(group2);
         security.setSelected(true);
         thief.setToggleGroup(group2);
@@ -140,26 +154,38 @@ public class SlideScreen extends AnchorPane {
         sliderTranslation.setRate(1);
         sliderTranslation.play();
 
-        /*this.cancel.setOnAction(e -> {
-            sliderTranslation.setRate(1);
-            sliderTranslation.play();
-        });*/
-
         connect.setOnAction(e -> {
         	String[] _data = host.getText().split(":");
         	String _ip = _data[0];
         	int _port = Integer.parseInt(_data[1]);
         	String _name = username.getText();
         	gameScreen.client.connect(_port, _ip, _name);
-            gameScreen.drawGame();
-            slider.getChildren().clear();
-            slider.getChildren().add(disconnect);
+        	if (!gameRendering) {
+        		gameScreen.drawGame();
+        		gameRendering = true;
+        	}
+            setState(State.FIND);
         });
         
         disconnect.setOnAction(e -> {
         	gameScreen.client.disconnect();
-        	slider.getChildren().clear();
-        	slider.getChildren().add(together);
+        	setState(State.START);
+        });
+        
+        security.setOnAction(e -> {
+        	gameScreen.client.player.faction = Faction.SECURITY;
+        });
+        
+        thief.setOnAction(e -> {
+        	gameScreen.client.player.faction = Faction.THIEF;
+        });
+        
+        toggleButton1vs2.setOnAction(e -> {
+        	gameScreen.client.player.mode = GameMode.SHORT;
+        });
+        
+        toggleButton2vs3.setOnAction(e -> {
+        	gameScreen.client.player.mode = GameMode.LONG;
         });
 
         this.mainButton.setOnAction(e -> {
@@ -176,18 +202,6 @@ public class SlideScreen extends AnchorPane {
 
     }
 
-    public void SetActive() {
-        toggleButton1vs2.setToggleGroup(group);
-        toggleButton1vs2.setSelected(true);
-        toggleButton2vs3.setToggleGroup(group);
-    }
-
-    public void securitySetActive() {
-        toggleButton1vs2.setToggleGroup(group);
-        toggleButton1vs2.setSelected(true);
-        toggleButton2vs3.setToggleGroup(group);
-    }
-
     public void slideIn(){
         sliderTranslation.setRate(-1);
         sliderTranslation.play();
@@ -202,27 +216,46 @@ public class SlideScreen extends AnchorPane {
     public enum State {
         START,
         FIND,
-        STOP_FIND,
-        ENTER,
-        LEAVE
+        LOBBY,
+        INGAME
     }
 
     public void setState(State state) {
        switch (state) {
            case START:
-               this.mainButton.setText("Start");
+        	   slider.getChildren().clear();
+        	   together.getChildren().clear();
+               together.setTop(connection);
+               together.setBottom(settings);
+        	   slider.getChildren().addAll(together);
+               mainButton.setText("Start");
                break;
            case FIND:
-               this.mainButton.setText("Find");
+        	   slider.getChildren().clear();
+        	   text.setText("Players found: 0");
+        	   VBox vbox1 = new VBox();
+        	   vbox1.getChildren().add(text);
+        	   vbox1.getChildren().add(disconnect);
+        	   together.getChildren().clear();
+               together.setTop(vbox1);
+               slider.getChildren().add(together);
+               mainButton.setText("Finding...");
                break;
-           case STOP_FIND:
-                this.mainButton.setText("Stop Find");
+           case LOBBY:
+               mainButton.setText("Menu");
+               slider.getChildren().clear();
+               text.setText("Players found: 0");
+        	   slider.getChildren().add(text);
+               slider.getChildren().add(ready);
                break;
-           case ENTER:
-               this.mainButton.setText("Enter");
-               break;
-           case LEAVE:
-               this.mainButton.setText("Leave");
+           case INGAME:
+               mainButton.setText("Menu");
+               slider.getChildren().clear();
+               text.setText("Thieves Captured: 0");
+               text2.setText("Thieves Escaped: 0");
+               slider.getChildren().add(text);
+               slider.getChildren().add(text2);
+               slider.getChildren().add(disconnect);
                break;
        }
     }

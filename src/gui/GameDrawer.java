@@ -16,7 +16,6 @@ import gui.util.FxUtils;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -29,6 +28,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
 import util.Client;
 
 /**
@@ -399,7 +399,10 @@ public class GameDrawer {
 
 		ch.addAll(allyShapes);
 
-		TextField battery = new TextField("Battery : " + String.valueOf(main.player.battery));
+		Text battery = new Text("Battery : " + String.valueOf(main.player.battery));
+		battery.setId("fancytext");
+		battery.setX(0.0);
+		battery.setY(0.0);
 		pane.getChildren().add(battery);
 	}
 

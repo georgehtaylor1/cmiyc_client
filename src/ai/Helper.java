@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import game.Faction;
+import game.GameData;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
@@ -13,6 +14,27 @@ import game.util.Position;
 import util.Maths;
 
 public class Helper {
+
+	/**
+	 * Get a random valid position in the arena
+	 * 
+	 * @param gameData
+	 *            The game data containing obstacles, treasures and players to be avoided
+	 * @return A valid random position
+	 */
+	public static Position getRandomFreePosition(GameData gameData) {
+
+		Position p = new Position();
+		p.x = gameData.rand.nextInt(GameSettings.Arena.size.width);
+		p.y = gameData.rand.nextInt(GameSettings.Arena.size.height);
+
+		while (!validPos(p, gameData.treasures, gameData.obstacles, new ArrayList<Player>(gameData.players.values()),
+				5)) {
+			p.x = gameData.rand.nextInt(GameSettings.Arena.size.width);
+			p.y = gameData.rand.nextInt(GameSettings.Arena.size.height);
+		}
+		return p;
+	}
 
 	/**
 	 * Get the treasure that is closest to the given point
@@ -36,6 +58,7 @@ public class Helper {
 				}
 			}
 		}
+
 		return minTreasure;
 
 	}
@@ -233,7 +256,7 @@ public class Helper {
 		double blDist = Maths.dist(p, o.bottomLeft);
 		double trDist = Maths.dist(p, o.topRight);
 		double brDist = Maths.dist(p, o.bottomRight);
-		
+
 		Position minPos = null;
 		double minDist = Maths.dist(p, wayPoint);
 
@@ -246,17 +269,17 @@ public class Helper {
 			minDist = trDist;
 			minPos = o.topRight;
 		}
-		
+
 		if (blDist < minDist) {
 			minDist = blDist;
 			minPos = o.bottomLeft;
 		}
-		
+
 		if (brDist < minDist) {
 			minDist = brDist;
 			minPos = o.bottomRight;
 		}
-		
+
 		return minPos;
 	}
 

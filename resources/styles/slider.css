@@ -31,7 +31,7 @@
 }
 
 
-#1vs2 {
+#leftToggle {
     -fx-background-color: #404040;
     -fx-text-fill: white;
     -fx-pref-height: 30;
@@ -39,32 +39,34 @@
 
 }
 
-#1vs2:selected {
+#leftToggle:selected {
     -fx-background-color: #000000;
     -fx-text-fill: white;
     -fx-pref-width: 147;
-    -fx-effect: dropshadow(three-pass-box, white, 10, 0, 0, 0);
+    -fx-border-color: white;
+    -fx-border-width: 0px 0px 0px 3px;
 }
 
-#1vs2:hover {
+#leftToggle:hover {
     -fx-background-color: #606060;
 }
 
-#2vs3 {
+#rightToggle {
     -fx-background-color: #404040;
     -fx-text-fill: white;
     -fx-pref-height: 30;
     -fx-pref-width: 147;
 }
 
-#2vs3:selected {
+#rightToggle:selected {
     -fx-background-color: #000000;
     -fx-text-fill: white;
     -fx-pref-width: 147;
-    -fx-effect: dropshadow(three-pass-box, white, 10, 0, 0, 0);
+    -fx-border-color: white;
+    -fx-border-width: 0px 3px 0px 0px;
 }
 
-#2vs3:hover {
+#rightToggle:hover {
     -fx-background-color: #606060;
 }
 

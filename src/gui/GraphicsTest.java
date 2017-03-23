@@ -42,13 +42,13 @@ public class GraphicsTest extends Application {
         main.client.gameData.treasures.add(new Treasure(390, 400));
 
         Handler h = new Handler(main.client.gameData);
-        // h.addPlayers(0, 1);
+        h.addPlayers(1, 1);
         h.start();
 
         Player tom = new Player("tom");
         tom.faction = Faction.THIEF;
         tom.position = new Position(100, 150);
-        main.client.gameData.players.put("tom", tom);
+        // main.client.gameData.players.put("tom", tom);
         main.client.player.faction = Faction.SECURITY;
         main.client.gameData.players.put(main.client.player.clientID,
                 main.client.player);

@@ -26,17 +26,19 @@ public class CommandProcessor implements Runnable {
 	
 	public CommandProcessor( Client _client ) {
 		this.client = _client;
+		this.queue = new ConcurrentLinkedQueue<Transferable>();
+		this.monitor = new Object();
 	}
 	
 	public void run() {
 		
 		while( this.client.connectionState == Client.ConnectionState.CONNECTED ) {
 		
-			if( this.queue.isEmpty() ) {
+			/**if( this.queue.isEmpty() ) {
 				synchronized( this.monitor ) {
-					try { this.monitor.wait(); } catch( Exception _exception ) { /* God knows. */ }
+					try { this.monitor.wait(); } catch( Exception _exception ) { /* God knows.  }
 				}
-			}
+			}*/
 			
 			if( !this.queue.isEmpty() ){ this.processTransferable( this.queue.poll() ); }
 
@@ -70,16 +72,17 @@ public class CommandProcessor implements Runnable {
 				}
 				break;
 			case UPDATE_MOVEMENT:
-				@SuppressWarnings("unchecked") ArrayList<Movement> _poss = (ArrayList<Movement>) _data.object.get(Key.PLAYER_POSITIONS);
+				@SuppressWarnings("unchecked") ArrayList<Movement> _poss = (ArrayList<Movement>) _data.object.get(Key.UNDEFINED);
 				for(Movement e : _poss) {
-					client.gameData.players.get(e.clientID).position = e.position;
+					client.gameData.players.get(e.clientID).position.x = e.position.x;
+					client.gameData.players.get(e.clientID).position.y = e.position.y;
 					client.gameData.players.get(e.clientID).direction = e.direction;
 					client.gameData.players.get(e.clientID).battery = e.battery;
 				}
 				break;
 			case UPDATE_TREASURE_STATE:
 				for (int i=0; i < client.gameData.treasures.size(); i++) {
-					if (client.gameData.treasures.get(i).id == _data.object.get(Key.TREASURE_ID)) {
+					if (client.gameData.treasures.get(i).id == (String) _data.object.get(Key.TREASURE_ID)) {
 						client.gameData.treasures.get(i).state = (TreasureState) _data.object.get(Key.TREASURE_STATE);
 						break;
 					}

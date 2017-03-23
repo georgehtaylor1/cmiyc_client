@@ -1,9 +1,12 @@
 package ai;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Random;
 
 import game.Faction;
+import game.GameData;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
@@ -13,6 +16,27 @@ import game.util.Position;
 import util.Maths;
 
 public class Helper {
+
+	/**
+	 * Get a random valid position in the arena
+	 * 
+	 * @param gameData
+	 *            The game data containing obstacles, treasures and players to be avoided
+	 * @return A valid random position
+	 */
+	public static Position getRandomFreePosition(GameData gameData) {
+
+		Position p = new Position();
+		p.x = gameData.rand.nextInt(GameSettings.Arena.size.width - 40) + 20;
+		p.y = gameData.rand.nextInt(GameSettings.Arena.size.height - 40) + 20;
+
+		while (!validPos(p, gameData.treasures, gameData.obstacles, new ArrayList<Player>(gameData.players.values()),
+				5)) {
+			p.x = gameData.rand.nextInt(GameSettings.Arena.size.width - 40) + 20;
+			p.y = gameData.rand.nextInt(GameSettings.Arena.size.height - 40) + 20;
+		}
+		return p;
+	}
 
 	/**
 	 * Get the treasure that is closest to the given point
@@ -36,6 +60,7 @@ public class Helper {
 				}
 			}
 		}
+
 		return minTreasure;
 
 	}
@@ -140,23 +165,28 @@ public class Helper {
 	 *            A double value representing the probability of a random waypoint being selected
 	 * @return The next waypoint to go to
 	 */
-	public static Position getNextWayPoint(Position p, ArrayList<Treasure> treasures, Position previousWaypoint,
-			double randomness, Random rand) {
+	public static Position getNextWayPoint(Position p, GameData gameData, Position previousWaypoint, double randomness,
+			Random rand) {
 
 		if (rand.nextDouble() < randomness) {
 
-			int index = rand.nextInt(treasures.size());
-			Position chosenPosition = treasures.get(index).position;
-			while (previousWaypoint != null ? chosenPosition.at(previousWaypoint, 2) : false) {
-				index = rand.nextInt(treasures.size());
-				chosenPosition = treasures.get(index).position;
+			int index = rand.nextInt(gameData.treasures.size());
+			Position chosenPosition = gameData.treasures.get(index).position;
+			
+			ArrayList<Treasure> randTreasures = (ArrayList<Treasure>) gameData.treasures.clone();
+			Collections.shuffle(randTreasures, gameData.rand);
+			Iterator<Treasure> i = randTreasures.iterator();
+			while(i.hasNext()){
+				Treasure t = i.next();
+				if(t.state == TreasureState.UNPICKED)
+					return t.position;
 			}
-			return chosenPosition;
+			return getRandomFreePosition(gameData);
 		}
 
 		double minDist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();
 		Position minPos = null;
-		for (Treasure t : treasures) {
+		for (Treasure t : gameData.treasures) {
 			if (t.state != TreasureState.PICKED && !t.position.at(p, 2)
 					&& (previousWaypoint != null ? !t.position.at(previousWaypoint, 2) : true)) {
 				double d = Maths.dist(p, t.position);
@@ -168,11 +198,8 @@ public class Helper {
 		}
 
 		// If no treasure has been found then pick a random treasure instead
-		if (minPos == null) {
-			int index = rand.nextInt(treasures.size());
-			Position chosenPosition = treasures.get(index).position;
-			return chosenPosition;
-		}
+		if (minPos == null)
+			return getRandomFreePosition(gameData);
 
 		return minPos;
 	}
@@ -233,7 +260,7 @@ public class Helper {
 		double blDist = Maths.dist(p, o.bottomLeft);
 		double trDist = Maths.dist(p, o.topRight);
 		double brDist = Maths.dist(p, o.bottomRight);
-		
+
 		Position minPos = null;
 		double minDist = Maths.dist(p, wayPoint);
 
@@ -246,17 +273,17 @@ public class Helper {
 			minDist = trDist;
 			minPos = o.topRight;
 		}
-		
+
 		if (blDist < minDist) {
 			minDist = blDist;
 			minPos = o.bottomLeft;
 		}
-		
+
 		if (brDist < minDist) {
 			minDist = brDist;
 			minPos = o.bottomRight;
 		}
-		
+
 		return minPos;
 	}
 
@@ -311,12 +338,12 @@ public class Helper {
 		Position testX = new Position(p.position.x + (speed * Math.cos(p.direction)), p.position.y);
 		Position testY = new Position(p.position.x, p.position.y + (speed * Math.sin(p.direction)));
 
-		if (testY.y <= 0 || testY.y >= GameSettings.Arena.size.getHeight()) {
+		if (testY.y <= 20 || testY.y >= GameSettings.Arena.size.getHeight() - 20) {
 			yFine = false;
 			bothFine = false;
 		}
 
-		if (testX.x <= 0 || testX.x >= GameSettings.Arena.size.getWidth()) {
+		if (testX.x <= 20 || testX.x >= GameSettings.Arena.size.getWidth() - 20) {
 			xFine = false;
 			bothFine = false;
 		}

@@ -72,6 +72,26 @@ public class GameDrawer {
             obstacleRects.add(r);
         }
 
+        Rectangle exitShape = new Rectangle(
+                GameSettings.Arena.exitSize.width * vals.scaleFactor,
+                GameSettings.Arena.exitSize.height * vals.scaleFactor);
+
+        exitShape.setX(
+                GameSettings.Arena.exit.x * vals.scaleFactor + vals.xOffset);
+        exitShape.setY(
+                GameSettings.Arena.exit.y * vals.scaleFactor + vals.yOffset);
+        exitShape.setFill(Color.GOLDENROD);
+
+        final double arenaBufferLength = 20 * vals.scaleFactor;
+
+        Rectangle chargeArea = new Rectangle(
+                GameSettings.Arena.secHomeSize.getWidth() * vals.scaleFactor,
+                GameSettings.Arena.secHomeSize.getHeight() * vals.scaleFactor);
+
+        chargeArea.setX(arenaBufferLength + vals.xOffset);
+        chargeArea.setY(arenaBufferLength + vals.yOffset);
+        chargeArea.setFill(Color.CADETBLUE);
+
         // Make treasure shapes
         ArrayList<TreasureShape> treasureShapes = new ArrayList<>();
         for (Treasure t : client.gameData.treasures) {
@@ -79,8 +99,8 @@ public class GameDrawer {
                     vals.xOffset, vals.yOffset));
         }
 
-        final double arcAngle = (GameSettings.Security.lightArcPercentage
-                / 100.0) * 360;
+        final double arcAngle =
+                (GameSettings.Security.lightArcPercentage / 100.0) * 360;
         final double cameraBoxLength = 10 * vals.scaleFactor;
 
         // Make camera shapes
@@ -202,9 +222,9 @@ public class GameDrawer {
         ArrayList<CenteredShape> occCameraVisionShapes = new ArrayList<>();
         for (CenteredShape vision : cameraVisionShapes) {
 
-            CenteredShape occVision = new CenteredShape(vision.shape,
-                    vision.getCenterX(), vision.getCenterY(),
-                    vision.getRadius());
+            CenteredShape occVision =
+                    new CenteredShape(vision.shape, vision.getCenterX(),
+                            vision.getCenterY(), vision.getRadius());
 
             for (Line edge : obstacleEdges) {
                 Polygon occlusion = calcOcclusion(vision.getCenterX(),
@@ -224,9 +244,9 @@ public class GameDrawer {
         ArrayList<CenteredShape> occThiefVisionShapes = new ArrayList<>();
         for (CenteredShape vision : thiefVisionShapes) {
 
-            CenteredShape occVision = new CenteredShape(vision.shape,
-                    vision.getCenterX(), vision.getCenterY(),
-                    vision.getRadius());
+            CenteredShape occVision =
+                    new CenteredShape(vision.shape, vision.getCenterX(),
+                            vision.getCenterY(), vision.getRadius());
 
             for (Line edge : obstacleEdges) {
                 Polygon occlusion = calcOcclusion(vision.getCenterX(),
@@ -234,10 +254,10 @@ public class GameDrawer {
                 occVision.shape = Shape.subtract(occVision.shape, occlusion);
             }
 
-            RadialGradient visionGrad = makeRadialGradient(vision.getCenterX(),
-                    vision.getCenterY(),
-                    GameSettings.Thief.visionRadius * vals.scaleFactor,
-                    Colors.thiefVision, Color.TRANSPARENT);
+            RadialGradient visionGrad =
+                    makeRadialGradient(vision.getCenterX(), vision.getCenterY(),
+                            GameSettings.Thief.visionRadius * vals.scaleFactor,
+                            Colors.thiefVision, Color.TRANSPARENT);
 
             occVision.shape.setFill(visionGrad);
             occThiefVisionShapes.add(occVision);
@@ -277,13 +297,13 @@ public class GameDrawer {
                 // Treasures
                 for (TreasureShape t : treasureShapes) {
                     if (t.treasure.state == TreasureState.UNPICKED) {
-                        Shape occTreasure = Shape.intersect(t.circle,
-                                light.shape);
+                        Shape occTreasure =
+                                Shape.intersect(t.circle, light.shape);
 
-                        RadialGradient treasureGrad = makeRadialGradient(
-                                light.getCenterX(), light.getCenterY(),
-                                light.getRadius(), Colors.treasure,
-                                Color.TRANSPARENT);
+                        RadialGradient treasureGrad =
+                                makeRadialGradient(light.getCenterX(),
+                                        light.getCenterY(), light.getRadius(),
+                                        Colors.treasure, Color.TRANSPARENT);
 
                         occTreasure.setFill(treasureGrad);
                         occTreasureShapes.add(occTreasure);
@@ -310,12 +330,12 @@ public class GameDrawer {
                     Shape occShadowTreasure = t.circle;
 
                     for (CenteredShape light : occSecurityLightShapes) {
-                        occShadowTreasure = Shape.subtract(occShadowTreasure,
-                                light.shape);
+                        occShadowTreasure =
+                                Shape.subtract(occShadowTreasure, light.shape);
                     }
                     for (CenteredShape vision : occCameraVisionShapes) {
-                        occShadowTreasure = Shape.subtract(occShadowTreasure,
-                                vision.shape);
+                        occShadowTreasure =
+                                Shape.subtract(occShadowTreasure, vision.shape);
                     }
 
                     occShadowTreasure.setFill(Colors.treasureShadow);
@@ -331,10 +351,10 @@ public class GameDrawer {
                 for (CenteredShape light : occSecurityLightShapes) {
                     Shape occLight = Shape.intersect(light.shape, vision.shape);
 
-                    RadialGradient lightGrad = makeRadialGradient(
-                            light.getCenterX(), light.getCenterY(),
-                            light.getRadius(), Colors.flashlight,
-                            Color.TRANSPARENT);
+                    RadialGradient lightGrad =
+                            makeRadialGradient(light.getCenterX(),
+                                    light.getCenterY(), light.getRadius(),
+                                    Colors.flashlight, Color.TRANSPARENT);
 
                     occLight.setFill(lightGrad);
                     occHiddenSecurityLightShapes.add(occLight);
@@ -363,8 +383,8 @@ public class GameDrawer {
                 // Treasures
                 for (TreasureShape t : treasureShapes) {
                     if (t.treasure.state == TreasureState.UNPICKED) {
-                        Shape occTreasure = Shape.intersect(t.circle,
-                                vision.shape);
+                        Shape occTreasure =
+                                Shape.intersect(t.circle, vision.shape);
 
                         RadialGradient treasureGrad = makeRadialGradient(
                                 vision.getCenterX(), vision.getCenterY(),
@@ -391,11 +411,9 @@ public class GameDrawer {
             }
         }
 
-        Rectangle outerArena = new Rectangle(0, 0, pane.getWidth(),
-                pane.getHeight());
+        Rectangle outerArena =
+                new Rectangle(0, 0, pane.getWidth(), pane.getHeight());
         outerArena.setFill(Colors.outerArena);
-
-        final double arenaBufferLength = 20 * vals.scaleFactor;
 
         Rectangle innerArena = new Rectangle(arenaBufferLength + vals.xOffset,
                 arenaBufferLength + vals.yOffset,
@@ -410,6 +428,11 @@ public class GameDrawer {
         ch.add(innerArena);
         ch.addAll(occObstacleShapes);
         ch.addAll(occTreasureShapes);
+        ch.add(chargeArea);
+
+        if (client.player.faction == Faction.THIEF) {
+            ch.add(exitShape);
+        }
 
         if (client.player.faction == Faction.SECURITY) {
             // Security
@@ -418,6 +441,7 @@ public class GameDrawer {
 
         ch.addAll(occEnemyShapes);
 
+        // Vision
         if (client.player.faction == Faction.SECURITY) {
             // Security
             for (CenteredShape s : occSecurityLightShapes) {
@@ -441,8 +465,8 @@ public class GameDrawer {
 
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
-        Text batText = new Text(
-                "Battery : " + df.format(client.player.battery));
+        Text batText =
+                new Text("Battery : " + df.format(client.player.battery));
         batText.setId("fancytext");
         batText.setFont(new Font(32));
         batText.setX(30);

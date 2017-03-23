@@ -26,6 +26,7 @@ public class Thief extends AI {
 	private final double moveSpeedSlow = 0.4;
 
 	private Treasure target;
+	private Position targetPosition;
 
 	public Thief(Handler handler) {
 		super(handler, Faction.THIEF);
@@ -38,8 +39,10 @@ public class Thief extends AI {
 	@Override
 	public void run() {
 
-		if (target == null)
+		if (target == null) {
 			target = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures);
+			targetPosition = target.position;
+		}
 
 		while (isRunning()) {
 
@@ -57,7 +60,7 @@ public class Thief extends AI {
 			Debug.say(getState() + " " + this.position.x + " " + this.position.y);
 			switch (getState()) {
 			case MOVING:
-				updateMovingPosition(target.position, turnSpeedMid, moveSpeedMid);
+				updateMovingPosition(targetPosition, turnSpeedMid, moveSpeedMid);
 				break;
 			case RUNNING:
 				break;
@@ -74,12 +77,19 @@ public class Thief extends AI {
 	@Override
 	protected void updateState() {
 
-		if (this.position.at(target.position, GameSettings.Thief.stealRadius)) {
-			Debug.say("Item collected");
-			target.state = TreasureState.PICKED;
+		if (this.position.at(targetPosition, GameSettings.Thief.stealRadius)) {
+			if (target != null) {
+				Debug.say("Item collected");
+				target.state = TreasureState.PICKED;
+			}
 
 			// Randomly select the next treasure
 			target = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures);
+			if (target == null) {
+				targetPosition = Helper.getRandomFreePosition(this.getHandler().gameData);
+			} else {
+				targetPosition = target.position;
+			}
 
 		}
 
@@ -130,7 +140,7 @@ public class Thief extends AI {
 			}
 		}
 
-		// Do we want to meve to the goal or away from the security
+		// Do we want to move to the goal or away from the security
 		double goalSecAngle = 0;
 		if (security != null)
 			goalSecAngle = Maths.angle(security, this.position);

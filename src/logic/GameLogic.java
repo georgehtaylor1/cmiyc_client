@@ -8,6 +8,7 @@ import constants.Commands.Key;
 
 import game.Camera;
 import game.Faction;
+import game.GameMode;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
@@ -88,8 +89,8 @@ public class GameLogic {
 
         // Makes the walkable area
         for (Obstacle o : client.gameData.obstacles) {
-            Rectangle object = new Rectangle(o.topLeft.x, o.topLeft.y, o.width,
-                    o.height);
+            Rectangle object =
+                    new Rectangle(o.topLeft.x, o.topLeft.y, o.width, o.height);
             Shape s = Rectangle.subtract(walkableArea, object);
             walkableArea = s;
         }
@@ -105,8 +106,8 @@ public class GameLogic {
         // (currently in radians)
 
         // Movement
-        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W)
-                && client.player.state == PlayerState.NORMAL) {
+        if (keys.containsKey(KeyCode.W) && keys.get(
+                KeyCode.W) /* && client.player.state == PlayerState.NORMAL */) {
             if (Math.pow(client.player.position.x * vals.scaleFactor
                     + vals.xOffset - mouseX, 2)
                     + Math.pow(client.player.position.y * vals.scaleFactor
@@ -115,6 +116,7 @@ public class GameLogic {
                                             * vals.scaleFactor, 2)) {
                 return; // This prevents spinning about mouse
             }
+
             double tempX = client.player.position.x,
                     tempY = client.player.position.y;
             tempX += client.player.speed * Math.cos(angle);
@@ -244,18 +246,22 @@ public class GameLogic {
                     client.player.battery -= GameSettings.Security.drainValue;
             }
 
-            client.gameData.secScore += GameSettings.Score.scorePerSecond
-                    / 60.0;
+            client.gameData.secScore +=
+                    GameSettings.Score.scorePerSecond / 60.0;
         }
 
-        // winning condition
+        // winning condition TODO
+        int oog = 0;
         for (Map.Entry<String, Player> e : client.gameData.players.entrySet()) {
             Player p = e.getValue();
             if (p.faction == Faction.THIEF && (p.state != PlayerState.CAUGHT
-                    || p.state != PlayerState.ESCAPED)) {
+                    && p.state != PlayerState.ESCAPED)) {
                 break;
-            }
-
+            } else if (p.faction == Faction.THIEF)
+                oog++;
+        }
+        if ((this.client.gameData.mode == GameMode.SHORT && oog == 1)
+                || (this.client.gameData.mode == GameMode.LONG && oog == 2)) {
             Debug.say("Security: " + Math.round(client.gameData.secScore));
             Debug.say("Thief: " + Math.round(client.gameData.thiefScore));
 
@@ -339,6 +345,10 @@ public class GameLogic {
             client.player.cameras--;
             Debug.say("deployed camera. Left " + client.player.cameras
                     + " cameras");
+
+            HashMap<Key, Object> map = new HashMap<Key, Object>();
+            map.put(Key.CAMERA, deployed);
+            client.send(new Transferable(Action.DEPLOY_CAMERA, map));
 
             try {
                 Thread.sleep(200);

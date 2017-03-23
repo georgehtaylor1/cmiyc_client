@@ -16,6 +16,7 @@ public class ClientReceiver implements Runnable {
 	
 	public ClientReceiver(Client client) {
 		this.client = client;
+		this.commandProcessor = new CommandProcessor(client);
 	}
 	
 	public void run() {		
@@ -23,7 +24,9 @@ public class ClientReceiver implements Runnable {
 		
 		while( this.client.connectionState == Client.ConnectionState.CONNECTED ) {
 			this.commandProcessor.queue.offer( this.readFromServer() );
-			this.commandProcessor.monitor.notifyAll();
+			synchronized (this.commandProcessor.monitor) {
+				this.commandProcessor.monitor.notifyAll();
+			}
 		}
 	}
 	

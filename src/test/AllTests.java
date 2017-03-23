@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ AITest.class })
+@SuiteClasses({ AITest.class, AudioTest.class })
 public class AllTests {
 
 }

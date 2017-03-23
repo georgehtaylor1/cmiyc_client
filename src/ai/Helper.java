@@ -228,33 +228,36 @@ public class Helper {
 	 * @return The closest corner to the player
 	 */
 	public static Position closestCorner(Obstacle o, Position p, Position wayPoint) {
-		Position minPos = o.topLeft;
-		double minDist = Maths.dist(p, o.topLeft);
-		double maxDist = Maths.dist(p, wayPoint);
 
+		double tlDist = Maths.dist(p, o.topLeft);
 		double blDist = Maths.dist(p, o.bottomLeft);
 		double trDist = Maths.dist(p, o.topRight);
 		double brDist = Maths.dist(p, o.bottomRight);
+		
+		Position minPos = null;
+		double minDist = Maths.dist(p, wayPoint);
 
-		if (Maths.dist(o.bottomLeft, wayPoint) < maxDist && blDist < minDist) {
-			minDist = blDist;
-			minPos = o.bottomLeft;
+		if (tlDist < minDist) {
+			minDist = tlDist;
+			minPos = o.topLeft;
 		}
 
-		if (Maths.dist(o.topRight, wayPoint) < maxDist && trDist < minDist) {
+		if (trDist < minDist) {
 			minDist = trDist;
 			minPos = o.topRight;
 		}
-
-		if (Maths.dist(o.bottomRight, wayPoint) < maxDist && brDist < minDist) {
+		
+		if (blDist < minDist) {
+			minDist = blDist;
+			minPos = o.bottomLeft;
+		}
+		
+		if (brDist < minDist) {
 			minDist = brDist;
 			minPos = o.bottomRight;
 		}
-
-		if (Maths.dist(o.bottomLeft, minPos) < maxDist)
-			return minPos;
-		else
-			return null;
+		
+		return minPos;
 	}
 
 	/**

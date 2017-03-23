@@ -140,7 +140,7 @@ public class AITest {
 				(new Position(20, 20)).at(Helper.closestCorner(obs, new Position(10, 10), new Position(100, 100)), 1));
 		assertTrue(
 				(new Position(70, 70)).at(Helper.closestCorner(obs, new Position(60, 80), new Position(100, 100)), 1));
-		assertTrue((new Position(20, 70)).at(Helper.closestCorner(obs, new Position(0, 80), new Position(10, 75)), 1));
+		assertTrue(Helper.closestCorner(obs, new Position(0, 80), new Position(10, 75)) == null);
 		}catch(Exception ex){
 			System.out.println("Unexpected error occured");
 			assert(false);

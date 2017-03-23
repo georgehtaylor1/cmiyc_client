@@ -4,6 +4,10 @@
 
 }
 
+#fancytext {
+    -fx-fill: #FFFFFF
+}
+
 #username {
     -fx-background-color: #202020;
     -fx-border-color: #000000;

@@ -1,7 +1,9 @@
 package sample;
 
+import java.io.IOException;
+
 import javafx.scene.control.ToolBar;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Arc;
@@ -9,10 +11,6 @@ import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
-import java.io.IOException;
-
-import static java.awt.SystemColor.text;
 
 /**
  * Created by Gerta on 04/03/2017.

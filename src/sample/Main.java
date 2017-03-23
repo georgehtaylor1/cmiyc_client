@@ -1,7 +1,11 @@
+/*
 package sample;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 
 public class Main extends Application {
@@ -10,21 +14,23 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 
 
-        /*StackPane base = new StackPane();
+        StackPane base = new StackPane();
         Scene scene = new Scene(base);
-        SlideScreen slideScreen = new SlideScreen();
+         // SlideScreen slideScreen = new SlideScreen();
        // primaryStage.initStyle(StageStyle.TRANSPARENT);
         WelcomeScreen welcomeScreen = new WelcomeScreen();
 
-        GameScreen gameScreen = new GameScreen();
-        base.getChildren().addAll(gameScreen, welcomeScreen, slideScreen);
+        //GameScreen gameScreen = new GameScreen(this);
+        SlideScreen slideScreen = new SlideScreen(gameScreen);
+
+        base.getChildren().addAll(gameScreen, slideScreen);
 
         primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
             welcomeScreen.setAnchor(newValue.doubleValue());
         });
 
         primaryStage.setScene(scene);
-        primaryStage.show();*/
+        primaryStage.show();
 
     }
 
@@ -32,3 +38,4 @@ public class Main extends Application {
         launch(args);
     }
 }
+*/

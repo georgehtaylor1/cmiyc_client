@@ -9,6 +9,7 @@ import gui.OffsetHolder;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import launcher.Main;
 import logic.GameLogic;
@@ -20,12 +21,13 @@ import logic.GameLoop;
 public class GameScreen extends AnchorPane{
 
     public BorderPane gameScreen;
-    private ToolBar gameControls;
+    private HBox gameControls;
     private GameLogic logic;
     private GameDrawer drawer;
     private Main launcherMain;
     public Pane pane;
     public Pane base;
+    public Handler aiHandler;
 
 
     /**
@@ -36,7 +38,7 @@ public class GameScreen extends AnchorPane{
      */
     public GameScreen(Main _main, Pane base) throws IOException {
         this.gameScreen = new BorderPane();
-        this.gameControls = new ToolBar();
+        this.gameControls = new HBox();
         this.launcherMain = _main;
         this.base = base;
         this.drawScene();
@@ -52,11 +54,11 @@ public class GameScreen extends AnchorPane{
         logic = new GameLogic(launcherMain, base, offsetHolder);
         drawer = new GameDrawer(launcherMain, pane, offsetHolder);
 
-        Handler h = new Handler(launcherMain.gameData);
-        h.addPlayers(0, 0);
-        h.start();
+        aiHandler = new Handler(launcherMain.gameData);
+        aiHandler.addPlayers(0, 0);
+        aiHandler.start();
         
-        Thread drawerThread = new Thread(new GameLoop(drawer, logic, h));
+        Thread drawerThread = new Thread(new GameLoop(drawer, logic, aiHandler));
         drawerThread.setDaemon(true);
         drawerThread.start();
         gameScreen.setCenter(pane);
@@ -76,7 +78,7 @@ public class GameScreen extends AnchorPane{
      * Get the gameControls
      * @return the gameControls
      */
-    public ToolBar getGameControls() {
+    public HBox getGameControls() {
         return gameControls;
     }
 

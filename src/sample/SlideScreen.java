@@ -5,18 +5,12 @@ import java.io.IOException;
 import gui.GameDrawer;
 import gui.OffsetHolder;
 import javafx.animation.TranslateTransition;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.ToolBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import launcher.Main;
 import logic.GameLogic;
@@ -28,7 +22,7 @@ import logic.GameLogic;
 public class SlideScreen extends AnchorPane {
 
     private AnchorPane slider;
-    private ToolBar toolBar;
+    private HBox sliderControls;
     private BorderPane together;
     private Pane pane;
 
@@ -36,6 +30,7 @@ public class SlideScreen extends AnchorPane {
     private TextField host;
     private Button connect;
     private Button mainButton;
+    private Button exit;
 
     private VBox vBox1;
     private VBox vBox2;
@@ -67,14 +62,17 @@ public class SlideScreen extends AnchorPane {
         this.slider = new AnchorPane();
         this.together = new BorderPane();
         this.mainButton = new Button("Find Game");
-        this.toolBar = new ToolBar(mainButton);
+
         this.username = new TextField();
         this.host = new TextField();
         this.connect = new Button("Connect");
+        this.exit = new Button("Exit");
         this.vBox1 = new VBox();
         this.vBox2 = new VBox();
         this.hBox1 = new HBox();
         this.hBox2 = new HBox();
+        this.sliderControls = new HBox();
+
 
         //toggleButton for number of players
         this.toggleButton1vs2 = new ToggleButton("1vs2");
@@ -103,10 +101,10 @@ public class SlideScreen extends AnchorPane {
         slider.getStylesheets().add("styles/slider.css");
         this.getStylesheets().add("styles/sliderLayer.css");
 
-        toolBar.setPrefHeight(40);
+        sliderControls.setPrefHeight(40);
         this.setPrefWidth(Constants.ScreenWidth);
         this.setPrefHeight(Constants.ScreenHeight);
-        this.getChildren().addAll(slider, toolBar);
+        this.getChildren().addAll(slider, sliderControls);
 
         slider.setPrefWidth(250);
         slider.setPrefHeight(Constants.ScreenHeight);
@@ -126,29 +124,32 @@ public class SlideScreen extends AnchorPane {
         together.setTop(vBox1);
         together.setBottom(vBox2);
         slider.getChildren().addAll(together);
+        sliderControls.getChildren().addAll(exit, mainButton);
+        sliderControls.setSpacing(1080.0);
 
 
-        AnchorPane.setBottomAnchor(toolBar, 0.0);
-        AnchorPane.setRightAnchor(toolBar, 0.0);
-        AnchorPane.setLeftAnchor(toolBar, 0.0);
+
+        AnchorPane.setBottomAnchor(sliderControls, 0.0);
+        AnchorPane.setRightAnchor(sliderControls, 0.0);
+        AnchorPane.setLeftAnchor(sliderControls, 0.0);
         AnchorPane.setTopAnchor(slider, 0.0);
         AnchorPane.setRightAnchor(slider, 0.0);
-        AnchorPane.setBottomAnchor(slider, toolBar.getPrefHeight());
+        AnchorPane.setBottomAnchor(slider, sliderControls.getPrefHeight());
 
         AnchorPane.setTopAnchor(together, 0.0);
         AnchorPane.setBottomAnchor(together, 0.0);
         AnchorPane.setLeftAnchor(together, 0.0);
         AnchorPane.setRightAnchor(together, 0.0);
 
-        toolBar.setPrefWidth(Constants.ScreenWidth);
+        sliderControls.setPrefWidth(Constants.ScreenWidth);
         slider.setId("slider");
         this.setId("sliderLayer");
-        toolBar.setId("toolbar");
+        sliderControls.setId("sliderControls");
         mainButton.setId("mainButton");
         username.setId("username");
         host.setId("host");
         connect.setId("connect");
-       // cancel.setId("cancel");
+        exit.setId("exit");
         toggleButton1vs2.setId("1vs2");
         toggleButton2vs3.setId("2vs3");
         security.setId("security");
@@ -179,6 +180,12 @@ public class SlideScreen extends AnchorPane {
                 slideIn();
             }
         });
+
+        this.exit.setOnAction(e -> {
+            gameScreen.aiHandler.end();
+            System.exit(0);
+        });
+
 
         this.setOnMouseClicked(event -> {
             if(this.sliderTranslation.getRate() == -1) {
@@ -285,8 +292,8 @@ public class SlideScreen extends AnchorPane {
      * Get the toolBar
      * @return the toolBar which contains the mainButton
      */
-    public ToolBar getToolBar() {
-        return toolBar;
+    public HBox getSliderControls() {
+        return sliderControls;
     }
 
     /**

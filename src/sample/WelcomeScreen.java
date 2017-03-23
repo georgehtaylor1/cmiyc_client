@@ -20,7 +20,7 @@ import static java.awt.SystemColor.text;
 public class WelcomeScreen extends AnchorPane{
 
     private AnchorPane welcomeScreen;
-    private ToolBar welcomeControls;
+    private HBox welcomeControls;
 
     private Arc arc1;
     private Arc arc2;
@@ -48,7 +48,7 @@ public class WelcomeScreen extends AnchorPane{
     public WelcomeScreen() throws IOException {
 
         this.welcomeScreen = new AnchorPane();
-        this.welcomeControls = new ToolBar();
+        this.welcomeControls = new HBox();
         this.drawScene();
 
     }
@@ -265,7 +265,7 @@ public class WelcomeScreen extends AnchorPane{
      * Get the welcomeControls
      * @return welcomeControls
      */
-    public ToolBar getWelcomeControls() {
+    public HBox getWelcomeControls() {
         return welcomeControls;
     }
 

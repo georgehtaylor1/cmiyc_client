@@ -5,7 +5,6 @@ import java.util.HashMap;
 import constants.Commands.Action;
 import constants.Commands.Key;
 import game.util.Movement;
-import states.ClientState;
 import util.Client;
 import util.Client.ConnectionState;
 import util.Debug;
@@ -19,20 +18,21 @@ public class ClientSender implements Runnable {
 	
 	private int exhaution = 10;
 
-	public ClientSender( Client _client) { this.client = _client; }
+	public ClientSender( Client _client) { 
+		this.client = _client;
+		this.monitor = new Object();
+	}
 
 	@Override
 	public void run() {
 
-		Debug.say("Sender Started for [ " + this.client.id + " ]");
-
 		while( this.client.connectionState == ConnectionState.CONNECTED ) {
 			
-			if( ( this.client.queue.isEmpty() ) && ( this.client.state == ClientState.IDLE ) ) {
+			/**if( ( this.client.queue.isEmpty() ) && ( this.client.state == ClientState.IDLE ) ) {
 				synchronized( this.monitor ) {
-					try { this.monitor.wait(); } catch( Exception _exception ) { /* God knows. */ }
+					try { this.monitor.wait(); } catch( Exception _exception ) { /* God knows.  }
 				}
-			}
+			}*/
 
 			if( !this.client.queue.isEmpty() ) { this.send( this.client.queue.poll() ); }
 			if( this.needsPosition() ) { this.send( this.buildMovement() ); }
@@ -46,7 +46,7 @@ public class ClientSender implements Runnable {
 		case FINDING: return true;
 		case PREGAME: return true;
 		case PLAYING: return true;
-		default: return false;
+		default: return true;
 		}
 	}
 
@@ -78,13 +78,13 @@ public class ClientSender implements Runnable {
 		Transferable data = _data;
 
 		try { this.client.out.reset(); }
-		catch (Exception _exception) { return this.send(data, (_triesCount + 1)); }
+		catch (Exception _exception) { _exception.printStackTrace(); return this.send(data, (_triesCount + 1)); }
 
 		try { this.client.out.writeObject(data); }
-		catch (Exception _exception) { return this.send(data, (_triesCount + 1)); }
+		catch (Exception _exception) { _exception.printStackTrace(); return this.send(data, (_triesCount + 1)); }
 
 		try { this.client.out.flush(); }
-		catch (Exception _exception) { return this.send(data, (_triesCount + 1)); }
+		catch (Exception _exception) { _exception.printStackTrace(); return this.send(data, (_triesCount + 1)); }
 
 		return true;
 

@@ -105,12 +105,14 @@ public class Client {
 		
 		HashMap<Key, Object> data = new HashMap<Key, Object>();
 		
-		Action action = Action.INIT_CLIENT;
+		Action action = Action.UPDATE_USERNAME;
 
-		data.put( Key.CLIENT_ID, this.id );
-		data.put( Key.CLIENT_USERNAME, this.username );
+		//data.put( Key.CLIENT_ID, this.id );
+		data.put( Key.CLIENT_USERNAME, this.id );
 				
 		this.send( ( new Transferable( action, data ) ) );
+		
+		this.state = ClientState.FINDING;
 	}
 
 	public void disconnect() {

@@ -104,7 +104,7 @@ public class GameLogic {
                                          // (currently in radians)
 
      // Movement
-        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W) && client.player.state == PlayerState.NORMAL) {
+        if (keys.containsKey(KeyCode.W) && keys.get(KeyCode.W) /*&& client.player.state == PlayerState.NORMAL*/) {
         	if (Math.pow(client.player.position.x  * scalingRatio + offsetHolder.offsetW - mouseX, 2) 
         			+ Math.pow(client.player.position.y  * scalingRatio + offsetHolder.offsetH - mouseY, 2) 
         			<= Math.pow(GameSettings.Player.radius * scalingRatio, 2)) {
@@ -234,8 +234,8 @@ public class GameLogic {
 	        client.gameData.secScore += GameSettings.Score.scorePerSecond/60.0;
         }
         
-        // winning condition 
-        for (Map.Entry<String, Player> e : client.gameData.players.entrySet()) {
+        // winning condition TODO
+        /**for (Map.Entry<String, Player> e : client.gameData.players.entrySet()) {
         	Player p = e.getValue();
         	if (p.faction == Faction.THIEF && (p.state != PlayerState.CAUGHT || p.state != PlayerState.ESCAPED)) {
         		break;
@@ -252,7 +252,7 @@ public class GameLogic {
         		Debug.say("It's a draw!");
         	}
         	this.gameEnd = true;
-        }
+        }*/
         
     }
     

@@ -280,7 +280,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if (this.state == State.LOBBY) {
+		if (this.state == State.FIND) {
 			if (this.gameScreen.client.obData.getState() == ClientState.PLAYING)
 				this.setState(State.INGAME);
 			else

@@ -46,11 +46,11 @@ public class Main extends Application {
 		this.client.gameData.treasures.add(new Treasure(450, 450));
 		this.client.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
 
-		this.client.gameData.obstacles.add(new Obstacle(0, 0, 20, (int) GameSettings.Arena.size.getHeight() + 40));
+		this.client.gameData.obstacles.add(new Obstacle(0, 0, 20, (int) GameSettings.Arena.size.getHeight() + 60));
 		this.client.gameData.obstacles.add(
-				new Obstacle(20, (int) GameSettings.Arena.size.getHeight() + 20, GameSettings.Arena.size.width, 20));
+				new Obstacle(20, (int) GameSettings.Arena.size.getHeight() + 40, GameSettings.Arena.size.width, 20));
 		this.client.gameData.obstacles.add(new Obstacle(GameSettings.Arena.size.width + 20, 0, 20,
-				(int) GameSettings.Arena.size.getHeight() + 40));
+				(int) GameSettings.Arena.size.getHeight() + 60));
 		this.client.gameData.obstacles.add(new Obstacle(20, 0, GameSettings.Arena.size.width, 20));
 
 		/// 

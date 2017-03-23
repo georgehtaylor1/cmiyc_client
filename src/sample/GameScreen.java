@@ -6,10 +6,12 @@ import ai.handler.Handler;
 import game.constants.GameSettings;
 import gui.GameDrawer;
 import gui.OffsetHolder;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import logic.GameLogic;
 import logic.GameLoop;
 import util.Client;
@@ -37,6 +39,7 @@ public class GameScreen extends AnchorPane{
 
     public void drawGame() {
         pane = new Pane();
+        pane.setPrefSize(base.getWidth(), base.getHeight());
         OffsetHolder offsetHolder = new OffsetHolder();
         
         logic = new GameLogic(launcherMain, base, offsetHolder);
@@ -59,20 +62,20 @@ public class GameScreen extends AnchorPane{
         this.getStylesheets().add("styles/gameLayer.css");
 
         gameControls.setPrefHeight(40);
-        this.setPrefWidth(GameSettings.Arena.outerSize.getWidth());
-        this.setPrefHeight(GameSettings.Arena.outerSize.getWidth());
         this.getChildren().addAll(gameScreen, gameControls);
+        
+        Screen screen = Screen.getPrimary();
+		Rectangle2D bounds = screen.getVisualBounds();
+		gameScreen.setPrefWidth( bounds.getWidth() );
+		gameScreen.setPrefHeight( bounds.getHeight() - 40 );
 
-        gameScreen.setPrefWidth(this.getWidth());
-        gameScreen.setPrefHeight(this.getHeight());
-
-        System.out.println(gameScreen.getHeight());
         AnchorPane.setBottomAnchor(gameControls, 0.0);
         AnchorPane.setRightAnchor(gameControls, 0.0);
         AnchorPane.setLeftAnchor(gameControls, 0.0);
-//        AnchorPane.setTopAnchor(gameScreen, 40.0);
-//        AnchorPane.setLeftAnchor(gameScreen, 40.0);
-//        AnchorPane.setRightAnchor(gameScreen, 40.0);
+        AnchorPane.setTopAnchor(gameScreen, 0.0);
+        AnchorPane.setLeftAnchor(gameScreen, 0.0);
+        AnchorPane.setRightAnchor(gameScreen, 0.0);
+        AnchorPane.setBottomAnchor(gameScreen, 0.0);
 
         this.getStylesheets().add("styles/gameLayer.css");
         this.setId("gameLayer");

@@ -7,9 +7,11 @@ import java.net.Socket;
 import game.Obstacle;
 import game.Treasure;
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import sample.GameScreen;
 import sample.SlideScreen;
@@ -78,9 +80,9 @@ public class Main extends Application {
 
 		WelcomeScreen welcomeScreen = new WelcomeScreen();
 
-		primaryStage.widthProperty().addListener( ( observable, oldValue, newValue ) -> {
+		/**primaryStage.widthProperty().addListener( ( observable, oldValue, newValue ) -> {
 			welcomeScreen.setAnchor( newValue.doubleValue() );
-		} );
+		} );*/
 		this.client.gameData.treasures.add( new Treasure( 450, 450 ) );
 		this.client.gameData.obstacles.add( new Obstacle( 400, 340, 120, 80 ) );
 
@@ -95,9 +97,6 @@ public class Main extends Application {
 		primaryStage.setFullScreen( true );
 		primaryStage.setScene( scene );
 		primaryStage.show();
-
-		gameScreen.gameScreen.setPrefWidth( gameScreen.getWidth() );
-		gameScreen.gameScreen.setPrefHeight( gameScreen.getHeight() - 40 );
 
 		slideScreen.setPickOnBounds( false );
 	}

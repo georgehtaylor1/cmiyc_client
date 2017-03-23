@@ -1,6 +1,8 @@
 package launcher;
 
+import game.Faction;
 import game.Obstacle;
+import game.Player;
 import game.Treasure;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -36,13 +38,21 @@ public class Main extends Application {
 		primaryStage.widthProperty().addListener( ( observable, oldValue, newValue ) -> {
 			welcomeScreen.setAnchor( newValue.doubleValue() );
 		} );
+		
+		/// TODO: Remove later
 		this.client.gameData.treasures.add( new Treasure( 450, 450 ) );
 		this.client.gameData.obstacles.add( new Obstacle( 400, 340, 120, 80 ) );
 
+		Player t1 = new Player("bob");
+		t1.faction = Faction.THIEF;
+		this.client.gameData.players.put(t1.clientID, t1);
+		/// 
+		
 		GameScreen gameScreen = new GameScreen( this, base );
 		SlideScreen slideScreen = new SlideScreen( gameScreen );
 
 		gameScreen.requestFocus();
+		//this.client.player.faction = Faction.THIEF;
 		this.client.gameData.players.put( this.client.player.clientID, this.client.player );
 		base.getChildren().addAll( gameScreen, slideScreen );
 

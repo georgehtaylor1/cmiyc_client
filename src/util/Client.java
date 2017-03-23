@@ -132,7 +132,7 @@ public class Client {
 
 	public void send( Transferable _data ) {
 		this.queue.offer( _data ); 
-		synchronized( this.sender.monitor ) { this.sender.monitor.notifyAll(); }
+		//synchronized( this.sender.monitor ) { this.sender.monitor.notifyAll(); }
 	}
 	
 	public void setState( ClientState _state ) {

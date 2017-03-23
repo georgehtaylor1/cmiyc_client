@@ -46,11 +46,14 @@ public class GameLogic {
     private DoubleProperty width;
     private DoubleProperty height;
     private double scalingRatio;
+
+	private boolean gameEnd;
     
     public GameLogic(Client client, Pane pane, OffsetHolder offsetHolder) {
         this.client = client;
         this.offsetHolder = offsetHolder;
         this.faction = client.player.faction;
+        this.gameEnd = false;
         // Adds listeners
         pane.requestFocus();
         pane.setOnKeyPressed(e -> {
@@ -75,6 +78,11 @@ public class GameLogic {
      * Updates the game periodically
      */
     public void update() {
+    	
+    	if (this.gameEnd) {
+    		return;
+    	}
+    	
 		this.scalingRatio = offsetHolder.scaling;
     	this.fullMap = new Rectangle(20, 20, 800, 450 ); // Must change this to
     	// inner arena size
@@ -148,6 +156,8 @@ public class GameLogic {
         }
         
         if (faction == Faction.THIEF) { // Thief functions
+        	
+        	
 	        if (keys.containsKey(KeyCode.SPACE) && keys.get(KeyCode.SPACE)  && client.player.state == PlayerState.NORMAL) {
 	        	// Action button to collect
 	            // treasures (FOR THIEVES)
@@ -163,17 +173,19 @@ public class GameLogic {
 		
 		        	Treasure tempT = null; // Saves a treasures to be collected
 		            for (Treasure t : client.gameData.treasures) {
-		                double tx = t.position.x;
-		                double ty = t.position.y;
-		                
-		                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math
-		                        .pow(GameSettings.Thief.stealRadius, 2)) { // Treasure
-		                                                                   // is in
-		                                                                   // catch
-		                                                                   // range.
-		                    tempT = t; // This is the treasure to delete
-		                    break;
-		                }
+			            if (t.state == TreasureState.UNPICKED) {
+		            		double tx = t.position.x;
+			                double ty = t.position.y;
+			                
+			                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math
+			                        .pow(GameSettings.Thief.stealRadius, 2)) { // Treasure
+			                                                                   // is in
+			                                                                   // catch
+			                                                                   // range.
+			                    tempT = t; // This is the treasure to delete
+			                    break;
+			                }
+			            }
 		            }
 		            collectTreasure(tempT);
 	        	}
@@ -218,9 +230,29 @@ public class GameLogic {
 	        	if (current > GameSettings.Security.noBattery)
 	        		client.player.battery -= GameSettings.Security.drainValue;
 	        }
+
+	        client.gameData.secScore += GameSettings.Score.scorePerSecond/60.0;
         }
         
-        client.gameData.secScore += GameSettings.Score.scorePerSecond/60.0;
+        // winning condition 
+        for (Map.Entry<String, Player> e : client.gameData.players.entrySet()) {
+        	Player p = e.getValue();
+        	if (p.faction == Faction.THIEF && (p.state != PlayerState.CAUGHT || p.state != PlayerState.ESCAPED)) {
+        		break;
+        	}
+        	
+        	Debug.say("Security: " + Math.round(client.gameData.secScore));
+        	Debug.say("Thief: " + Math.round(client.gameData.thiefScore));
+        	
+        	if (client.gameData.secScore > client.gameData.thiefScore) {
+        		Debug.say("Security wins!");
+        	} else if (client.gameData.secScore < client.gameData.thiefScore) {
+        		Debug.say("Thief wins!");
+        	} else {
+        		Debug.say("It's a draw!");
+        	}
+        	this.gameEnd = true;
+        }
         
     }
     
@@ -253,7 +285,7 @@ public class GameLogic {
     public void captureThief(String name, Player thief) {
     	if (thief != null && thief.state != PlayerState.ESCAPED) {
     		thief.state = PlayerState.CAUGHT;
-    		client.gameData.secScore += GameSettings.Score.thiefCaptureScore;//TODO: Is this necessary?
+    		//client.gameData.secScore += GameSettings.Score.thiefCaptureScore;//TODO: Is this necessary?
     		client.gameData.thiefScore -= thief.treasureScore;
     		client.gameData.players.remove(name);
     		//Network
@@ -264,7 +296,7 @@ public class GameLogic {
             map = new HashMap<Key, Object>();
             map.put(Key.SCORE, client.gameData.thiefScore);
             client.send(new Transferable(Action.UPDATE_THIEF_SCORE, map));
-    		Debug.say("Thief " + thief.clientID + " captured. Score " + client.gameData.secScore);
+    		Debug.say("Thief " + thief.clientID + " captured. Score " + Math.round(client.gameData.secScore));
     	}
     }
     
@@ -275,10 +307,16 @@ public class GameLogic {
      */
     public void deployCamera(Position p, double angle) {
     	if (client.player.cameras > 0) {
-    		Camera deployed = new Camera(p.x, p.y, -Math.toDegrees(angle), GameSettings.Security.lightRadius);
+    		Camera deployed = new Camera(p.x, p.y, -angle, GameSettings.Security.lightRadius);
     		client.gameData.cameras.add(deployed);
     		client.player.cameras--;
     		Debug.say("deployed camera. Left " + client.player.cameras + " cameras");
+    		
+    		try {
+    			Thread.sleep(200);
+    		} catch (Exception e) {
+    			e.getMessage();
+    		}
     	}
     }
 }

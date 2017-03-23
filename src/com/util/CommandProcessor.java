@@ -7,9 +7,11 @@ import constants.Commands.Key;
 import game.Camera;
 import game.Faction;
 import game.Player;
+import game.constants.GameSettings;
 import game.states.PlayerState;
 import game.states.TreasureState;
 import game.util.Movement;
+import game.util.Position;
 import states.ClientState;
 import util.Client;
 import util.Transferable;
@@ -58,6 +60,14 @@ public class CommandProcessor implements Runnable {
 				break;
 			case UPDATE_CLIENT_STATE:
 				this.client.state = (ClientState) _data.object.get(Key.CLIENT_STATE);
+				if (this.client.state == ClientState.PLAYING) {
+					if (this.client.player.faction == Faction.SECURITY) {
+						this.client.player.position = new Position(0, 0);
+						this.client.player.battery = GameSettings.Security.fullBattery;
+					}
+					else
+						this.client.player.position = new Position(GameSettings.Arena.size.getWidth(), GameSettings.Arena.size.getHeight());
+				}
 				break;
 			case UPDATE_MOVEMENT:
 				@SuppressWarnings("unchecked") ArrayList<Movement> _poss = (ArrayList<Movement>) _data.object.get(Key.PLAYER_POSITIONS);

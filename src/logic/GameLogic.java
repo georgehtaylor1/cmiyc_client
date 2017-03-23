@@ -163,17 +163,19 @@ public class GameLogic {
 		
 		        	Treasure tempT = null; // Saves a treasures to be collected
 		            for (Treasure t : client.gameData.treasures) {
-		                double tx = t.position.x;
-		                double ty = t.position.y;
-		                
-		                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math
-		                        .pow(GameSettings.Thief.stealRadius, 2)) { // Treasure
-		                                                                   // is in
-		                                                                   // catch
-		                                                                   // range.
-		                    tempT = t; // This is the treasure to delete
-		                    break;
-		                }
+		            	if (t.state == TreasureState.UNPICKED) {
+			                double tx = t.position.x;
+			                double ty = t.position.y;
+			                
+			                if (Math.pow(px - tx, 2) + Math.pow(py - ty, 2) <= Math
+			                        .pow(GameSettings.Thief.stealRadius, 2)) { // Treasure
+			                                                                   // is in
+			                                                                   // catch
+			                                                                   // range.
+			                    tempT = t; // This is the treasure to delete
+			                    break;
+			                }
+		            	}
 		            }
 		            collectTreasure(tempT);
 	        	}

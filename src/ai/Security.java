@@ -103,6 +103,11 @@ public class Security extends AI {
 	 * @see ai.AI#updateState()
 	 */
 	protected void updateState() {
+		
+		if(nextWaypoint == null){
+			nextWaypoint = Helper.getRandomFreePosition(getHandler().gameData);
+		}
+		
 		// Get the volume for the players
 		leftVol = Maths.getLeftVolume(this.position, this.clientID, this.getHandler().gameData.players);
 		rightVol = Maths.getLeftVolume(this.position, this.clientID, this.getHandler().gameData.players);

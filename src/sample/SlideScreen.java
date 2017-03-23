@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
+import ai.handler.Handler;
 import game.Faction;
 import game.GameMode;
 import javafx.animation.TranslateTransition;
@@ -35,6 +36,7 @@ public class SlideScreen extends AnchorPane implements Observer {
     private Button disconnect;
     private ToggleButton ready;
     private Button mainButton;
+    private Button singlePlayer;
     private Text text;
     private Text text2;
     private VBox connection;
@@ -65,6 +67,7 @@ public class SlideScreen extends AnchorPane implements Observer {
         this.host = new TextField();
         this.connect = new Button("Connect");
         this.disconnect = new Button("Disconnect");
+        this.singlePlayer = new Button("Single Player");
         this.ready = new ToggleButton("Ready");
         this.text = new Text();
         text.setId("fancytext");
@@ -103,7 +106,7 @@ public class SlideScreen extends AnchorPane implements Observer {
         host.setPromptText("host");
 
 
-        connection.getChildren().addAll(username, host, connect);
+        connection.getChildren().addAll(username, host, connect, singlePlayer);
         connection.setDisable(false);
         HBox hBox1 = new HBox();
         hBox1.getChildren().addAll(toggleButton1vs2, toggleButton2vs3);
@@ -137,6 +140,7 @@ public class SlideScreen extends AnchorPane implements Observer {
         connect.setId("connect");
         disconnect.setId("connect");
         ready.setId("connect");
+        singlePlayer.setId("connect");
         toggleButton1vs2.setId("1vs2");
         toggleButton2vs3.setId("2vs3");
         security.setId("security");
@@ -192,6 +196,13 @@ public class SlideScreen extends AnchorPane implements Observer {
         
         toggleButton2vs3.setOnAction(e -> {
         	gameScreen.client.player.mode = GameMode.LONG;
+        });
+        
+        singlePlayer.setOnAction(e -> {
+        	Handler h = new Handler(gameScreen.client.gameData);
+        	h.addPlayers(1, 1);
+        	h.start();
+        	gameScreen.drawGame();
         });
 
         this.mainButton.setOnAction(e -> {

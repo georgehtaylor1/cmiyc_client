@@ -1,0 +1,15 @@
+#gameLayer {
+    -fx-background-color: #404040 ;
+    -fx-pref-width: 500;
+}
+
+#gameScreen {
+    -fx-background-color: #808080;
+
+}
+
+
+#gameControls {
+    -fx-background-color: #606060;
+    -fx-alignment: center-right;
+}

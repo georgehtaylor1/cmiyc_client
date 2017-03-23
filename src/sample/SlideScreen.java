@@ -7,6 +7,8 @@ import java.util.Observer;
 import ai.handler.Handler;
 import game.Faction;
 import game.GameMode;
+import game.constants.GameSettings;
+import gui.GraphicsSettings;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -28,12 +30,13 @@ import states.ClientState;
 public class SlideScreen extends AnchorPane implements Observer {
 
     private AnchorPane slider;
-    private ToolBar toolBar;
+    private HBox sliderControls;
     private BorderPane together;
     private TextField username;
     private TextField host;
     private Button connect;
     private Button disconnect;
+    private Button exit;
     private ToggleButton ready;
     private Button mainButton;
     private Button singlePlayer;
@@ -62,7 +65,8 @@ public class SlideScreen extends AnchorPane implements Observer {
         this.slider = new AnchorPane();
         this.together = new BorderPane();
         this.mainButton = new Button("Start");
-        this.toolBar = new ToolBar(mainButton);
+        this.sliderControls = new HBox();
+        this.exit = new Button("Exit");
         this.username = new TextField();
         this.host = new TextField();
         this.connect = new Button("Connect");
@@ -95,13 +99,15 @@ public class SlideScreen extends AnchorPane implements Observer {
         slider.getStylesheets().add("styles/slider.css");
         this.getStylesheets().add("styles/sliderLayer.css");
 
-        toolBar.setPrefHeight(40);
-        this.setPrefWidth(Constants.ScreenWidth);
-        this.setPrefHeight(Constants.ScreenHeight);
-        this.getChildren().addAll(slider, toolBar);
+        sliderControls.setPrefHeight(40);
+        this.setPrefWidth(GameSettings.Arena.outerSize.getWidth());
+        this.setPrefHeight(GameSettings.Arena.outerSize.getHeight());
+        this.getChildren().addAll(slider, sliderControls);
+        sliderControls.getChildren().addAll(exit, mainButton);
+        sliderControls.setSpacing(1080);
 
         slider.setPrefWidth(250);
-        slider.setPrefHeight(Constants.ScreenHeight);
+        slider.setPrefHeight(GameSettings.Arena.outerSize.getHeight());
         username.setPromptText("username");
         host.setPromptText("host");
 
@@ -118,23 +124,25 @@ public class SlideScreen extends AnchorPane implements Observer {
         slider.getChildren().addAll(together);
 
 
-        AnchorPane.setBottomAnchor(toolBar, 0.0);
-        AnchorPane.setRightAnchor(toolBar, 0.0);
-        AnchorPane.setLeftAnchor(toolBar, 0.0);
+
+        AnchorPane.setBottomAnchor(sliderControls, 0.0);
+        AnchorPane.setRightAnchor(sliderControls, 0.0);
+        AnchorPane.setLeftAnchor(sliderControls, 0.0);
         AnchorPane.setTopAnchor(slider, 0.0);
         AnchorPane.setRightAnchor(slider, 0.0);
-        AnchorPane.setBottomAnchor(slider, toolBar.getPrefHeight());
+        AnchorPane.setBottomAnchor(slider, sliderControls.getPrefHeight());
 
         AnchorPane.setTopAnchor(together, 0.0);
         AnchorPane.setBottomAnchor(together, 0.0);
         AnchorPane.setLeftAnchor(together, 0.0);
         AnchorPane.setRightAnchor(together, 0.0);
 
-        toolBar.setPrefWidth(Constants.ScreenWidth);
+        sliderControls.setPrefWidth(GameSettings.Arena.outerSize.getWidth());
         slider.setId("slider");
         this.setId("sliderLayer");
-        toolBar.setId("toolbar");
+        sliderControls.setId("sliderControls");
         mainButton.setId("mainButton");
+        exit.setId("exit");
         username.setId("username");
         host.setId("host");
         connect.setId("connect");
@@ -199,9 +207,8 @@ public class SlideScreen extends AnchorPane implements Observer {
         });
         
         singlePlayer.setOnAction(e -> {
-        	Handler h = new Handler(gameScreen.client.gameData);
-        	h.addPlayers(1, 1);
-        	h.start();
+        	gameScreen.aiHandler.addPlayers(1, 1);
+        	gameScreen.aiHandler.start();
         	gameScreen.drawGame();
         });
 
@@ -210,6 +217,12 @@ public class SlideScreen extends AnchorPane implements Observer {
                 slideIn();
             }
         });
+
+        this.exit.setOnAction(e -> {
+            gameScreen.aiHandler.end();
+            System.exit(0);
+        });
+
 
         this.setOnMouseClicked(event -> {
             if(this.sliderTranslation.getRate() == -1) {

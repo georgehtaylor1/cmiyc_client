@@ -334,12 +334,12 @@ public class Helper {
 		Position testX = new Position(p.position.x + (speed * Math.cos(p.direction)), p.position.y);
 		Position testY = new Position(p.position.x, p.position.y + (speed * Math.sin(p.direction)));
 
-		if (testY.y <= 0 || testY.y >= GameSettings.Arena.size.getHeight()) {
+		if (testY.y <= 20 || testY.y >= GameSettings.Arena.size.getHeight()) {
 			yFine = false;
 			bothFine = false;
 		}
 
-		if (testX.x <= 0 || testX.x >= GameSettings.Arena.size.getWidth()) {
+		if (testX.x <= 20 || testX.x >= GameSettings.Arena.size.getWidth()) {
 			xFine = false;
 			bothFine = false;
 		}

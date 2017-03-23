@@ -4,6 +4,7 @@ import game.Faction;
 import game.Obstacle;
 import game.Player;
 import game.Treasure;
+import game.constants.GameSettings;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
@@ -26,45 +27,49 @@ public class Main extends Application {
 
 	}
 
-	public static void main( String _arguments[] ) {
+	public static void main(String _arguments[]) {
 		new Main();
-		launch( _arguments );
+		launch(_arguments);
 	}
 
-	public void start( Stage primaryStage ) throws Exception {
+	public void start(Stage primaryStage) throws Exception {
 		StackPane base = new StackPane();
-		Scene scene = new Scene( base );
+		Scene scene = new Scene(base);
 
 		WelcomeScreen welcomeScreen = new WelcomeScreen();
 
-		primaryStage.widthProperty().addListener( ( observable, oldValue, newValue ) -> {
-			welcomeScreen.setAnchor( newValue.doubleValue() );
-		} );
-		
-		/// TODO: Remove later
-		this.client.gameData.treasures.add( new Treasure( 450, 450 ) );
-		this.client.gameData.obstacles.add( new Obstacle( 400, 340, 120, 80 ) );
+		primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+			welcomeScreen.setAnchor(newValue.doubleValue());
+		});
 
-		Player t1 = new Player("bob");
-		t1.faction = Faction.THIEF;
-		this.client.gameData.players.put(t1.clientID, t1);
+		/// TODO: Remove later
+		this.client.gameData.treasures.add(new Treasure(450, 450));
+		this.client.gameData.obstacles.add(new Obstacle(400, 340, 120, 80));
+
+		this.client.gameData.obstacles.add(new Obstacle(0, 0, 20, (int) GameSettings.Arena.size.getHeight() + 40));
+		this.client.gameData.obstacles.add(
+				new Obstacle(20, (int) GameSettings.Arena.size.getHeight() + 20, GameSettings.Arena.size.width, 20));
+		this.client.gameData.obstacles.add(new Obstacle(GameSettings.Arena.size.width + 20, 0, 20,
+				(int) GameSettings.Arena.size.getHeight() + 40));
+		this.client.gameData.obstacles.add(new Obstacle(20, 0, GameSettings.Arena.size.width, 20));
+
 		/// 
-		
-		GameScreen gameScreen = new GameScreen( this, base );
-		SlideScreen slideScreen = new SlideScreen( gameScreen );
+
+		GameScreen gameScreen = new GameScreen(this, base);
+		SlideScreen slideScreen = new SlideScreen(gameScreen);
 		obData.addObserver(slideScreen);
 
 		gameScreen.requestFocus();
 		//this.client.player.faction = Faction.THIEF;
-		this.client.gameData.players.put( this.client.player.clientID, this.client.player );
-		base.getChildren().addAll( gameScreen, slideScreen );
+		this.client.gameData.players.put(this.client.player.clientID, this.client.player);
+		base.getChildren().addAll(gameScreen, slideScreen);
 
-		primaryStage.setFullScreenExitKeyCombination( KeyCombination.NO_MATCH );
-		primaryStage.setFullScreen( true );
-		primaryStage.setScene( scene );
+		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+		primaryStage.setFullScreen(true);
+		primaryStage.setScene(scene);
 		primaryStage.show();
 
-		slideScreen.setPickOnBounds( false );
+		slideScreen.setPickOnBounds(false);
 	}
 
 }

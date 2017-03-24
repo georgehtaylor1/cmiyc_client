@@ -31,8 +31,7 @@ public class Thief extends AI {
 		super(handler, Faction.THIEF);
 		this.faction = Faction.THIEF;
 		this.state = ThiefState.MOVING;
-		this.position = new Position(100, 100);
-		// TODO Auto-generated constructor stub
+		this.position = Helper.getRandomFreePosition(getHandler().gameData);
 	}
 
 	@Override

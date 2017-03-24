@@ -1,21 +1,21 @@
 package sample;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
-import ai.handler.Handler;
+import audio.AudioPlayer;
+import audio.AudioWav;
 import game.Faction;
 import game.GameMode;
 import game.constants.GameSettings;
-import gui.GraphicsSettings;
 import javafx.animation.TranslateTransition;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -31,6 +31,8 @@ import states.ClientState;
 
 public class SlideScreen extends AnchorPane implements Observer {
 
+	private AudioPlayer player;
+	
 	private StackPane base;
 	private AnchorPane slider;
 	private BorderPane sliderControls;
@@ -65,6 +67,10 @@ public class SlideScreen extends AnchorPane implements Observer {
 	private TranslateTransition sliderTranslation;
 
 	public SlideScreen(StackPane base, GameScreen gameScreen, WelcomeScreen welcomeScreen) throws IOException {
+		
+		player = new AudioWav(new File("/home/george/workspace/cmiyc-client/resources/the_environment.wav"));
+		player.play(true);
+		
 		this.base = base;
 		this.slider = new AnchorPane();
 		this.together = new BorderPane();
@@ -221,8 +227,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 		singlePlayer.setOnAction(e -> {
 			if (this.sliderTranslation.getRate() == -1)
 				slideOut();
-			gameScreen.aiHandler.addPlayers(1, 1);
-			gameScreen.aiHandler.start();
+			startAI();
 			gameScreen.drawGame();
 			this.base.getChildren().clear();
 			this.base.getChildren().addAll(this.gameScreen, this);
@@ -236,6 +241,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 
 		this.exit.setOnAction(e -> {
 			gameScreen.aiHandler.end();
+			player.stop();
 			System.exit(0);
 		});
 
@@ -244,6 +250,20 @@ public class SlideScreen extends AnchorPane implements Observer {
 				slideOut();
 		});
 
+	}
+
+	private void startAI() {
+		int numSec = gameScreen.client.player.faction == Faction.SECURITY ? 1 : 0;
+		int numThi = gameScreen.client.player.faction == Faction.SECURITY ? 0 : 1;
+		if (gameScreen.client.player.mode == GameMode.LONG) {
+			numSec = 3 - numSec;
+			numThi = 2 - numThi;
+		}else{
+			numSec = 2 - numSec;
+			numThi = 1 - numThi;
+		}
+		gameScreen.aiHandler.addPlayers(numSec, numThi);
+		gameScreen.aiHandler.start();
 	}
 
 	public void slideIn() {

@@ -31,8 +31,9 @@ import states.ClientState;
 
 public class SlideScreen extends AnchorPane implements Observer {
 
-	private AudioPlayer player;
-	
+	private AudioPlayer backgroundMusic;
+	private AudioPlayer footsteps;
+
 	private StackPane base;
 	private AnchorPane slider;
 	private BorderPane sliderControls;
@@ -67,10 +68,11 @@ public class SlideScreen extends AnchorPane implements Observer {
 	private TranslateTransition sliderTranslation;
 
 	public SlideScreen(StackPane base, GameScreen gameScreen, WelcomeScreen welcomeScreen) throws IOException {
-		
-		player = new AudioWav(new File("/home/george/workspace/cmiyc-client/resources/the_environment.wav"));
-		player.play(true);
-		
+
+		backgroundMusic = new AudioWav(new File("/home/george/workspace/cmiyc-client/resources/the_environment.wav"));
+		footsteps = new AudioWav(new File("/home/george/workspace/cmiyc-client/resources/footsteps.wav"));
+		backgroundMusic.play(true);
+
 		this.base = base;
 		this.slider = new AnchorPane();
 		this.together = new BorderPane();
@@ -199,6 +201,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 				gameRendering = true;
 			}
 			setState(State.FIND);
+			this.base.getChildren().clear();
+			this.base.getChildren().addAll(this.gameScreen, this);
 		});
 
 		disconnect.setOnAction(e -> {
@@ -241,7 +245,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 
 		this.exit.setOnAction(e -> {
 			gameScreen.aiHandler.end();
-			player.stop();
+			backgroundMusic.stop();
 			System.exit(0);
 		});
 
@@ -258,7 +262,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 		if (gameScreen.client.player.mode == GameMode.LONG) {
 			numSec = 3 - numSec;
 			numThi = 2 - numThi;
-		}else{
+		} else {
 			numSec = 2 - numSec;
 			numThi = 1 - numThi;
 		}

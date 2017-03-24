@@ -60,7 +60,7 @@ public class GraphicsTest extends Application {
                 .add(new Camera(500, 300, Math.PI / 6.0, 50));
 
         Pane pane = new Pane();
-        GameLogic logic = new GameLogic(main.client, pane);
+        GameLogic logic = new GameLogic(main.client, pane, null);
         GameDrawer drawer = new GameDrawer(main.client, pane);
 
         Scene scene = new Scene(pane);

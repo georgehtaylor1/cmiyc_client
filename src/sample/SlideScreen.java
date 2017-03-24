@@ -2,6 +2,7 @@ package sample;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -32,7 +33,6 @@ import states.ClientState;
 public class SlideScreen extends AnchorPane implements Observer {
 
 	private AudioPlayer backgroundMusic;
-	private AudioPlayer footsteps;
 
 	private StackPane base;
 	private AnchorPane slider;
@@ -67,10 +67,9 @@ public class SlideScreen extends AnchorPane implements Observer {
 
 	private TranslateTransition sliderTranslation;
 
-	public SlideScreen(StackPane base, GameScreen gameScreen, WelcomeScreen welcomeScreen) throws IOException {
+	public SlideScreen(StackPane base, GameScreen gameScreen, WelcomeScreen welcomeScreen) throws IOException, URISyntaxException {
 
-		backgroundMusic = new AudioWav(new File("/home/george/workspace/cmiyc-client/resources/the_environment.wav"));
-		footsteps = new AudioWav(new File("/home/george/workspace/cmiyc-client/resources/footsteps.wav"));
+		backgroundMusic = new AudioWav(new File(getClass().getClassLoader().getResource("the_environment.wav").toURI()));
 		backgroundMusic.play(true);
 
 		this.base = base;

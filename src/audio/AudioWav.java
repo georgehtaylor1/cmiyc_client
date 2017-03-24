@@ -1,11 +1,14 @@
 package audio;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import util.Debug;
 
@@ -26,6 +29,20 @@ public class AudioWav implements AudioPlayer {
 	public AudioWav(File audiofile) {
 		running = false;
 		this.audiofile = audiofile;
+		try {
+			player = AudioSystem.getClip();
+			AudioInputStream ais = AudioSystem.getAudioInputStream(audiofile);
+			player.open(ais);
+		} catch (LineUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedAudioFileException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -35,6 +52,7 @@ public class AudioWav implements AudioPlayer {
 	public void play(boolean loop) {
 		try {
 			if(running) stop();
+			running = true;
 			player = AudioSystem.getClip();
 			AudioInputStream ais = AudioSystem.getAudioInputStream(audiofile);
 			player.open(ais);

@@ -1,23 +1,22 @@
 package sample;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import ai.handler.Handler;
-
+import audio.AudioPlayer;
+import audio.AudioWav;
 import gui.GameDrawer;
-
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
-
 import launcher.Main;
-
 import logic.GameLogic;
 import logic.GameLoop;
-
 import util.Client;
 
 /**
@@ -25,6 +24,7 @@ import util.Client;
  */
 public class GameScreen extends AnchorPane {
 
+	private AudioPlayer footsteps;
     public BorderPane gameScreen;
     private ToolBar gameControls;
     private GameLogic logic;
@@ -34,7 +34,10 @@ public class GameScreen extends AnchorPane {
     public Pane base;
     public Handler aiHandler;
 
-    public GameScreen(Main _main, Pane base) throws IOException {
+    public GameScreen(Main _main, Pane base) throws IOException, URISyntaxException {
+
+		footsteps = new AudioWav(new File(getClass().getClassLoader().getResource("footsteps.wav").toURI()));
+    	
         this.gameScreen = new BorderPane();
         this.gameControls = new ToolBar();
         this.client = _main.client;
@@ -47,7 +50,7 @@ public class GameScreen extends AnchorPane {
         pane = new Pane();
         pane.setPrefSize(base.getWidth(), base.getHeight());
 
-        logic = new GameLogic(client, base);
+        logic = new GameLogic(client, base, footsteps);
         drawer = new GameDrawer(client, pane);
 
         aiHandler.addPlayers(0, 0);

@@ -56,13 +56,14 @@ public class Main extends Application {
 		/// 
 
 		GameScreen gameScreen = new GameScreen(this, base);
-		SlideScreen slideScreen = new SlideScreen(gameScreen);
+		SlideScreen slideScreen = new SlideScreen(base, gameScreen, welcomeScreen);
 		obData.addObserver(slideScreen);
 
-		gameScreen.requestFocus();
+		welcomeScreen.requestFocus();
 		//this.client.player.faction = Faction.THIEF;
 		this.client.gameData.players.put(this.client.player.clientID, this.client.player);
-		base.getChildren().addAll(gameScreen, slideScreen);
+		//base.getChildren().clear();
+		base.getChildren().addAll(gameScreen, welcomeScreen, slideScreen);
 
 		primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		primaryStage.setFullScreen(true);

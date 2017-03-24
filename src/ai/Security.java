@@ -10,7 +10,6 @@ import game.Obstacle;
 import game.Player;
 import game.constants.GameSettings;
 import game.util.Position;
-import util.Debug;
 import util.Maths;
 
 public class Security extends AI {
@@ -47,7 +46,7 @@ public class Security extends AI {
 		super(handler, Faction.SECURITY);
 		this.faction = Faction.SECURITY;
 		setState(SecurityState.MOVING);
-		this.position = new Position(100, 200);
+		this.position = Helper.getRandomFreePosition(getHandler().gameData);
 	}
 
 	/* (non-Javadoc)
@@ -55,8 +54,6 @@ public class Security extends AI {
 	 */
 	@Override
 	public void run() {
-
-		Debug.say("Security started");
 
 		if (nextWaypoint == null)
 			nextWaypoint = Helper.getClosestTreasure(this.position, this.getHandler().gameData.treasures).position;
@@ -145,10 +142,8 @@ public class Security extends AI {
 		}
 
 		// Are we currently scanning
-		//Debug.say("Checking scan " + currentScanStep + " " + this.state);
 		if (this.getState() == SecurityState.SCANNING) {
 			currentScanStep++;
-			//Debug.say("Scanning");
 			if (currentScanStep > scanTime) {
 				currentScanStep = 0;
 				setState(SecurityState.MOVING);
@@ -173,7 +168,6 @@ public class Security extends AI {
 	 *            The new state of the AI
 	 */
 	public void setState(SecurityState state) {
-		Debug.say("Set state: " + state);
 		this.state = state;
 	}
 
@@ -216,6 +210,7 @@ public class Security extends AI {
 	 *            The speed at which the AI can move for this movement
 	 */
 	private void updateMovingPosition(Position goal, double turnSpeed, double moveSpeed) {
+		//The goal should exert more force than any other surrounding obstacles, too high and it won't look natural though
 		double goalForce = 1;
 
 		Obstacle obstruction = null;

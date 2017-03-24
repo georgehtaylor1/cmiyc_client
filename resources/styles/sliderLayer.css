@@ -1,34 +1,38 @@
 #sliderLayer {
     -fx-background-color: transparent;
-    -fx-pref-width: 500;
-    -fx-spacing: 5;
+    -fx-pref-width: 500.0;
+    -fx-spacing: 5.0;
+    -fx-effect: dropshadow(GAUSSIAN, #303030, 10, 0, 0, 0)
 }
 
 #sliderControls {
     -fx-background-color: #606060;
-    -fx-alignment: center-right;
+    -fx-padding: 0.0px 10px 0px 10px;
+    -fx-border-color: #404040;
+    -fx-effect: dropshadow(GAUSSIAN, #303030, 10, 0, 0, 0)
 }
-
 
 #mainButton {
     -fx-background-color: #3CB371;
-    -fx-background-radius: 10px;
-    -fx-border-radius: 8px;
+    -fx-background-radius: 10.0px;
+    -fx-border-radius: 8.0px;
     -fx-border-color: #404040;
-    -fx-pref-height: 30;
-    -fx-pref-width: 248;
+    -fx-pref-height: 30.0;
+    -fx-pref-width: 248.0;
     -fx-text-fill: white;
+}
+
+#mainButton:hover{
+	-fx-background-color: #606060;
 }
 
 #exit {
-    -fx-background-color: darkred;
+	-fx-background-color: #404040;
     -fx-text-fill: white;
 }
 
-#sliderLayer .button:hover {
-    -fx-background-color: #606060;
-    -fx-border-color: #404040;
-    -fx-border-radius: 8px;
+#exit:hover {
+    -fx-background-color: darkred;
 }
 
 

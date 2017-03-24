@@ -471,6 +471,7 @@ public class GameDrawer {
         batText.setFont(new Font(32));
         batText.setX(30);
         batText.setY(30);
+        batText.setFill(Color.WHITE);
         pane.getChildren().add(batText);
     }
 

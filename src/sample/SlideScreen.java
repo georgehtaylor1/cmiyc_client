@@ -10,6 +10,7 @@ import game.GameMode;
 import game.constants.GameSettings;
 import gui.GraphicsSettings;
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -110,6 +111,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 		this.setPrefWidth(GameSettings.Arena.outerSize.getWidth());
 		this.setPrefHeight(GameSettings.Arena.outerSize.getHeight());
 		this.getChildren().addAll(slider, sliderControls);
+		BorderPane.setAlignment(exit, Pos.CENTER_LEFT);
+		BorderPane.setAlignment(mainButton, Pos.CENTER_RIGHT);
 		sliderControls.setLeft(exit);
 		sliderControls.setRight(mainButton);
 

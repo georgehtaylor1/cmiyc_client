@@ -11,7 +11,6 @@ import game.Treasure;
 import game.constants.GameSettings;
 import game.states.TreasureState;
 import game.util.Position;
-import util.Debug;
 import util.Maths;
 
 public class Thief extends AI {
@@ -57,7 +56,6 @@ public class Thief extends AI {
 			}
 
 			updateState();
-			Debug.say(getState() + " " + this.position.x + " " + this.position.y);
 			switch (getState()) {
 			case MOVING:
 				updateMovingPosition(targetPosition, turnSpeedMid, moveSpeedMid);
@@ -79,7 +77,6 @@ public class Thief extends AI {
 
 		if (this.position.at(targetPosition, GameSettings.Thief.stealRadius)) {
 			if (target != null) {
-				Debug.say("Item collected");
 				target.state = TreasureState.PICKED;
 			}
 

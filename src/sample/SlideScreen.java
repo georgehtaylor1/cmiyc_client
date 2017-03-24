@@ -18,6 +18,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -29,6 +30,7 @@ import states.ClientState;
 
 public class SlideScreen extends AnchorPane implements Observer {
 
+	private StackPane base;
 	private AnchorPane slider;
 	private HBox sliderControls;
 	private BorderPane together;
@@ -55,13 +57,14 @@ public class SlideScreen extends AnchorPane implements Observer {
 	private ToggleButton thief;
 	private ToggleGroup group2;
 	private GameScreen gameScreen;
+	private WelcomeScreen welcomeScreen;
 
 	private boolean gameRendering;
 
 	private TranslateTransition sliderTranslation;
 
-	public SlideScreen(GameScreen gameScreen) throws IOException {
-		this.state = State.START;
+	public SlideScreen(StackPane base, GameScreen gameScreen, WelcomeScreen welcomeScreen) throws IOException {
+		this.base = base;
 		this.slider = new AnchorPane();
 		this.together = new BorderPane();
 		this.mainButton = new Button("Start");
@@ -91,9 +94,14 @@ public class SlideScreen extends AnchorPane implements Observer {
 		this.group2 = new ToggleGroup();
 
 		this.gameScreen = gameScreen;
+		this.welcomeScreen = welcomeScreen;
 		this.drawScene();
+		this.state = State.START;
 	}
 
+	/**
+	 * Draw the slider screen
+	 */
 	public void drawScene() {
 		slider.getStylesheets().add("styles/slider.css");
 		this.getStylesheets().add("styles/sliderLayer.css");
@@ -170,7 +178,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 		sliderTranslation.play();
 
 		connect.setOnAction(e -> {
-			slideOut();
+			if (this.sliderTranslation.getRate() == -1)
+				slideOut();
 			String[] _data = host.getText().split(":");
 			String _ip = _data[0];
 			int _port = Integer.parseInt(_data[1]);
@@ -184,7 +193,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 		});
 
 		disconnect.setOnAction(e -> {
-			slideOut();
+			if (this.sliderTranslation.getRate() == -1)
+				slideOut();
 			gameScreen.client.disconnect();
 			setState(State.START);
 		});
@@ -206,10 +216,13 @@ public class SlideScreen extends AnchorPane implements Observer {
 		});
 
 		singlePlayer.setOnAction(e -> {
-			slideOut();
+			if (this.sliderTranslation.getRate() == -1)
+				slideOut();
 			gameScreen.aiHandler.addPlayers(1, 1);
 			gameScreen.aiHandler.start();
 			gameScreen.drawGame();
+			this.base.getChildren().clear();
+			this.base.getChildren().addAll(this.gameScreen, this);
 		});
 
 		this.mainButton.setOnAction(e -> {
@@ -224,9 +237,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 		});
 
 		this.setOnMouseClicked(event -> {
-			if (this.sliderTranslation.getRate() == -1) {
+			if (this.sliderTranslation.getRate() == -1)
 				slideOut();
-			}
 		});
 
 	}
@@ -255,6 +267,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 			together.setBottom(settings);
 			slider.getChildren().addAll(together);
 			mainButton.setText("Start");
+			base.getChildren().clear();
+			base.getChildren().addAll(this.gameScreen, this.welcomeScreen, this);
 			break;
 		case FIND:
 			slider.getChildren().clear();

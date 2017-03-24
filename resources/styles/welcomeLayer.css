@@ -1,11 +1,11 @@
 #welcomeLayer {
-    -fx-background-color: #404040 ;
+    -fx-background-color: #808080 ;
     -fx-pref-width: 500;
     -fx-pref-height: 300;
 }
 
 #welcomeScreen {
-    -fx-background-color: #404040;
+    -fx-background-color: #808080;
 }
 
 

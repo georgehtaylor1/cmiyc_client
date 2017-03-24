@@ -81,7 +81,6 @@ public class GameLogic {
 		if(!footsteps.isRunning() && playSound){
 			playSound = true;
 			footsteps.play(false);
-			System.out.println("PLaying");
 		}
 			
 		if(!playSound)

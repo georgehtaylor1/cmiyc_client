@@ -46,7 +46,7 @@ public class Security extends AI {
 		super(handler, Faction.SECURITY);
 		this.faction = Faction.SECURITY;
 		setState(SecurityState.MOVING);
-		this.position = new Position(100, 200);
+		this.position = Helper.getRandomFreePosition(getHandler().gameData);
 	}
 
 	/* (non-Javadoc)
@@ -211,7 +211,7 @@ public class Security extends AI {
 	 */
 	private void updateMovingPosition(Position goal, double turnSpeed, double moveSpeed) {
 		//The goal should exert more force than any other surrounding obstacles, too high and it won't look natural though
-		double goalForce = 1.3;
+		double goalForce = 1;
 
 		Obstacle obstruction = null;
 		double dist = GameSettings.Arena.outerSize.getHeight() + GameSettings.Arena.outerSize.getWidth();

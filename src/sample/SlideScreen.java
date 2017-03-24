@@ -32,7 +32,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 
 	private StackPane base;
 	private AnchorPane slider;
-	private HBox sliderControls;
+	private BorderPane sliderControls;
 	private BorderPane together;
 	private TextField username;
 	private TextField host;
@@ -68,7 +68,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 		this.slider = new AnchorPane();
 		this.together = new BorderPane();
 		this.mainButton = new Button("Start");
-		this.sliderControls = new HBox();
+		this.sliderControls = new BorderPane();
 		this.exit = new Button("Exit");
 		this.username = new TextField();
 		this.host = new TextField();
@@ -110,8 +110,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 		this.setPrefWidth(GameSettings.Arena.outerSize.getWidth());
 		this.setPrefHeight(GameSettings.Arena.outerSize.getHeight());
 		this.getChildren().addAll(slider, sliderControls);
-		sliderControls.getChildren().addAll(exit, mainButton);
-		sliderControls.setSpacing(1080);
+		sliderControls.setLeft(exit);
+		sliderControls.setRight(mainButton);
 
 		slider.setPrefWidth(250);
 		slider.setPrefHeight(GameSettings.Arena.outerSize.getHeight());
@@ -149,12 +149,12 @@ public class SlideScreen extends AnchorPane implements Observer {
 		sliderControls.setId("sliderControls");
 		mainButton.setId("mainButton");
 		exit.setId("exit");
-		username.setId("username");
-		host.setId("host");
-		connect.setId("connect");
-		disconnect.setId("connect");
-		ready.setId("connect");
-		singlePlayer.setId("connect");
+		username.setId("textBox");
+		host.setId("textBox");
+		connect.setId("button");
+		disconnect.setId("button");
+		ready.setId("button");
+		singlePlayer.setId("button");
 		toggleButton1vs2.setId("leftToggle");
 		toggleButton2vs3.setId("rightToggle");
 		security.setId("leftToggle");

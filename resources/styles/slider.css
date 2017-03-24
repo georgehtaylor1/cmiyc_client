@@ -8,25 +8,23 @@
     -fx-fill: #FFFFFF
 }
 
-#username {
+#textBox {
     -fx-background-color: #202020;
     -fx-border-color: #000000;
-    -fx-pref-width: 294;
-    -fx-pref-height: 30;
+    -fx-pref-width: 294.0;
+    -fx-pref-height: 30.0;
     -fx-text-fill: white;
 }
 
-#host {
-    -fx-background-color: #202020;
-    -fx-border-color: #000000;
-    -fx-pref-width: 294;
-    -fx-pref-height: 30;
-    -fx-text-fill: white;
-}
-
-#connect {
+#button {
     -fx-background-color: #3CB371;
-    -fx-pref-width: 300;
+    -fx-pref-width: 300.0;
+    -fx-text-fill: white;
+}
+
+#button:hover{
+ 	-fx-background-color: #606060;
+    -fx-pref-width: 300.0;
     -fx-text-fill: white;
 }
 
@@ -34,17 +32,17 @@
 #leftToggle {
     -fx-background-color: #404040;
     -fx-text-fill: white;
-    -fx-pref-height: 30;
-    -fx-pref-width: 147;
+    -fx-pref-height: 30.0;
+    -fx-pref-width: 147.0;
 
 }
 
 #leftToggle:selected {
     -fx-background-color: #000000;
     -fx-text-fill: white;
-    -fx-pref-width: 147;
+    -fx-pref-width: 147.0;
     -fx-border-color: white;
-    -fx-border-width: 0px 0px 0px 3px;
+    -fx-border-width: 0.0px 0.0px 0.0px 3.0px;
 }
 
 #leftToggle:hover {
@@ -54,61 +52,19 @@
 #rightToggle {
     -fx-background-color: #404040;
     -fx-text-fill: white;
-    -fx-pref-height: 30;
-    -fx-pref-width: 147;
+    -fx-pref-height: 30.0;
+    -fx-pref-width: 147.0;
 }
 
 #rightToggle:selected {
     -fx-background-color: #000000;
     -fx-text-fill: white;
-    -fx-pref-width: 147;
+    -fx-pref-width: 147.0;
     -fx-border-color: white;
-    -fx-border-width: 0px 3px 0px 0px;
+    -fx-border-width: 0.0px 3.0px 0.0px 0.0px;
 }
 
 #rightToggle:hover {
-    -fx-background-color: #606060;
-}
-
-#security {
-    -fx-background-color: #404040;
-    -fx-text-fill: white;
-    -fx-pref-width: 147;
-    -fx-pref-height: 30;
-}
-
-#security:selected {
-    -fx-background-color: #000000;
-    -fx-text-fill: white;
-    -fx-pref-width: 147;
-    -fx-effect: dropshadow(three-pass-box, white, 10, 0, 0, 0);
-}
-
-
-#security:hover {
-    -fx-background-color: #606060;
-}
-
-#thief {
-    -fx-background-color: #404040;
-    -fx-text-fill: white;
-    -fx-pref-width: 147;
-    -fx-pref-height: 30;
-}
-
-#thief:selected {
-    -fx-background-color: #000000;
-    -fx-text-fill: white;
-    -fx-pref-width: 147;
-    -fx-effect: dropshadow(three-pass-box, white, 10, 0, 0, 0);
-}
-
-#thief:hover {
-    -fx-background-color: #606060;
-}
-
-
-#slider .button:hover {
     -fx-background-color: #606060;
 }
 

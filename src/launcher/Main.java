@@ -28,11 +28,13 @@ public class Main extends Application {
 	}
 
 	public static void main(String _arguments[]) {
-		new Main();
+		//new Main();
 		launch(_arguments);
 	}
 
 	public void start(Stage primaryStage) throws Exception {
+		this.obData = new SlideScreenData();
+		this.client = new Client("u-n-owen", obData);
 		StackPane base = new StackPane();
 		Scene scene = new Scene(base);
 

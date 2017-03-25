@@ -15,11 +15,13 @@ public class GameLoop implements Runnable {
     private GameLogic logic;
     private Handler aiHandler;
     private boolean fps;
+    private boolean running;
 
     public GameLoop(GameDrawer drawer, GameLogic logic, Handler aiHandler) {
         this.drawer = drawer;
         this.logic = logic;
         this.aiHandler = aiHandler;
+        this.running = false;
     }
 
     /**
@@ -30,11 +32,11 @@ public class GameLoop implements Runnable {
     }
 
     public void run() {
-
+    	running = true;
         double fpsAcc = 0.0;
         int itAcc = 0;
 
-        while (true) {
+        while (running) {
 
             if (fpsAcc >= 1000.0) {
                 fpsAcc = 0.0;
@@ -70,5 +72,9 @@ public class GameLoop implements Runnable {
      */
     private static double milliTime() {
         return System.nanoTime() / 1000000.0;
+    }
+    
+    public void stop() {
+    	this.running = false;
     }
 }

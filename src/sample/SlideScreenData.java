@@ -19,11 +19,13 @@ public class SlideScreenData extends Observable {
 	
 	public void setPlayers(int _players) {
 		this.players = _players;
+		setChanged();
 		notifyObservers();
 	}
 	
 	public void setState(ClientState _state) {
 		this.state = _state;
+		setChanged();
 		notifyObservers();
 	}
 	

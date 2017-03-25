@@ -14,6 +14,7 @@ import game.Obstacle;
 import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
+import game.states.GameState;
 import game.states.PlayerState;
 import game.states.TreasureState;
 import game.util.Position;
@@ -22,6 +23,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import states.ClientState;
 import util.Client;
 import util.Debug;
 import util.Maths;
@@ -263,6 +265,8 @@ public class GameLogic {
 				Debug.say("It's a draw!");
 			}
 			this.gameEnd = true;
+			client.gameData.state = GameState.POSTGAME;
+			client.obData.setState(ClientState.POSTGAME);
 		}
 
 	}

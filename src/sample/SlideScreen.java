@@ -25,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import states.ClientState;
+import util.Debug;
 
 /**
  * Created by Gerta on 24/02/2017.
@@ -333,9 +334,10 @@ public class SlideScreen extends AnchorPane implements Observer {
 				this.setState(State.INGAME);
 			else
 				this.setState(State.LOBBY);
-		} else if (this.state == State.INGAME) {
-			if (this.gameScreen.client.obData.getState() == ClientState.POSTGAME)
+		} //else if (this.state == State.INGAME) {
+			if (this.gameScreen.client.obData.getState() == ClientState.POSTGAME) {
 				this.state = State.START;
-		}
+			}
+		//}
 	}
 }

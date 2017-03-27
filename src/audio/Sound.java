@@ -1,7 +1,6 @@
 package audio;
 
 import java.io.File;
-import java.net.URL;
 
 /**
  * Stores location of audio files and provides an interface to play them
@@ -9,8 +8,7 @@ import java.net.URL;
  * @author harvey
  */
 public enum Sound {
-	//FOOTSTEP ("footsteps.wav"), MUSIC_MAIN ("output.midi", AudioType.MIDI), DOOR_OPEN ("open.wav"), BATTERY_LOW ("battery.wav"), WINDOW_BREAK ("window.wav");
-	MUSIC_MAIN ("output.wav");
+	MUSIC_MAIN ("the_environment.wav"), FOOTSTEPS ("footsteps.wav");
 	
 	private File audiofile;
 	private AudioPlayer player;
@@ -21,7 +19,7 @@ public enum Sound {
 	 * @param filename The path of the audio file relative to /resources/sound/
 	 */
 	private Sound(String filename) {
-		this.audiofile = new File("sound/" + filename);
+		this.audiofile = new File("resources/sound/" + filename);
 		this.player = new AudioWav(this.audiofile);
 		this.type = AudioType.WAV;
 	}
@@ -32,8 +30,7 @@ public enum Sound {
 	 * @param type MIDI or Wav
 	 */
 	private Sound(String filename, AudioType type) {
-		URL url = getClass().getResource(filename);
-		this.audiofile = new File(url.getPath());
+		this.audiofile = new File("resources/sound/" + filename);
 		switch(type) {
 		case MIDI:
 			this.player = new AudioMidi(this.audiofile);

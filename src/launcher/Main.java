@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import sample.GameOverScreen;
 import sample.GameScreen;
 import sample.SlideScreen;
 import sample.SlideScreenData;
@@ -57,8 +58,9 @@ public class Main extends Application {
 
 		/// 
 
+		GameOverScreen gameover = new GameOverScreen(this.client);
 		GameScreen gameScreen = new GameScreen(this, base);
-		SlideScreen slideScreen = new SlideScreen(base, gameScreen, welcomeScreen);
+		SlideScreen slideScreen = new SlideScreen(base, gameScreen, welcomeScreen, gameover);
 		obData.addObserver(slideScreen);
 
 		welcomeScreen.requestFocus();

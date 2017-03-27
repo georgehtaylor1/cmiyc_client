@@ -1,12 +1,9 @@
 package sample;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import ai.handler.Handler;
-import audio.AudioPlayer;
-import audio.AudioWav;
 import gui.GameDrawer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ToolBar;
@@ -24,7 +21,6 @@ import util.Client;
  */
 public class GameScreen extends AnchorPane {
 
-	private AudioPlayer footsteps;
     public BorderPane gameScreen;
     private ToolBar gameControls;
     private GameLogic logic;
@@ -35,8 +31,6 @@ public class GameScreen extends AnchorPane {
     public Handler aiHandler;
 
     public GameScreen(Main _main, Pane base) throws IOException, URISyntaxException {
-
-		footsteps = new AudioWav(new File(getClass().getClassLoader().getResource("footsteps.wav").toURI()));
     	
         this.gameScreen = new BorderPane();
         this.gameControls = new ToolBar();
@@ -50,7 +44,7 @@ public class GameScreen extends AnchorPane {
         pane = new Pane();
         pane.setPrefSize(base.getWidth(), base.getHeight());
 
-        logic = new GameLogic(client, base, footsteps);
+        logic = new GameLogic(client, base);
         drawer = new GameDrawer(client, pane);
 
         aiHandler.addPlayers(0, 0);
@@ -60,7 +54,7 @@ public class GameScreen extends AnchorPane {
                 new Thread(new GameLoop(drawer, logic, aiHandler));
         drawerThread.setDaemon(true);
         drawerThread.start();
-        gameScreen.setCenter(pane);
+        this.gameScreen.setCenter(pane);
     }
 
     public void drawScene() {
@@ -72,8 +66,8 @@ public class GameScreen extends AnchorPane {
 
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
-        gameScreen.setPrefWidth(bounds.getWidth());
-        gameScreen.setPrefHeight(bounds.getHeight() - 40);
+        this.gameScreen.setPrefWidth(bounds.getWidth());
+        this.gameScreen.setPrefHeight(bounds.getHeight() - 40);
 
         AnchorPane.setBottomAnchor(gameControls, 0.0);
         AnchorPane.setRightAnchor(gameControls, 0.0);
@@ -85,7 +79,7 @@ public class GameScreen extends AnchorPane {
 
         this.getStylesheets().add("styles/gameLayer.css");
         this.setId("gameLayer");
-        gameScreen.setId("gameScreen");
+        this.gameScreen.setId("gameScreen");
         gameControls.setId("gameControls");
 
     }

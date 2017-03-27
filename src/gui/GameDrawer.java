@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import constants.Colors;
-
 import game.Camera;
 import game.Faction;
 import game.Obstacle;
@@ -15,9 +14,7 @@ import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
 import game.states.TreasureState;
-
 import gui.util.FxUtils;
-
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -33,7 +30,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
 import util.Client;
 
 /**

@@ -3,8 +3,7 @@ package logic;
 import java.util.HashMap;
 import java.util.Map;
 
-import audio.AudioPlayer;
-import audio.AudioWav;
+import audio.Sound;
 import constants.Commands.Action;
 import constants.Commands.Key;
 import game.Camera;
@@ -42,7 +41,6 @@ public class GameLogic {
 	private double mouseX;
 	private double mouseY;
 
-	private AudioPlayer footsteps;
 	private boolean playSound;
 
 	private Rectangle fullMap;
@@ -51,8 +49,7 @@ public class GameLogic {
 
 	private boolean gameEnd;
 
-	public GameLogic(Client client, Pane pane, AudioPlayer footsteps) {
-		this.footsteps = footsteps;
+	public GameLogic(Client client, Pane pane) {
 		this.client = client;
 		this.pane = pane;
 		this.faction = client.player.faction;
@@ -80,13 +77,13 @@ public class GameLogic {
 
 		DrawValues vals = new DrawValues(this.pane);
 
-		if(!footsteps.isRunning() && playSound){
+		if(!Sound.FOOTSTEP.isRunning() && playSound){
 			playSound = true;
-			footsteps.play(false);
+			Sound.FOOTSTEP.play();
 		}
 			
 		if(!playSound)
-			footsteps.stop();
+			Sound.FOOTSTEP.stop();
 		
 		if (this.gameEnd) {
 			return;

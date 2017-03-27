@@ -1,13 +1,11 @@
 package sample;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Observable;
 import java.util.Observer;
 
-import audio.AudioPlayer;
-import audio.AudioWav;
+import audio.Sound;
 import game.Faction;
 import game.GameMode;
 import game.constants.GameSettings;
@@ -33,8 +31,6 @@ import util.Debug;
 
 public class SlideScreen extends AnchorPane implements Observer {
 
-	private AudioPlayer backgroundMusic;
-
 	private StackPane base;
 	private AnchorPane slider;
 	private BorderPane sliderControls;
@@ -51,8 +47,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 	private Text text2;
 	private VBox connection;
 	private VBox settings;
-
-	private State state;
+	
+	private GameOverScreen gameover;
 
 	private ToggleButton toggleButton2vs3;
 	private ToggleButton toggleButton1vs2;
@@ -68,10 +64,9 @@ public class SlideScreen extends AnchorPane implements Observer {
 
 	private TranslateTransition sliderTranslation;
 
-	public SlideScreen(StackPane base, GameScreen gameScreen, WelcomeScreen welcomeScreen) throws IOException, URISyntaxException {
+	public SlideScreen(StackPane base, GameScreen gameScreen, WelcomeScreen welcomeScreen, GameOverScreen gameover) throws IOException, URISyntaxException {
 
-		backgroundMusic = new AudioWav(new File(getClass().getClassLoader().getResource("the_environment.wav").toURI()));
-		backgroundMusic.play(true);
+		Sound.MUSIC.playLoop();
 
 		this.base = base;
 		this.slider = new AnchorPane();
@@ -92,6 +87,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 		this.connection = new VBox();
 		this.settings = new VBox();
 		this.gameRendering = false;
+		this.gameover = gameover;
 
 		//toggleButton for number of players
 		this.toggleButton1vs2 = new ToggleButton("1vs2");
@@ -105,7 +101,6 @@ public class SlideScreen extends AnchorPane implements Observer {
 		this.gameScreen = gameScreen;
 		this.welcomeScreen = welcomeScreen;
 		this.drawScene();
-		this.state = State.START;
 	}
 
 	/**
@@ -245,7 +240,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 
 		this.exit.setOnAction(e -> {
 			gameScreen.aiHandler.end();
-			backgroundMusic.stop();
+			Sound.MUSIC.stop();
 			System.exit(0);
 		});
 
@@ -282,7 +277,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 	}
 
 	public enum State {
-		START, FIND, LOBBY, INGAME
+		START, FIND, LOBBY, INGAME, END
 	}
 
 	public void setState(State state) {
@@ -295,7 +290,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 			slider.getChildren().addAll(together);
 			mainButton.setText("Start");
 			base.getChildren().clear();
-			base.getChildren().addAll(this.gameScreen, this.welcomeScreen, this);
+			Debug.say("setting welcome");
+			base.getChildren().addAll(this.welcomeScreen, this);
 			break;
 		case FIND:
 			slider.getChildren().clear();
@@ -324,20 +320,16 @@ public class SlideScreen extends AnchorPane implements Observer {
 			slider.getChildren().add(text2);
 			slider.getChildren().add(disconnect);
 			break;
+		case END:
+			this.gameover.drawScene();
+			base.getChildren().add(this.gameover);
 		}
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if (this.state == State.FIND) {
-			if (this.gameScreen.client.obData.getState() == ClientState.PLAYING)
-				this.setState(State.INGAME);
-			else
-				this.setState(State.LOBBY);
-		} //else if (this.state == State.INGAME) {
-			if (this.gameScreen.client.obData.getState() == ClientState.POSTGAME) {
-				this.state = State.START;
-			}
-		//}
+		if (this.gameScreen.client.obData.getState() == ClientState.POSTGAME) {
+			setState(State.END);
+		}
 	}
 }

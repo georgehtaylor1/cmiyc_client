@@ -14,12 +14,12 @@ public class AudioTest {
 	 */
 	@BeforeClass
 	public static void setUp() {
-		Sound.MUSIC_MAIN.play();
+		Sound.MUSIC.play();
 	}
 	
 	@AfterClass
 	public static void tearDown() {
-		audio.Sound.MUSIC_MAIN.stop();
+		audio.Sound.MUSIC.stop();
 	}
 
 	/**
@@ -27,7 +27,7 @@ public class AudioTest {
 	 */
 	@Test
 	public void testPlay() {
-		Assert.assertEquals(true, Sound.MUSIC_MAIN.isRunning());
+		Assert.assertEquals(true, Sound.MUSIC.isRunning());
 	}
 	
 	/**

@@ -305,7 +305,7 @@ public class GameLogic {
 			// client.gameData.secScore +=
 			// GameSettings.Score.thiefCaptureScore;//TODO: Is this necessary?
 			client.gameData.thiefScore -= thief.treasureScore;
-			client.gameData.players.remove(name);
+			//client.gameData.players.remove(name);
 			// Network
 			HashMap<Key, Object> map = new HashMap<Key, Object>();
 			map.put(Key.CLIENT_ID, thief.clientID);

@@ -322,7 +322,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 			break;
 		case END:
 			this.gameover.drawScene();
-			base.getChildren().add(this.gameover);
+			slider.getChildren().clear();
+			slider.getChildren().add(gameover);
 		}
 	}
 

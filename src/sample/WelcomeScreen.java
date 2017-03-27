@@ -48,7 +48,7 @@ public class WelcomeScreen extends AnchorPane {
 
 	public void drawScene() {
 
-		this.getStylesheets().add(Stylesheet.getUrl("styles/welcomeLayer.css"));
+		this.getStylesheets().add(Stylesheet.getUrl("resources/styles/welcomeLayer.css"));
 
 		welcomeControls.setPrefHeight(40);
 		this.setPrefWidth(Constants.ScreenWidth);

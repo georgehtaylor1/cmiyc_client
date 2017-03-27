@@ -1,4 +1,4 @@
-package logic;
+package test;
 
 import static org.junit.Assert.assertTrue;
 
@@ -14,6 +14,7 @@ import game.states.TreasureState;
 import game.util.Position;
 import gui.OffsetHolder;
 import javafx.scene.layout.Pane;
+import logic.GameLogic;
 import sample.SlideScreenData;
 import util.Client;
 

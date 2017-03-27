@@ -1,2 +1,3 @@
 #!/bin/bash
-java -cp bin gui.GraphicsTest
+cd resources
+java -cp ../bin launcher.Main

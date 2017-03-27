@@ -1,8 +1,6 @@
 package launcher;
 
-import game.Faction;
 import game.Obstacle;
-import game.Player;
 import game.Treasure;
 import game.constants.GameSettings;
 import javafx.application.Application;

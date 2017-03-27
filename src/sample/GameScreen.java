@@ -1,12 +1,9 @@
 package sample;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
 import ai.handler.Handler;
-import audio.AudioPlayer;
-import audio.AudioWav;
 import gui.GameDrawer;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ToolBar;
@@ -24,7 +21,6 @@ import util.Client;
  */
 public class GameScreen extends AnchorPane {
 
-	private AudioPlayer footsteps;
     public BorderPane gameScreen;
     private ToolBar gameControls;
     private GameLogic logic;
@@ -35,8 +31,6 @@ public class GameScreen extends AnchorPane {
     public Handler aiHandler;
 
     public GameScreen(Main _main, Pane base) throws IOException, URISyntaxException {
-
-		footsteps = new AudioWav(new File(getClass().getClassLoader().getResource("footsteps.wav").toURI()));
     	
         this.gameScreen = new BorderPane();
         this.gameControls = new ToolBar();
@@ -50,7 +44,7 @@ public class GameScreen extends AnchorPane {
         pane = new Pane();
         pane.setPrefSize(base.getWidth(), base.getHeight());
 
-        logic = new GameLogic(client, base, footsteps);
+        logic = new GameLogic(client, base);
         drawer = new GameDrawer(client, pane);
 
         aiHandler.addPlayers(0, 0);
@@ -65,7 +59,7 @@ public class GameScreen extends AnchorPane {
 
     public void drawScene() {
 
-        this.getStylesheets().add(Stylesheet.getUrl("styles/gameLayer.css"));
+        this.getStylesheets().add(Stylesheet.getUrl("resources/styles/gameLayer.css"));
 
         gameControls.setPrefHeight(40);
         this.getChildren().addAll(gameScreen, gameControls);
@@ -83,7 +77,7 @@ public class GameScreen extends AnchorPane {
         AnchorPane.setRightAnchor(gameScreen, 0.0);
         AnchorPane.setBottomAnchor(gameScreen, 0.0);
 
-        this.getStylesheets().add(Stylesheet.getUrl("styles/gameLayer.css"));
+        this.getStylesheets().add(Stylesheet.getUrl("resources/styles/gameLayer.css"));
         this.setId("gameLayer");
         gameScreen.setId("gameScreen");
         gameControls.setId("gameControls");

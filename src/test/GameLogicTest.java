@@ -2,12 +2,8 @@ package test;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import audio.AudioWav;
 
 import game.Faction;
 import game.Obstacle;
@@ -16,27 +12,21 @@ import game.Treasure;
 import game.states.PlayerState;
 import game.states.TreasureState;
 import game.util.Position;
-
 import javafx.scene.layout.Pane;
-
 import logic.GameLogic;
-
 import sample.SlideScreenData;
-
 import util.Client;
 
 public class GameLogicTest {
 
     Client c;
-    AudioWav footsteps;
     GameLogic logic;
 
     @Before
     public void setUp() throws Exception {
 
         c = new Client("test", new SlideScreenData());
-        footsteps = new AudioWav(new File(getClass().getClassLoader().getResource("footsteps.wav").toURI()));
-        logic = new GameLogic(c, new Pane(), footsteps);
+        logic = new GameLogic(c, new Pane());
 
         c.gameData.treasures.add(new Treasure(0, 0));
         c.gameData.treasures.add(new Treasure(10, 0));
@@ -88,7 +78,7 @@ public class GameLogicTest {
     @Test
     public void testInitialization() {
         try {
-            logic = new GameLogic(c, new Pane(), footsteps);
+            logic = new GameLogic(c, new Pane());
         } catch (final Exception ex) {
 
         }

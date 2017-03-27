@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Arc;
@@ -49,7 +48,7 @@ public class WelcomeScreen extends AnchorPane {
 
 	public void drawScene() {
 
-		this.getStylesheets().add(Stylesheet.getUrl("styles/welcomeLayer.css"));
+		this.getStylesheets().add(Stylesheet.getUrl("resources/styles/welcomeLayer.css"));
 
 		welcomeControls.setPrefHeight(40);
 		this.setPrefWidth(Constants.ScreenWidth);

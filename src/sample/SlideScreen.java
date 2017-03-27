@@ -1,13 +1,11 @@
 package sample;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Observable;
 import java.util.Observer;
 
-import audio.AudioPlayer;
-import audio.AudioWav;
+import audio.Sound;
 import game.Faction;
 import game.GameMode;
 import game.constants.GameSettings;
@@ -31,8 +29,6 @@ import states.ClientState;
  */
 
 public class SlideScreen extends AnchorPane implements Observer {
-
-	private AudioPlayer backgroundMusic;
 
 	private StackPane base;
 	private AnchorPane slider;
@@ -68,9 +64,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 	private TranslateTransition sliderTranslation;
 
 	public SlideScreen(StackPane base, GameScreen gameScreen, WelcomeScreen welcomeScreen) throws IOException, URISyntaxException {
-
-		backgroundMusic = new AudioWav(new File(getClass().getClassLoader().getResource("the_environment.wav").toURI()));
-		backgroundMusic.play(true);
+		
+		Sound.MUSIC_MAIN.playLoop();
 
 		this.base = base;
 		this.slider = new AnchorPane();
@@ -111,8 +106,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 	 * Draw the slider screen
 	 */
 	public void drawScene() {
-		slider.getStylesheets().add(Stylesheet.getUrl("styles/slider.css"));
-		this.getStylesheets().add(Stylesheet.getUrl("styles/sliderLayer.css"));
+		slider.getStylesheets().add(Stylesheet.getUrl("resources/styles/slider.css"));
+		this.getStylesheets().add(Stylesheet.getUrl("resources/styles/sliderLayer.css"));
 
 		sliderControls.setPrefHeight(40);
 		this.setPrefWidth(GameSettings.Arena.outerSize.getWidth());
@@ -244,7 +239,7 @@ public class SlideScreen extends AnchorPane implements Observer {
 
 		this.exit.setOnAction(e -> {
 			gameScreen.aiHandler.end();
-			backgroundMusic.stop();
+			Sound.MUSIC_MAIN.stop();
 			System.exit(0);
 		});
 

@@ -111,8 +111,8 @@ public class SlideScreen extends AnchorPane implements Observer {
 	 * Draw the slider screen
 	 */
 	public void drawScene() {
-		slider.getStylesheets().add("styles/slider.css");
-		this.getStylesheets().add("styles/sliderLayer.css");
+		slider.getStylesheets().add(Stylesheet.getUrl("styles/slider.css"));
+		this.getStylesheets().add(Stylesheet.getUrl("styles/sliderLayer.css"));
 
 		sliderControls.setPrefHeight(40);
 		this.setPrefWidth(GameSettings.Arena.outerSize.getWidth());

@@ -65,7 +65,7 @@ public class GameScreen extends AnchorPane {
 
     public void drawScene() {
 
-        this.getStylesheets().add("styles/gameLayer.css");
+        this.getStylesheets().add(Stylesheet.getUrl("styles/gameLayer.css"));
 
         gameControls.setPrefHeight(40);
         this.getChildren().addAll(gameScreen, gameControls);
@@ -83,7 +83,7 @@ public class GameScreen extends AnchorPane {
         AnchorPane.setRightAnchor(gameScreen, 0.0);
         AnchorPane.setBottomAnchor(gameScreen, 0.0);
 
-        this.getStylesheets().add("styles/gameLayer.css");
+        this.getStylesheets().add(Stylesheet.getUrl("styles/gameLayer.css"));
         this.setId("gameLayer");
         gameScreen.setId("gameScreen");
         gameControls.setId("gameControls");
